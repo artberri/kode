@@ -30,7 +30,7 @@
 		"oxlint": "^1.94.0",
 		"oxlint-tsgolint": "^7.0.2007",
 		"tailwindcss": "4.3.3",
-		"typescript": "^5",
+		"typescript": "^7",
 		"wrangler": "^4.163.0"
 	},
 	"engines": {
