@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Rejects commit messages that don't follow Conventional Commits.
+set -euo pipefail
+
+commitlint="node_modules/.bin/commitlint"
+if [[ ! -x "$commitlint" ]]; then
+	echo "commit-msg: commitlint not found, run 'bun install' first." >&2
+	exit 1
+fi
+
+"$commitlint" --edit "$1"
