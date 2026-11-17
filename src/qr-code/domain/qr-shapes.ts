@@ -5,20 +5,19 @@ import { num, type Radii, roundedRect } from "./svg-path";
 const ROUND_DOT_INSET = 0.08;
 const HALF = 0.5;
 
-function isDark(matrix: QrMatrix, row: number, column: number): boolean {
-	return matrix[row]?.[column] === true && !isInFinder(row, column, matrix.length);
-}
+/** Whether the module at a row and column is drawn as a dot. */
+type Darkness = (row: number, column: number) => boolean;
 
 function cornerRadius(neighbourA: boolean, neighbourB: boolean): number {
 	return neighbourA || neighbourB ? 0 : HALF;
 }
 
 /** Rounds only the corners where the dot has no dark neighbour on either side. */
-function smoothRadii(matrix: QrMatrix, row: number, column: number): Radii {
-	const above = isDark(matrix, row - 1, column);
-	const below = isDark(matrix, row + 1, column);
-	const left = isDark(matrix, row, column - 1);
-	const right = isDark(matrix, row, column + 1);
+function smoothRadii(isDark: Darkness, row: number, column: number): Radii {
+	const above = isDark(row - 1, column);
+	const below = isDark(row + 1, column);
+	const left = isDark(row, column - 1);
+	const right = isDark(row, column + 1);
 	return [
 		cornerRadius(above, left),
 		cornerRadius(above, right),
@@ -27,7 +26,7 @@ function smoothRadii(matrix: QrMatrix, row: number, column: number): Radii {
 	];
 }
 
-type DotDrawer = (matrix: QrMatrix, row: number, column: number) => string;
+type DotDrawer = (isDark: Darkness, row: number, column: number) => string;
 
 const ROUND_DOT_SIZE = 1 - ROUND_DOT_INSET * 2;
 
@@ -43,21 +42,32 @@ const DOTS: Record<DotStyle, DotDrawer> = {
 			},
 			[ROUND_DOT_SIZE / 2, ROUND_DOT_SIZE / 2, ROUND_DOT_SIZE / 2, ROUND_DOT_SIZE / 2],
 		),
-	smooth: (matrix, row, column) =>
-		roundedRect({ x: column, y: row, width: 1, height: 1 }, smoothRadii(matrix, row, column)),
+	smooth: (isDark, row, column) =>
+		roundedRect({ x: column, y: row, width: 1, height: 1 }, smoothRadii(isDark, row, column)),
 	diamond: (_matrix, row, column) =>
 		`M${num(column + HALF)} ${String(row)}L${String(column + 1)} ${num(row + HALF)}` +
 		`L${num(column + HALF)} ${String(row + 1)}L${String(column)} ${num(row + HALF)}Z`,
 };
 
+export interface DotsOptions {
+	/** Leave out the modules where the finder patterns go. Off only for a sample drawing. */
+	readonly skipFinders?: boolean;
+}
+
 /** Every dark module outside the finder patterns, in module units, as one path. */
-export function dotsPath(matrix: QrMatrix, style: DotStyle): string {
+export function dotsPath(
+	matrix: QrMatrix,
+	style: DotStyle,
+	{ skipFinders = true }: DotsOptions = {},
+): string {
 	const draw = DOTS[style];
+	const isDark: Darkness = (row, column) =>
+		matrix[row]?.[column] === true && !(skipFinders && isInFinder(row, column, matrix.length));
 	let d = "";
 	matrix.forEach((cells, row) => {
 		cells.forEach((_, column) => {
-			if (isDark(matrix, row, column)) {
-				d += draw(matrix, row, column);
+			if (isDark(row, column)) {
+				d += draw(isDark, row, column);
 			}
 		});
 	});
@@ -76,13 +86,22 @@ function all(radius: number): Radii {
 	return [radius, radius, radius, radius];
 }
 
-function finder(x: number, y: number, corner: CornerStyle, centre: CornerStyle): string {
+/** A finder pattern's 7-module ring, with its 5-module hole, from its top-left corner. */
+export function finderRingPath(x: number, y: number, corner: CornerStyle): string {
 	const { outer, inner } = RING_RADII[corner];
 	return (
 		roundedRect({ x, y, width: FINDER_SIZE, height: FINDER_SIZE }, all(outer)) +
-		roundedRect({ x: x + 1, y: y + 1, width: 5, height: 5 }, all(inner), true) +
-		roundedRect({ x: x + 2, y: y + 2, width: 3, height: 3 }, all(CENTRE_RADIUS[centre]))
+		roundedRect({ x: x + 1, y: y + 1, width: 5, height: 5 }, all(inner), true)
 	);
+}
+
+/** A finder pattern's 3-module centre, from the pattern's top-left corner. */
+export function finderCentrePath(x: number, y: number, centre: CornerStyle): string {
+	return roundedRect({ x: x + 2, y: y + 2, width: 3, height: 3 }, all(CENTRE_RADIUS[centre]));
+}
+
+function finder(x: number, y: number, corner: CornerStyle, centre: CornerStyle): string {
+	return finderRingPath(x, y, corner) + finderCentrePath(x, y, centre);
 }
 
 /** The three finder patterns, in module units, as one path: ring, hole and centre each. */
