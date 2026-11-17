@@ -31,6 +31,8 @@ Add an entry when a finding is rejected with a reason that will hold next time. 
 
 **`open-next.config.ts` configures no incremental cache.** Every page is static for now, so there is nothing to cache or revalidate. Add the R2 cache with the first page that needs ISR or revalidation.
 
+**The Content Security Policy allows `'unsafe-inline'` scripts.** Next.js hydrates with inline scripts, and a nonce would make every page render on each request, losing the prerendered HTML for little gain while no page shows user content. Everything else is locked to the site's own origin. This holds only until a page serves user content: then that page moves to a nonce. Settled in [SECURITY_HEADERS.md](./SECURITY_HEADERS.md).
+
 **`next.config.ts` calls `void initOpenNextCloudflareForDev()`.** OpenNext requires this call so `getCloudflareContext()` returns bindings under `next dev`; the `void` intentionally discards its promise, as nothing waits on it.
 
 ## Agent docs

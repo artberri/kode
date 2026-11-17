@@ -53,6 +53,7 @@ The app deploys to Cloudflare Workers through OpenNext (`@opennextjs/cloudflare`
 - Leave `cacheComponents` off in `next.config.ts`: see [FOOTGUNS.md](docs/FOOTGUNS.md).
 - Read bindings through `getCloudflareContext()`. After editing `wrangler.jsonc`, run `bun run cf-typegen` to refresh `cloudflare-env.d.ts`.
 - No incremental cache is configured (`open-next.config.ts`). Add the R2 cache when a page needs ISR or revalidation.
+- `next.config.ts` sends a Content Security Policy that allows only what the pages load today. Read [SECURITY_HEADERS.md](docs/SECURITY_HEADERS.md) and update the policy in the same change whenever a page loads something new (script, style, font, image, connection, another origin) or serves user content.
 - Every push to `main` deploys to production once QA passes, so `main` is always live. Infrastructure is `wrangler.jsonc` only; the dashboard-side setup (token, secrets, `www` redirect) is in [DEPLOYMENT.md](docs/DEPLOYMENT.md): read it before touching the domain, the deploy job or the zone.
 
 ## Design
