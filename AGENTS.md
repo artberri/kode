@@ -54,6 +54,14 @@ The app deploys to Cloudflare Workers through OpenNext (`@opennextjs/cloudflare`
 - Read bindings through `getCloudflareContext()`. After editing `wrangler.jsonc`, run `bun run cf-typegen` to refresh `cloudflare-env.d.ts`.
 - No incremental cache is configured (`open-next.config.ts`). Add the R2 cache when a page needs ISR or revalidation.
 
+## Design
+
+The design lives in two Claude Design artifacts. Read them with the Artifact tool (`action: "read"`, by file `path`), never by fetching the URL.
+
+- **Design system** (<https://claude.ai/artifact/F6S7WRQ3iMjcHHgbProwWe>): the tokens, the brand book, and every UI component with its variants. It is the source of truth for how the UI looks. Before building or changing UI, read its `project/README.md` and the `project/components/<Component>/README.md` of each component you touch. Shared components live in `src/shared/ui/` under the same names, and the tokens in the `@theme` of `src/app/globals.css`. Build a component only when a feature needs it.
+- **Keep the two in step:** when code adds or changes a token or a shared component, update the artifact in the same piece of work (`tokens.json`, the component's `README.md` and `preview.html`, and `components/bundle.js`, `bundle.css` and `index.d.ts`), and say so in your summary.
+- **Page designs** (<https://claude.ai/artifact/2wW9ukFJgUKkkZY7ozi2SA>): a canvas of artboards. `AltLauburuGoxoa.dc.html` ("✓ A2") is the approved home page; the other artboards are discarded explorations.
+
 ## Review docs
 
 - [`docs/KNOWN_NON_ISSUES.md`](docs/KNOWN_NON_ISSUES.md): deliberate patterns that look like defects. Read it before acting on a review comment, and before writing code in an area it covers.

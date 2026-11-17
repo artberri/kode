@@ -59,6 +59,7 @@ Work through the phase's **TDD checklist** and **To-do** top to bottom, outside 
     - **`wrangler.jsonc` changes:** run `bun run cf-typegen` and commit the regenerated `cloudflare-env.d.ts` in the same commit.
     - **Caching, middleware, headers or bindings:** verify on `bun run preview` (the real Worker on `workerd`), not only `bun run dev`. See [FOOTGUNS.md](../../../docs/FOOTGUNS.md).
     - **New dependencies:** add them with `bun add` (or `bun add -d`) and commit `bun.lock` with them.
+    - **Shared UI or tokens** (`src/shared/ui`, the `@theme` in `globals.css`): build to the design-system artifact, and update the artifact wherever the code ends up different, as `AGENTS.md`, Design, says.
 3. Commit **small, stable units**: one atomic change per commit, not one commit per phase.
 4. Don't silently expand scope. If you find something the phase doesn't cover, raise it with the user instead of tacking it on.
 

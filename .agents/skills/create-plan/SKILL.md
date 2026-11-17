@@ -63,6 +63,7 @@ The brief is the spec: there is no tracker or design tool behind it. **Grill** t
 2. **The contracts involved:** the observable surfaces the change affects. If the user doesn't name them, propose a list:
     - Use cases and their ports (input and output), and the slice they live in
     - Pages and routes under `src/app/`, with their metadata and SEO
+    - Shared UI components and design tokens, mirrored in the design-system artifact
     - Route handlers and redirects: API routes, and short-link redirects once the URL shortener exists
     - Cloudflare configuration and bindings: `wrangler.jsonc`, `open-next.config.ts` and the generated `cloudflare-env.d.ts`
     - Generated outputs users keep: downloaded QR codes (PNG, SVG) and the content scanners read; a printed code can't be changed
@@ -76,6 +77,7 @@ The brief is the spec: there is no tracker or design tool behind it. **Grill** t
 Read what the task will touch; without it the plan is generic and the phases won't match reality.
 
 - The project's `AGENTS.md` / `CLAUDE.md`, and the docs they point to, for architecture and conventions.
+- For UI work, the Claude Design artifacts listed in `AGENTS.md`, Design: link the approved artboard in each UI phase's `> Design:` line, and name the design-system components and tokens the phase builds.
 - The material the brief links: reference sites, documentation, screenshots. If a source can't be read with the tools available, ask the user to paste it. Check the existing code against the brief: a mismatch there is a decision for the user before the plan is written, not a bug to discover in phase two.
 - The code: trace the key files and note their paths for **Context**.
 
