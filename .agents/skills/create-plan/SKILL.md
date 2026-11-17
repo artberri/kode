@@ -15,7 +15,7 @@ metadata:
 
 # Create a plan
 
-Produces a plan that a later session, or this one, carries out with `execute-plan`. A plan is a sequence of phases; each phase is a vertical slice that is independently shippable and small enough to review in one sitting.
+Produces a plan that a later session, or this one, carries out with `execute-plan`. A plan is a sequence of phases; each phase is an end-to-end increment that is independently shippable and small enough to review in one sitting.
 
 **Don't write anything to disk until the user has agreed** on the task, the contracts and the phase breakdown. The plan is the artifact; the conversation before it is where the thinking happens. And not every plan needs a file: step 4 checks that.
 
@@ -61,6 +61,7 @@ The brief is the spec: there is no tracker or design tool behind it. **Grill** t
 1. **The task:** 1-3 sentences on what to build, fix or change. Confirm your understanding back.
 
 2. **The contracts involved:** the observable surfaces the change affects. If the user doesn't name them, propose a list:
+    - Use cases and their ports (input and output), and the slice they live in
     - Pages and routes under `src/app/`, with their metadata and SEO
     - Route handlers and redirects: API routes, and short-link redirects once the URL shortener exists
     - Cloudflare configuration and bindings: `wrangler.jsonc`, `open-next.config.ts` and the generated `cloudflare-env.d.ts`
@@ -89,13 +90,13 @@ Surface gaps before drafting, in one message: vague scope, no clear "done", or s
 
 ## Step 3: Propose the phases
 
-Walk the user through the proposed phases before writing anything. Each phase is a **vertical slice**:
+Walk the user through the proposed phases before writing anything. Each phase is an **end-to-end increment**:
 
-- It includes everything needed to ship that slice (schema, logic, test, wiring), not the schema in one phase and its handler in another.
+- It includes everything needed to ship that increment (schema, logic, test, wiring), not the schema in one phase and its handler in another.
 - It's independently committable and pushable: tests pass, the build is green, and the code makes sense on its own.
 - It touches about 15 files at most, so review stays manageable. Going over is fine when the files are tightly coupled (one type change rippling through its consumers); say why in the phase description.
 - It has a single responsibility: a phase that emits something and also handles it is two phases.
-- For feature, behaviour-change and bug-fix phases, it has an **outside-in TDD checklist**: tests ordered from the outermost slice (usually an acceptance test) inward. Each test names the behaviour rules it proves (`B1`, `B2`). Every rule is proved by a test in some phase, or listed as manual with the reason.
+- For feature, behaviour-change and bug-fix phases, it has an **outside-in TDD checklist**: tests ordered from the outermost layer (usually the use case's acceptance test) inward. Each test names the behaviour rules it proves (`B1`, `B2`). Every rule is proved by a test in some phase, or listed as manual with the reason.
 
 When the work is too large for one plan, propose a board: each part gets its own plan, with 1-3 phases inside it if the part is large. Order the plans by their dependencies.
 
