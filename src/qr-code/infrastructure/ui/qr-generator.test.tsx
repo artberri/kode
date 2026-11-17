@@ -1,15 +1,21 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 
 import { QrGenerator } from "./qr-generator";
 
 const FIELD = "Nora eraman behar du zure QRak?";
+const FRAME_TEXT = "Markoaren testua";
+const PREVIEW = /^QR kodearen aurrebista/u;
 
 function setup(): { user: ReturnType<typeof userEvent.setup> } {
 	const user = userEvent.setup();
 	render(<QrGenerator />);
 	return { user };
+}
+
+function preview(): HTMLElement {
+	return screen.getByRole("img", { name: PREVIEW });
 }
 
 describe("QrGenerator", () => {
@@ -81,5 +87,74 @@ describe("QrGenerator", () => {
 		expect(screen.getByRole("group", { name: "1 · Esteka" })).toContainElement(
 			screen.getByRole("textbox", { name: FIELD }),
 		);
+	});
+
+	it("opens the design step on the Markoa tab, with the default design chosen", () => {
+		setup();
+
+		const step = screen.getByRole("group", { name: "2 · Diseinua" });
+		expect(within(step).getByRole("tab", { name: "Markoa", selected: true })).toBeVisible();
+		expect(within(step).getByRole("radio", { name: "Zigilua" })).toBeChecked();
+		expect(within(step).getByRole("textbox", { name: FRAME_TEXT })).toHaveValue("Eskaneatu");
+	});
+
+	it.each([
+		{ tab: "Markoa", group: "Markoa", option: "Markorik ez" },
+		{ tab: "Markoa", group: "Markoa", option: "Etiketa" },
+		{ tab: "Markoa", group: "Markoa", option: "Arbela" },
+		{ tab: "Markoa", group: "Markoa", option: "Tiketa" },
+		{ tab: "Forma", group: "Puntuen forma", option: "Karratuak" },
+		{ tab: "Forma", group: "Puntuen forma", option: "Leunak" },
+		{ tab: "Forma", group: "Puntuen forma", option: "Diamanteak" },
+		{ tab: "Forma", group: "Izkinen markoa", option: "Karratua" },
+		{ tab: "Forma", group: "Izkinen markoa", option: "Borobildua" },
+		{ tab: "Forma", group: "Izkinen erdigunea", option: "Karratua" },
+		{ tab: "Forma", group: "Izkinen erdigunea", option: "Borobildua" },
+	])("redraws the preview when $group is set to $option", async ({ tab, group, option }) => {
+		const { user } = setup();
+		await user.type(screen.getByRole("textbox", { name: FIELD }), "kode.eus");
+		await user.click(screen.getByRole("tab", { name: tab }));
+		const before = preview().innerHTML;
+
+		const choice = within(screen.getByRole("group", { name: group })).getByRole("radio", {
+			name: option,
+		});
+		await user.click(choice);
+
+		expect(choice).toBeChecked();
+		expect(preview().innerHTML).not.toBe(before);
+	});
+
+	it("follows the design in the dimmed preview before there is a link", async () => {
+		const { user } = setup();
+		const before = preview().innerHTML;
+
+		await user.click(screen.getByRole("radio", { name: "Etiketa" }));
+
+		expect(preview().innerHTML).not.toBe(before);
+	});
+
+	it("cuts the frame text at 16 characters and counts them", async () => {
+		const { user } = setup();
+		const field = screen.getByRole("textbox", { name: FRAME_TEXT });
+
+		await user.clear(field);
+		await user.type(field, "Begiratu gure menua");
+
+		expect(field).toHaveValue("Begiratu gure me");
+		expect(screen.getByText("16/16")).toBeVisible();
+		expect(within(preview()).getByText("Begiratu gure me")).toBeInTheDocument();
+	});
+
+	it("hides the frame text without a frame, and draws no label", async () => {
+		const { user } = setup();
+
+		await user.click(screen.getByRole("radio", { name: "Markorik ez" }));
+
+		expect(screen.queryByRole("textbox", { name: FRAME_TEXT })).not.toBeInTheDocument();
+		expect(within(preview()).queryByText("Eskaneatu")).not.toBeInTheDocument();
+
+		await user.click(screen.getByRole("radio", { name: "Etiketa" }));
+		expect(screen.getByRole("textbox", { name: FRAME_TEXT })).toHaveValue("Eskaneatu");
 	});
 });

@@ -3,13 +3,15 @@
 import { useCallback, useMemo, useState } from "react";
 
 import { StepLabel } from "@/shared/ui/step-label";
+import { TabPanel, Tabs } from "@/shared/ui/tabs";
 import { TicketCard } from "@/shared/ui/ticket-card";
 import { UrlField } from "@/shared/ui/url-field";
 
 import { type DesignQrCodeResult, designQrCode } from "../../application/design-qr-code";
 import type { InvalidLinkReason } from "../../domain/parse-link";
-import { DEFAULT_DESIGN } from "../../domain/qr-design";
+import { DEFAULT_DESIGN, type QrDesign } from "../../domain/qr-design";
 import { QrcodeGeneratorEncoder } from "../qrcode-generator-encoder";
+import { type DesignChange, FramePanel, ShapePanel } from "./design-panels";
 
 const encoder = new QrcodeGeneratorEncoder();
 
@@ -43,9 +45,17 @@ function fieldMessages(result: DesignQrCodeResult, left: boolean): FieldMessages
 		: { error: ERRORS[result.reason] };
 }
 
-function QrPreview({ result }: { readonly result: DesignQrCodeResult }) {
+/** The code to show: the link's, or the placeholder's in the same design until the link is valid. */
+function previewSvg(result: DesignQrCodeResult, design: QrDesign): string {
+	if (result.status === "ready") {
+		return result.svg;
+	}
+	const placeholder = designQrCode({ link: PLACEHOLDER_LINK, design }, { encoder });
+	return placeholder.status === "ready" ? placeholder.svg : "";
+}
+
+function QrPreview({ result, svg }: { readonly result: DesignQrCodeResult; readonly svg: string }) {
 	const ready = result.status === "ready";
-	const svg = ready ? result.svg : svgOfPlaceholder;
 	const label = ready
 		? `QR kodearen aurrebista: ${result.link}`
 		: "QR kodearen aurrebista, esteka baliozko baten zain";
@@ -62,28 +72,75 @@ function QrPreview({ result }: { readonly result: DesignQrCodeResult }) {
 	);
 }
 
-const placeholder = designQrCode({ link: PLACEHOLDER_LINK, design: DEFAULT_DESIGN }, { encoder });
-const svgOfPlaceholder = placeholder.status === "ready" ? placeholder.svg : "";
+type DesignTab = "markoa" | "forma";
 
-/** The QR code generator: paste a link and see the code it makes. */
+const DESIGN_TABS = [
+	{ id: "markoa", label: "Markoa" },
+	{ id: "forma", label: "Forma" },
+] as const;
+
+const STEP = "m-0 flex min-w-0 flex-col border-0 p-0";
+
+function DesignStep({
+	design,
+	onChange,
+}: {
+	readonly design: QrDesign;
+	readonly onChange: DesignChange;
+}) {
+	const [tab, setTab] = useState<DesignTab>("markoa");
+	return (
+		<fieldset aria-labelledby="urratsa-diseinua" className={`${STEP} gap-space-4`}>
+			<StepLabel step={2} id="urratsa-diseinua">
+				Diseinua
+			</StepLabel>
+			<Tabs
+				items={DESIGN_TABS}
+				value={tab}
+				onChange={setTab}
+				label="Diseinua"
+				idPrefix="diseinua"
+			/>
+			<TabPanel
+				id="markoa"
+				idPrefix="diseinua"
+				selected={tab === "markoa"}
+				className="pt-space-2"
+			>
+				<FramePanel design={design} onChange={onChange} />
+			</TabPanel>
+			<TabPanel
+				id="forma"
+				idPrefix="diseinua"
+				selected={tab === "forma"}
+				className="pt-space-2"
+			>
+				<ShapePanel design={design} onChange={onChange} />
+			</TabPanel>
+		</fieldset>
+	);
+}
+
+/** The QR code generator: paste a link, design the code and see it as it will be saved. */
 export function QrGenerator() {
 	const [link, setLink] = useState("");
 	const [left, setLeft] = useState(false);
-	const result = useMemo(
-		() => designQrCode({ link, design: DEFAULT_DESIGN }, { encoder }),
-		[link],
+	const [design, setDesign] = useState<QrDesign>(DEFAULT_DESIGN);
+	const result = useMemo(() => designQrCode({ link, design }, { encoder }), [link, design]);
+	const preview = useMemo(
+		() => <QrPreview result={result} svg={previewSvg(result, design)} />,
+		[result, design],
 	);
-	const preview = useMemo(() => <QrPreview result={result} />, [result]);
 	const leaveField = useCallback(() => {
 		setLeft(true);
+	}, []);
+	const changeDesign = useCallback<DesignChange>((key, value) => {
+		setDesign((current) => ({ ...current, [key]: value }));
 	}, []);
 
 	return (
 		<TicketCard label="QR sortzailea" side={preview}>
-			<fieldset
-				aria-labelledby="urratsa-esteka"
-				className="m-0 flex min-w-0 flex-col gap-space-3 border-0 p-0"
-			>
+			<fieldset aria-labelledby="urratsa-esteka" className={`${STEP} gap-space-3`}>
 				<StepLabel step={1} id="urratsa-esteka">
 					Esteka
 				</StepLabel>
@@ -96,6 +153,7 @@ export function QrGenerator() {
 					{...fieldMessages(result, left)}
 				/>
 			</fieldset>
+			<DesignStep design={design} onChange={changeDesign} />
 		</TicketCard>
 	);
 }

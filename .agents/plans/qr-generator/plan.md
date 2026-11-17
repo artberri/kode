@@ -10,8 +10,8 @@ Ship the first version of kode.eus: a landing page with a QR code generator that
 - **B2.** A link typed without a scheme (`kode.eus/menua`) gets `https://` added; the helper text says so and shows the full link. — _proved by:_ `src/qr-code/domain/parse-link.test.ts` › adds https:// to a link typed without a scheme; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › says https:// was added and names the preview with the full link
 - **B3.** Any of these shows a Basque error under the field, dims the preview and disables the download button: a scheme other than http or https, a host without a dot, a link with spaces, or a link longer than 1000 characters. — _proved by:_ `src/qr-code/domain/parse-link.test.ts` › rejects a scheme other than http or https, rejects a host without a dot, rejects a link with spaces, rejects a link longer than 1000 characters; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › announces an error for a scheme other than http or https, waits until the field is left before calling a half-typed host wrong
 - **B4.** An empty field shows a neutral prompt, not an error, and the download stays disabled. — _proved by:_ `src/qr-code/application/design-qr-code.acceptance.test.ts` › waits for a link while the field is empty, without encoding anything; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › prompts for a link while the field is empty, without an error
-- **B5.** Changing the frame, dot shape, corner frame shape, corner centre shape, any colour or the frame text updates the preview at once. — _proved by:_ `src/qr-code/domain/render-qr-svg.test.ts` › dots, finder patterns, colours
-- **B6.** The frame text accepts at most 16 characters. With "Markorik ez" (no frame) the text field is hidden and the code has no label. — _proved by:_ `src/qr-code/domain/render-qr-svg.test.ts` › cuts the text to 16 characters, draws no text without a frame
+- **B5.** Changing the frame, dot shape, corner frame shape, corner centre shape, any colour or the frame text updates the preview at once. — _proved by:_ `src/qr-code/domain/render-qr-svg.test.ts` › dots, finder patterns, colours; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › redraws the preview when $group is set to $option
+- **B6.** The frame text accepts at most 16 characters. With "Markorik ez" (no frame) the text field is hidden and the code has no label. — _proved by:_ `src/qr-code/domain/render-qr-svg.test.ts` › cuts the text to 16 characters, draws no text without a frame; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › cuts the frame text at 16 characters and counts them, hides the frame text without a frame, and draws no label
 - **B7.** A warning appears when the QR colour is lighter than the background or their contrast is below 3:1, and disappears once neither holds. — _proved by:_ `src/qr-code/domain/contrast.test.ts` › is low below 3:1, is inverted when the QR is lighter than the background
 - **B8.** Choosing a palette preset sets the QR, background, frame and frame-text colours; changing any of those colours afterwards leaves no preset selected. — _proved by:_
 - **B9.** Every code keeps at least four modules of quiet zone between the modules and the frame or the image edge. — _proved by:_ `src/qr-code/domain/render-qr-svg.test.ts` › keeps four light modules around a $size-module code in the $frame frame
@@ -151,7 +151,7 @@ None outside this plan. Each phase builds on the previous one.
 
 **Outside-in TDD checklist:**
 
-- [ ] Component test (B5, B6): `QrGenerator` covers three cases:
+- [x] Component test (B5, B6): `QrGenerator` covers three cases:
     - picking each frame and shape changes the preview
     - the frame text is cut at 16 characters, with the counter showing it
     - "Markorik ez" hides the text field
@@ -162,7 +162,7 @@ None outside this plan. Each phase builds on the previous one.
 **To-do:**
 
 - [x] Shared UI: `Tabs`, `OptionTiles` (sizes `md` and `sm`), `TextField`.
-- [ ] Slice UI:
+- [x] Slice UI:
     - the tile drawings for the five frames, four dot shapes and three corner shapes
     - the "Markoa" and "Forma" panels
     - the tab state in `QrGenerator`
@@ -283,4 +283,4 @@ None outside this plan. Each phase builds on the previous one.
 
 ## Next step
 
-Phase 3: add the "Markoa" and "Forma" tabs of step 2, with the `Tabs`, `OptionTiles` and `TextField` components, starting with the `QrGenerator` component test for picking frames and shapes. Run `/execute-plan .agents/plans/qr-generator`.
+Phase 3: update the design-system artifact for `Tabs` (`TabPanel`), `OptionTiles` (`showLegend`) and `TextField` (`onChange` with the text), then scan the preview with every dot shape and corner shape. Run `/execute-plan .agents/plans/qr-generator`.
