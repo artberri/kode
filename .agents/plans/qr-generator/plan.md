@@ -133,7 +133,7 @@ None outside this plan. Each phase builds on the previous one.
 
 - [x] Tokens: the design system's colours, radii, border widths and spacing in an `@theme` block in `src/app/globals.css`, with the page background and text colour on `body`.
 - [x] Fonts: Unbounded (600–800) and DM Sans (400, 500, 700) through `next/font/google` in `layout.tsx`, exposed as `--font-display` and `--font-body`.
-- [ ] Shared UI: `Logo`, `Icon` (the six icons), `StepLabel`, `UrlField`, `TicketCard`.
+- [x] Shared UI: `Logo`, `Icon` (the six icons), `StepLabel`, `UrlField`, `TicketCard`.
 - [ ] Slice UI (`src/qr-code/infrastructure/ui/`): `QrGenerator` (client component) with step 1 and the preview of the default design. It wires `designQrCode` to `QrcodeGeneratorEncoder` and renders the SVG string as is on the peach side, about 250 px wide, so the preview is exactly the file people download (no `QrSticker` around it: that would draw a second frame and label). When the link isn't valid, the preview shows `https://kode.eus/` dimmed.
 - [ ] `page.tsx`: the header with `Logo` (no menu) and the generator section (`id="sortzailea"`).
 - [ ] Check each component against its design-system README; update the artifact where the code differs.
