@@ -1,0 +1,14 @@
+{
+	"name": "kode",
+	"description": "Project-local plugins for KODE",
+	"owner": {
+		"name": "KODE"
+	},
+	"plugins": [
+		{
+			"name": "typescript-native-lsp",
+			"source": "./typescript-native-lsp",
+			"description": "TypeScript 7's built-in language server (tsc --lsp) from the project's node_modules"
+		}
+	]
+}

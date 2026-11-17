@@ -9,6 +9,7 @@ The site is in **Basque only** for now: write all user-facing text in Basque, in
 - proto pins Node and Bun in `.prototools`. Bun installs packages and runs scripts (`bun add`, `bun run <script>`); Node runs Next.js, OpenNext and Wrangler, which are Node CLIs. Keep `bun.lock` as the only lockfile.
 - `bun run qa` (lint, type check) is the gate: a change is done when it passes with zero warnings. Formatting is left to the `pre-commit` hook. When the project gets a test runner, append its tests to `qa`.
 - Format with `bun run format` rather than by hand. Indentation comes from `.editorconfig` (tabs; spaces only for YAML), which oxfmt reads.
+- Claude Code's TypeScript language server is the project plugin in `.claude/marketplace/`, which runs TypeScript 7's built-in `tsc --lsp`. TypeScript 7 ships no `tsserver.js`, so `.claude/settings.json` turns off the official `typescript-lsp` plugin (built on `typescript-language-server`) for this project.
 - Git hooks live in `.githooks/`; `bun install` points `core.hooksPath` at them. `pre-commit` formats staged files and `commit-msg` runs commitlint, so commit messages follow Conventional Commits with body lines of 100 characters or fewer.
 
 ## Linting and types

@@ -1,0 +1,14 @@
+{
+	"enabledPlugins": {
+		"typescript-native-lsp@kode": true,
+		"typescript-lsp@claude-plugins-official": false
+	},
+	"extraKnownMarketplaces": {
+		"kode": {
+			"source": {
+				"source": "directory",
+				"path": "./.claude/marketplace"
+			}
+		}
+	}
+}
