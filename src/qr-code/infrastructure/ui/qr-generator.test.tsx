@@ -3,7 +3,14 @@ import type userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 
 import { BoxFrameTextOutliner } from "../box-frame-text-outliner";
-import { FIELD, FRAME_TEXT, preview, setup, typeLink } from "./qr-generator.harness";
+import {
+	downloadButton,
+	FIELD,
+	FRAME_TEXT,
+	preview,
+	setup,
+	typeLink,
+} from "./qr-generator.harness";
 
 /** The colour tab's live region, which holds the contrast warning. */
 function contrastStatus(): HTMLElement {
@@ -50,9 +57,11 @@ describe("QrGenerator", () => {
 			"Estekak http:// edo https:// izan behar du. Adibidez: kode.eus",
 		);
 		expect(screen.getByRole("textbox", { name: FIELD })).toBeInvalid();
-		expect(
-			screen.getByRole("img", { name: "QR kodearen aurrebista, esteka baliozko baten zain" }),
-		).toBeVisible();
+		const waiting = screen.getByRole("img", {
+			name: "QR kodearen aurrebista, esteka baliozko baten zain",
+		});
+		expect(waiting).toBeVisible();
+		expect(waiting).toHaveClass("opacity-20");
 	});
 
 	it("waits until the field is left before calling a half-typed host wrong", async () => {
@@ -78,9 +87,17 @@ describe("QrGenerator", () => {
 		);
 		expect(screen.getByRole("textbox", { name: FIELD })).toBeValid();
 		expect(screen.queryByRole("alert")).not.toBeInTheDocument();
-		expect(
-			screen.getByRole("img", { name: "QR kodearen aurrebista, esteka baliozko baten zain" }),
-		).toBeVisible();
+	});
+
+	it("shows the kode.eus sample at full strength while the field is empty, but can't download it", () => {
+		setup();
+
+		const sample = screen.getByRole("img", {
+			name: "QR kodearen aurrebista (adibidea): https://kode.eus/",
+		});
+		expect(sample).toBeVisible();
+		expect(sample).not.toHaveClass("opacity-20");
+		expect(downloadButton()).toBeDisabled();
 	});
 
 	it("labels the link step", () => {

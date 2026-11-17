@@ -6,7 +6,7 @@ import type { QrMatrixEncoder } from "../../application/qr-matrix-encoder";
 import { DEFAULT_DESIGN, type QrDesign } from "../../domain/qr-design";
 import type { OutlineFrameText } from "../../domain/qr-frames";
 
-/** What the preview shows, dimmed, until the link is valid. */
+/** What the preview shows until the link is valid. */
 const PLACEHOLDER_LINK = "https://kode.eus/";
 
 const NONE: readonly string[] = [];
@@ -97,12 +97,25 @@ export function usePreview(
 	return { result, svg, undrawable };
 }
 
-/** The code as an image named by its link, dimmed until the link is valid. */
+/** How the preview names itself, and whether it is dimmed. */
+function previewState(result: DesignQrCodeResult): { label: string; dimmed: boolean } {
+	if (result.status === "ready") {
+		return { label: `QR kodearen aurrebista: ${result.link}`, dimmed: false };
+	}
+	// Nothing typed yet: the placeholder is a sample of the design, not a waiting state.
+	if (result.status === "empty") {
+		return { label: `QR kodearen aurrebista (adibidea): ${PLACEHOLDER_LINK}`, dimmed: false };
+	}
+	// Dimmed, so a link that doesn't work never looks like a finished code.
+	return { label: "QR kodearen aurrebista, esteka baliozko baten zain", dimmed: true };
+}
+
+/**
+ * The code as an image named by its link. While the field is empty it shows the kode.eus sample in
+ * the same design; while the link is invalid, that sample dimmed.
+ */
 export function QrPreview({ result, svg }: Pick<Preview, "result" | "svg">) {
-	const ready = result.status === "ready";
-	const label = ready
-		? `QR kodearen aurrebista: ${result.link}`
-		: "QR kodearen aurrebista, esteka baliozko baten zain";
+	const { label, dimmed } = previewState(result);
 	const markup = useMemo(() => ({ __html: svg }), [svg]);
 	return (
 		<div
@@ -111,7 +124,7 @@ export function QrPreview({ result, svg }: Pick<Preview, "result" | "svg">) {
 			// oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- an <img> can't use the page's fonts
 			role="img"
 			aria-label={label}
-			className={`w-[250px] max-w-full self-center [&>svg]:block [&>svg]:h-auto [&>svg]:w-full ${ready ? "" : "opacity-20"}`}
+			className={`w-[250px] max-w-full self-center [&>svg]:block [&>svg]:h-auto [&>svg]:w-full ${dimmed ? "opacity-20" : ""}`}
 			dangerouslySetInnerHTML={markup}
 		/>
 	);
