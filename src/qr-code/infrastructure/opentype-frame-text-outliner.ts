@@ -61,17 +61,14 @@ export class OpentypeFrameTextOutliner implements FrameTextOutliner {
 	}
 
 	async load(): Promise<FrameTextOutlines> {
-		this.#loaded ??= Promise.all([
-			import("opentype.js/dist/opentype.mjs"),
-			this.#fontBytes(),
-		]).then(
-			([{ parse }, bytes]) => outlinesOf(parse(bytes)),
-			(error: unknown) => {
+		this.#loaded ??= Promise.all([import("opentype.js/dist/opentype.mjs"), this.#fontBytes()])
+			.then(([{ parse }, bytes]) => outlinesOf(parse(bytes)))
+			// After `then`, so it also catches a download that isn't a font, not only a failed one.
+			.catch((error: unknown) => {
 				// Forget the failure, so the next export tries again rather than failing for good.
 				this.#loaded = undefined;
 				throw error;
-			},
-		);
+			});
 		return await this.#loaded;
 	}
 }

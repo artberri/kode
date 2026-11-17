@@ -141,6 +141,21 @@ describe("OpentypeFrameTextOutliner", () => {
 		expect(top).toBeGreaterThan(bottom * 2);
 	});
 
+	it("tries again after the font could not be read", async () => {
+		// A 200 that isn't a font, as a captive portal or a proxy error page would give.
+		const loadFont = vi
+			.fn<() => Promise<ArrayBuffer>>()
+			.mockResolvedValueOnce(new TextEncoder().encode("<html>Wi-Fi login</html>").buffer)
+			.mockImplementation(fontBytes);
+		const outliner = new OpentypeFrameTextOutliner(loadFont);
+
+		await expect(outliner.load()).rejects.toThrow(/Unsupported OpenType signature/u);
+		const { outline } = await outliner.load();
+
+		expect(outline("Kaixo", SLOT)).not.toBe("");
+		expect(loadFont).toHaveBeenCalledTimes(2);
+	});
+
 	it("tries again after the font failed to load", async () => {
 		const loadFont = vi
 			.fn<() => Promise<ArrayBuffer>>()
