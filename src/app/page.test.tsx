@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import Home from "./page";
@@ -29,10 +29,25 @@ describe("the home page", () => {
 		expect(sample).toHaveAttribute("src", expect.stringMatching(/^data:image\/svg\+xml,/u));
 	});
 
-	it("credits the QR Code trademark in the footer", () => {
+	it("says in the footer that KODE.eus is free software, linking to its source", () => {
 		render(<Home />);
+		const footer = within(screen.getByRole("contentinfo"));
+		expect(screen.getByRole("contentinfo")).toHaveTextContent("KODE.eus software librea da");
+		expect(footer.getByRole("link", { name: "software librea" })).toHaveAttribute(
+			"href",
+			"https://github.com/artberri/kode",
+		);
+	});
+
+	it("credits the author in the footer, linking to the author's website", () => {
+		render(<Home />);
+		const footer = within(screen.getByRole("contentinfo"));
 		expect(screen.getByRole("contentinfo")).toHaveTextContent(
-			"QR Code DENSO WAVE Incorporated-en marka erregistratua da.",
+			"Alberto Varelak desorduetan egina",
+		);
+		expect(footer.getByRole("link", { name: "Alberto Varela" })).toHaveAttribute(
+			"href",
+			"https://albertovarela.net/",
 		);
 	});
 });

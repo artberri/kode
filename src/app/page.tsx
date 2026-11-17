@@ -22,6 +22,11 @@ const COLUMN = "mx-auto w-full max-w-[1200px] px-space-4 sm:px-space-6";
 
 const SAMPLE_LINK = "https://kode.eus/";
 
+const SOURCE_URL = "https://github.com/artberri/kode";
+const AUTHOR_URL = "https://albertovarela.net/";
+/** Footer links: bold ink without an underline, violet on hover. */
+const FOOTER_LINK = "font-bold text-ink no-underline hover:text-violet";
+
 /** The hero's sample code, drawn once at build time: the sticker is its frame. */
 const sample = designQrCode(
 	{ link: SAMPLE_LINK, design: { ...DEFAULT_DESIGN, frame: "none" } },
@@ -93,9 +98,19 @@ export default function Home() {
 			<footer className={COLUMN}>
 				<div className="flex flex-wrap justify-between gap-space-3 border-t-soft border-line py-space-6 text-small text-ink-muted">
 					<p className="m-0">
-						QR Code DENSO WAVE Incorporated-en marka erregistratua da.
+						KODE.eus{" "}
+						<a href={SOURCE_URL} className={FOOTER_LINK}>
+							software librea
+						</a>{" "}
+						da
 					</p>
-					<p className="m-0 font-bold text-ink">kode.eus</p>
+					<p className="m-0">
+						{/* The ergative -k stays outside the link, which names the person. */}
+						<a href={AUTHOR_URL} className={FOOTER_LINK}>
+							Alberto Varela
+						</a>
+						k desorduetan egina
+					</p>
 				</div>
 			</footer>
 		</>
