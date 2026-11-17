@@ -27,7 +27,7 @@ function LogoMark({ size, label }: { readonly size: number; readonly label?: str
 }
 
 export interface LogoProps {
-	/** `full` (mark and "kode" wordmark, the default) or `mark` alone. */
+	/** `full` (mark and "KODE.eus" wordmark, the default) or `mark` alone. */
 	readonly variant?: "full" | "mark";
 	/** Mark size in px. Default 42. */
 	readonly size?: number;
@@ -36,7 +36,7 @@ export interface LogoProps {
 	readonly className?: string;
 }
 
-/** The KODE mark: four rounded QR corner squares, and the lowercase "kode" wordmark. */
+/** The KODE mark: four rounded QR corner squares, and the "KODE.eus" wordmark with a smaller violet ".eus". */
 export function Logo({ variant = "full", size = 42, href, className }: LogoProps) {
 	const classes = ["inline-flex items-center gap-space-3 text-ink no-underline", className]
 		.filter(Boolean)
@@ -54,13 +54,15 @@ export function Logo({ variant = "full", size = 42, href, className }: LogoProps
 	const content = (
 		<>
 			<LogoMark size={size} />
-			<span className="font-display text-wordmark">kode</span>
+			<span className="font-display text-wordmark">
+				KODE<span className="text-[0.62em] text-violet">.eus</span>
+			</span>
 		</>
 	);
 	return href === undefined ? (
 		<span className={classes}>{content}</span>
 	) : (
-		<a href={href} aria-label="kode, hasiera" className={classes}>
+		<a href={href} aria-label="kode.eus, hasiera" className={classes}>
 			{content}
 		</a>
 	);
