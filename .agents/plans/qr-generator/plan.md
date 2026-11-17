@@ -87,7 +87,7 @@ None outside this plan. Each phase builds on the previous one.
 | 5   | The design-system artifact must stay in step with `src/shared/ui`. Each phase that builds a component checks it against the artifact and updates the artifact where the code ends up different.                                                                                                                              | AGENTS.md, Design                                                                                                                                        | Phases 2–7  | Open     |
 | 6   | Left out on purpose for this version: dark mode, a size picker, a logo inside the code, QR content other than links (Wi-Fi, vCard…), analytics, and an Open Graph image.                                                                                                                                                     | Brief                                                                                                                                                    | —           | Deferred |
 
-## Phase 1: Render a QR design to SVG
+## Phase 1: Render a QR design to SVG ✅
 
 **Description:** Builds the pure core of the `qr-code` slice and its first use case, with no UI. It comes first because every later phase draws with it, and B1 and B9, the promises a printed code depends on, live here.
 
@@ -111,7 +111,7 @@ None outside this plan. Each phase builds on the previous one.
 **Verify:**
 
 - [x] The project's checks pass for what this phase touched (see `execute-plan`).
-- [ ] A one-off script prints the SVG for `https://kode.eus/` in each frame, and a phone scans each one.
+- [x] A one-off script prints the SVG for `https://kode.eus/` in each frame, and a phone scans each one.
 
 ## Phase 2: Show the link step and a live preview
 
@@ -283,4 +283,4 @@ None outside this plan. Each phase builds on the previous one.
 
 ## Next step
 
-Phase 1: build the pure QR rendering core and `designQrCode` in `src/qr-code`, starting with its acceptance test. Run `/execute-plan .agents/plans/qr-generator`.
+Phase 2: put the link step and the live preview on the page, with the design tokens, the fonts and the first shared components, starting with the `QrGenerator` component test. Run `/execute-plan .agents/plans/qr-generator`.
