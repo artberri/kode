@@ -51,10 +51,10 @@ The app deploys to Cloudflare Workers through OpenNext (`@opennextjs/cloudflare`
 
 - `bun run dev` is the fast loop; `bun run preview` builds and serves the real Worker locally. Verify on `preview` anything touching caching, middleware, headers or bindings.
 - Leave `cacheComponents` off in `next.config.ts`: see [FOOTGUNS.md](docs/FOOTGUNS.md).
-- Read bindings through `getCloudflareContext()`. After editing `wrangler.jsonc`, run `bun run cf-typegen` to refresh `cloudflare-env.d.ts`.
+- Read bindings through `getCloudflareContext()`. After editing `wrangler.jsonc`, run `bun run cf-typegen` to refresh `cloudflare-env.d.ts`, with no `.open-next/` on disk: see [FOOTGUNS.md](docs/FOOTGUNS.md).
 - No incremental cache is configured (`open-next.config.ts`). Add the R2 cache when a page needs ISR or revalidation.
 - `next.config.ts` sends a Content Security Policy that allows only what the pages load today. Read [SECURITY_HEADERS.md](docs/SECURITY_HEADERS.md) and update the policy in the same change whenever a page loads something new (script, style, font, image, connection, another origin) or serves user content.
-- Every push to `main` deploys to production once QA passes, so `main` is always live. Infrastructure is `wrangler.jsonc` only; the dashboard-side setup (token, secrets, `www` redirect) is in [DEPLOYMENT.md](docs/DEPLOYMENT.md): read it before touching the domain, the deploy job or the zone.
+- Every push to `main` deploys to production once QA passes, so `main` is always live. Infrastructure is `wrangler.jsonc` only; the dashboard-side setup (token, secrets, `www` redirect) is in [DEPLOYMENT.md](docs/DEPLOYMENT.md): read it before touching the domain, the deploy job or the zone. To commit and push, use the `ship` skill, so QA and the local review run before a push goes live.
 
 ## Design
 

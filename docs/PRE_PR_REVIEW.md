@@ -23,3 +23,7 @@ It doesn't replace the formatters, linters, type checks and tests. Run `bun run 
 - **The change was verified with `bun run preview`, not only `bun run dev`.** `next dev` runs on Node; production runs on `workerd`, and some failures only show there (see [FOOTGUNS.md](./FOOTGUNS.md)).
 - **The Content Security Policy still matches what the pages load.** A page that loads something new (a script, style, font, image or connection, or anything from another origin), or that shows user content, updates the policy in `next.config.ts` and [SECURITY_HEADERS.md](./SECURITY_HEADERS.md) in the same PR, and was checked on `bun run preview` with the console open for "Refused to …" errors. User content also means moving those pages to a nonce.
 - **A change to `wrangler.jsonc` comes with a regenerated `cloudflare-env.d.ts`.** Run `bun run cf-typegen` and commit the result, or the binding types drift from the config.
+
+## When the diff touches `.github/workflows/`
+
+- **Every action is pinned to a full commit SHA, with its version in a comment** (`uses: owner/action@<sha> # v1.2.3`), so a moved tag can't change what runs with the deploy secrets.
