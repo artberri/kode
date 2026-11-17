@@ -12,7 +12,7 @@ Ship the first version of kode.eus: a landing page with a QR code generator that
 - **B4.** An empty field shows a neutral prompt, not an error, and the download stays disabled. — _proved by:_
 - **B5.** Changing the frame, dot shape, corner frame shape, corner centre shape, any colour or the frame text updates the preview at once. — _proved by:_
 - **B6.** The frame text accepts at most 16 characters. With "Markorik ez" (no frame) the text field is hidden and the code has no label. — _proved by:_
-- **B7.** A warning appears when the QR colour is lighter than the background or their contrast is below 3:1, and disappears once neither holds. — _proved by:_
+- **B7.** A warning appears when the QR colour is lighter than the background or their contrast is below 3:1, and disappears once neither holds. — _proved by:_ `src/qr-code/domain/contrast.test.ts` › is low below 3:1, is inverted when the QR is lighter than the background
 - **B8.** Choosing a palette preset sets the QR, background, frame and frame-text colours; changing any of those colours afterwards leaves no preset selected. — _proved by:_
 - **B9.** Every code keeps at least four modules of quiet zone between the modules and the frame or the image edge. — _proved by:_
 - **B10.** Downloading SVG saves `kode-qr.svg`: the same design as the preview, with the frame text's font embedded so it renders the same without Unbounded installed. — _proved by:_
@@ -96,7 +96,7 @@ None outside this plan. Each phase builds on the previous one.
 - [ ] Acceptance test (B1, B2, B3, B4, B9): `designQrCode` with `FixedMatrixEncoder`. It covers empty, invalid (each reason), scheme added, a ready SVG that contains the frame text and colours, and the quiet zone for each frame.
 - [x] Unit test (B2, B3): `parseLink`, including trimming, uppercase schemes, `ftp:`, `localhost`, spaces and 1001 characters.
 - [ ] Unit test (B5, B6, B9): `renderQrSvg` for each dot shape, corner shape, centre shape and frame. Frame text is cut to 16 characters, and "none" has no `<text>`.
-- [ ] Unit test (B7): `contrastOf` gives `ok`, `low` (below 3:1) and `inverted` (QR lighter than background).
+- [x] Unit test (B7): `contrastOf` gives `ok`, `low` (below 3:1) and `inverted` (QR lighter than background).
 - [ ] Contract test (B1): a `QrMatrixEncoder` suite run against `FixedMatrixEncoder` and `QrcodeGeneratorEncoder`. The matrix is square, odd-sized, at least 21, and has the three finder patterns. For the real adapter only, `jsqr` decodes the matrix (drawn to RGBA with a quiet zone) back to the input.
 
 **To-do:**
