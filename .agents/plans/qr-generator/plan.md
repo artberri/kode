@@ -15,7 +15,7 @@ Ship the first version of kode.eus: a landing page with a QR code generator that
 - **B7.** A warning appears when the QR colour is lighter than the background or their contrast is below 3:1, and disappears once neither holds. — _proved by:_ `src/qr-code/domain/contrast.test.ts` › is low below 3:1, is inverted when the QR is lighter than the background; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › warns when the QR is lighter than its background, warns when the QR and its background are too alike, until they are not
 - **B8.** Choosing a palette preset sets the QR, background, frame and frame-text colours; changing any of those colours afterwards leaves no preset selected. — _proved by:_ `src/qr-code/domain/palette-presets.test.ts` › finds $name from its own four colours, matches none once any one colour differs; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › sets the four colours from a palette and selects it, leaves no palette selected once a colour is changed by hand
 - **B9.** Every code keeps at least four modules of quiet zone between the modules and the frame or the image edge. — _proved by:_ `src/qr-code/domain/render-qr-svg.test.ts` › keeps four light modules around a $size-module code in the $frame frame
-- **B10.** Downloading SVG saves `kode-qr.svg`: the same design as the preview, with the frame text's font embedded so it renders the same without Unbounded installed. — _proved by:_
+- **B10.** Downloading SVG saves `kode-qr.svg`: the same design as the preview, with the frame text drawn as Unbounded outlines, so it looks the same in any browser, design tool or print shop without the font installed. — _proved by:_
 - **B11.** Downloading PNG or WebP saves `kode-qr.png` or `kode-qr.webp`, 1024 px on its long side, matching the preview. — _proved by:_
 - **B12.** Where the browser can't encode WebP, the WebP option is disabled with a Basque explanation; PNG and SVG keep working. — _proved by:_
 - **B13.** No network request carries the link: generating, previewing and downloading all happen in the browser. — _proved by:_
@@ -57,12 +57,13 @@ New code goes in the `qr-code` slice (`src/qr-code/{domain,application,infrastru
     - `QrMatrixEncoder`: `encode(text): QrMatrix`. The real adapter wraps `qrcode-generator` 2.x, which is `export =` with the `qrcode(typeNumber, errorCorrectionLevel)` factory, `addData`, `make`, `getModuleCount` and `isDark`. It uses type number 0 (automatic) and level `"Q"`. The normalised link is ASCII (`new URL().href`), so the default byte encoding is enough.
     - `ImageRasterizer`: `rasterize(svg, { format, longSide })` returns a `Promise<Blob>`, and `canEncode(format)` returns a `Promise<boolean>`.
     - `FileSaver`: `save({ name, blob })`.
-    - `FrameFontSource`: `load()` returns `Promise<string>`, the base64 of the embedded font.
+    - `FrameTextOutliner`: `load()` returns `Promise<OutlineFrameText>`, a function that turns the frame text into SVG path data in Unbounded 800, fitted to the frame's label slot. The real adapter loads `opentype.js` and the font on first use.
 - **Domain** (`src/qr-code/domain/`), all pure:
     - `QrDesign`: frame, dots, corner, centre, colours `{ qr, background, frame, frameText }` and frameText.
     - `QrMatrix`: a square `readonly (readonly boolean[])[]`.
     - `parseLink`.
-    - `renderQrSvg(matrix, design, options?)`: returns the SVG markup string. `options.embeddedFont` arrives in Phase 5.
+    - `renderQrSvg(matrix, design, options?)`: returns the SVG markup string. With `options.outlineFrameText` (Phase 5) the label is a `<path>`; without it, a `<text>` in the page's font.
+    - `OutlineFrameText`: `(text, slot) => string`, the type the outliner provides.
     - `contrastOf(qr, background)`.
     - The palette presets.
 - **Shared UI** (`src/shared/ui/`): `Logo`, `Icon`, `StepLabel`, `UrlField`, `TicketCard`, `QrSticker`, `Tabs`, `OptionTiles`, `TextField`, `SwatchPicker`, `ColorField`, `Notice`, `SegmentedControl`, `Button`, `Tag`, `Stamp`. The design system's props are the starting point. Tokens go in the `@theme` of `globals.css` under the design system's names (`--color-ink`, `--color-violet`, `--radius-pill`…).
@@ -78,14 +79,15 @@ None outside this plan. Each phase builds on the previous one.
 
 ## Open questions and risks
 
-| #   | Question or risk                                                                                                                                                                                                                                                                                                             | Source                                                                                                                                                   | Affects     | Status   |
-| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- | -------- |
-| 1   | A font embedded as a `data:` URI in an SVG may not be applied when the browser draws that SVG through an `<img>` onto a canvas, so the frame text could fall back to another face in PNG and WebP. If it fails in any of Chrome, Firefox or Safari, draw the label onto the canvas with the page's loaded Unbounded instead. | Planning                                                                                                                                                 | Phase 5     | Open     |
-| 2   | `happy-dom` has no canvas and no downloads, so `CanvasImageRasterizer` and `BrowserFileSaver` can't run in Vitest and get no contract test. Verify them by hand in Chrome, Firefox and Safari, and scan each downloaded file with a phone.                                                                                   | Planning                                                                                                                                                 | Phases 5, 6 | Open     |
-| 3   | Safari may not encode WebP from a canvas: `toBlob(…, "image/webp")` silently returns a PNG. `canEncode("webp")` must check the blob's `type`, not the browser version.                                                                                                                                                       | [WebKit bug 226950](https://bugs.webkit.org/show_bug.cgi?id=226950), [caniuse](https://caniuse.com/mdn-api_htmlcanvaselement_toblob_type_parameter_webp) | Phases 5, 6 | Open     |
-| 4   | The embedded font is a Latin subset of Unbounded 800 under the SIL Open Font License, which allows embedding in documents. Commit the licence text next to the file.                                                                                                                                                         | Planning                                                                                                                                                 | Phase 5     | Resolved |
-| 5   | The design-system artifact must stay in step with `src/shared/ui`. Each phase that builds a component checks it against the artifact, and updates the artifact once, at the end of the phase, wherever the code ends up different.                                                                                           | AGENTS.md, Design                                                                                                                                        | Phases 2–7  | Resolved |
-| 6   | Left out on purpose for this version: dark mode, a size picker, a logo inside the code, QR content other than links (Wi-Fi, vCard…), analytics, and an Open Graph image.                                                                                                                                                     | Brief                                                                                                                                                    | —           | Deferred |
+| #   | Question or risk                                                                                                                                                                                                                                                                                                                                                                                                                                      | Source                                                                                                                                                   | Affects     | Status   |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- | -------- |
+| 1   | A font embedded as a `data:` URI in an SVG may not be applied when the browser draws that SVG through an `<img>` onto a canvas. A spike (2026-11-17) found Chrome, Firefox (Zen) and Safari 27 all apply it once the font is cached, but a cold Safari drew the canvas straight after `decode()` with no label at all. So the label is drawn as outlines instead: no font loading at draw time in any browser, and the SVG file needs no font either. | Spike                                                                                                                                                    | Phase 5     | Resolved |
+| 2   | `happy-dom` has no canvas and no downloads, so `CanvasImageRasterizer` and `BrowserFileSaver` can't run in Vitest and get no contract test. Verify them by hand in Chrome, Firefox and Safari, and scan each downloaded file with a phone.                                                                                                                                                                                                            | Planning                                                                                                                                                 | Phases 5, 6 | Open     |
+| 3   | Safari may not encode WebP from a canvas: `toBlob(…, "image/webp")` silently returns a PNG. `canEncode("webp")` must check the blob's `type`, not the browser version.                                                                                                                                                                                                                                                                                | [WebKit bug 226950](https://bugs.webkit.org/show_bug.cgi?id=226950), [caniuse](https://caniuse.com/mdn-api_htmlcanvaselement_toblob_type_parameter_webp) | Phases 5, 6 | Open     |
+| 4   | The outlines come from the Latin subset of Unbounded 800 as TrueType (51 KB, from Google Fonts' `css?family=Unbounded:800&subset=latin`; `opentype.js` can't read WOFF2). It is under the SIL Open Font License with no Reserved Font Name, so it can be served as is. Commit `OFL.txt` next to the file.                                                                                                                                             | Planning, spike                                                                                                                                          | Phase 5     | Resolved |
+| 5   | The design-system artifact must stay in step with `src/shared/ui`. Each phase that builds a component checks it against the artifact, and updates the artifact once, at the end of the phase, wherever the code ends up different.                                                                                                                                                                                                                    | AGENTS.md, Design                                                                                                                                        | Phases 2–7  | Resolved |
+| 6   | Left out on purpose for this version: dark mode, a size picker, a logo inside the code, QR content other than links (Wi-Fi, vCard…), analytics, and an Open Graph image.                                                                                                                                                                                                                                                                              | Brief                                                                                                                                                    | —           | Deferred |
+| 7   | The Latin subset has no glyph for characters outside Latin-1 and a few extras (emoji, Cyrillic, CJK). Decide what the outlines do with them: leave them out and say so under the frame text field, or refuse them as they are typed.                                                                                                                                                                                                                  | Spike                                                                                                                                                    | Phases 5, 6 | Open     |
 
 ## Phase 1: Render a QR design to SVG ✅
 
@@ -202,31 +204,32 @@ None outside this plan. Each phase builds on the previous one.
 
 ## Phase 5: Export QR files
 
-**Description:** The second use case, `exportQrCode`, with its ports, fakes and browser adapters, and the embedded frame font. It has no UI yet, so the export logic is tested on its own before it gets buttons. About 15 files, because the three ports come with a fake and a real adapter each.
+**Description:** The second use case, `exportQrCode`, with its ports, fakes and adapters, and the frame text drawn as Unbounded outlines. It has no UI yet, so the export logic is tested on its own before it gets buttons. About 15 files, because the three ports come with a fake and a real adapter each.
 
 **Outside-in TDD checklist:**
 
-- [ ] Acceptance test (B10, B11, B12): `exportQrCode` with `FakeImageRasterizer`, `InMemoryFileSaver` and `FixedFrameFontSource`.
-    - SVG saves `kode-qr.svg`, whose markup holds an `@font-face` with the font's base64 and no external URL.
-    - PNG and WebP pass the SVG to the rasterizer with `longSide: 1024` and save `kode-qr.png` and `kode-qr.webp`.
+- [ ] Acceptance test (B10, B11, B12): `exportQrCode` with `FakeImageRasterizer`, `InMemoryFileSaver` and `BoxFrameTextOutliner`.
+    - SVG saves `kode-qr.svg`, whose label is the outliner's `<path>` in the frame-text colour, with no `<text>` and no external URL.
+    - PNG and WebP pass that same outlined SVG to the rasterizer with `longSide: 1024` and save `kode-qr.png` and `kode-qr.webp`.
     - WebP on a rasterizer that can't encode it saves nothing and answers `"webp-unsupported"`.
     - An invalid link saves nothing.
-- [ ] Unit test (B10): `renderQrSvg` with `embeddedFont` writes the `@font-face`, and without it references the family only.
+- [ ] Unit test (B10): `renderQrSvg` with `outlineFrameText` draws the label as a `<path>` from it, given the label slot, and without it as a `<text>`; no frame, or blank text, draws neither.
+- [ ] Contract test (B10): a `FrameTextOutliner` suite run against `BoxFrameTextOutliner` and `OpentypeFrameTextOutliner` (reading the TTF from disk): blank text gives no path, and a long text stays within the slot's `maxWidth`, centred on its `x`.
 
 **To-do:**
 
-- [ ] Ports: `ImageRasterizer`, `FileSaver`, `FrameFontSource`. Use case: `exportQrCode`.
-- [ ] Font: download the Latin-subset WOFF2 of Unbounded 800 (the `latin` block of Google Fonts' `css2?family=Unbounded:wght@800`) into `src/qr-code/infrastructure/fonts/`, with `OFL.txt`.
+- [ ] Ports: `ImageRasterizer`, `FileSaver`, `FrameTextOutliner`. Use case: `exportQrCode`.
+- [ ] Font: `bun add opentype.js@2.0.0` (with a minimal local type declaration for the calls used, as 2.0 ships no types), and the Latin-subset TTF of Unbounded 800 in `public/fonts/`, with `OFL.txt`.
 - [ ] Adapters:
     - `CanvasImageRasterizer` draws the SVG through an `<img>` onto a canvas sized to `longSide` and calls `toBlob`. Its `canEncode` checks the returned blob's `type`.
     - `BrowserFileSaver` uses an object URL and a temporary `<a download>`.
-    - `BundledFrameFontSource` loads the font file as base64.
-- [ ] Fakes: `FakeImageRasterizer`, `InMemoryFileSaver`, `FixedFrameFontSource`.
+    - `OpentypeFrameTextOutliner` imports `opentype.js` and fetches the font on first `load()`, then fits the text to the slot with the glyphs' real advance widths.
+- [ ] Fakes: `FakeImageRasterizer`, `InMemoryFileSaver`, `BoxFrameTextOutliner` (one box per character, so fitting is easy to check).
 
 **Verify:**
 
 - [ ] The project's checks pass for what this phase touched (see `execute-plan`).
-- [ ] Resolve risk 1: render a framed code with text to PNG in Chrome, Firefox and Safari from a scratch page or the dev console, and check the label's font.
+- [ ] Render a framed, outlined code to PNG in Chrome from a scratch page, check the label is Unbounded, and scan it with a phone.
 
 ## Phase 6: Download from the generator
 
@@ -247,6 +250,7 @@ None outside this plan. Each phase builds on the previous one.
 
 - [ ] Shared UI: `SegmentedControl` (with a disabled option), `Button` (`primary`, `secondary`, `outline`; `md`, `lg`).
 - [ ] Slice UI: step 3 in `QrGenerator`, with the adapters passed in as props so tests can inject fakes, and the success and WebP messages.
+- [ ] Slice UI: once the outliner has loaded, the preview draws the frame text with the same outlines, so it stays exactly the file people download.
 - [ ] Check the new components against the design system; update the artifact where the code differs.
 
 **Verify:**
@@ -283,4 +287,4 @@ None outside this plan. Each phase builds on the previous one.
 
 ## Next step
 
-Phase 5: add the `exportQrCode` use case with its `ImageRasterizer`, `FileSaver` and `FrameFontSource` ports, fakes and browser adapters, and the embedded Unbounded subset, starting with the `exportQrCode` acceptance test. Run `/execute-plan .agents/plans/qr-generator`.
+Phase 5: add the `exportQrCode` use case with its `ImageRasterizer`, `FileSaver` and `FrameTextOutliner` ports, fakes and adapters, and the frame text as Unbounded outlines, starting with the `exportQrCode` acceptance test. Decide open question 7 first. Run `/execute-plan .agents/plans/qr-generator`.
