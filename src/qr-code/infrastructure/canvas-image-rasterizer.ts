@@ -4,9 +4,12 @@ import type {
 	RasterizeOptions,
 } from "../application/image-rasterizer";
 
+/** At 1, Chrome encodes WebP losslessly; below it, edges of the flat colours blur. PNG ignores it. */
+const QUALITY = 1;
+
 async function toBlob(canvas: HTMLCanvasElement, type: string): Promise<Blob | null> {
 	return await new Promise((resolve) => {
-		canvas.toBlob(resolve, type);
+		canvas.toBlob(resolve, type, QUALITY);
 	});
 }
 
