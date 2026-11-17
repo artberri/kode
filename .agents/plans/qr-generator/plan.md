@@ -143,7 +143,7 @@ None outside this plan. Each phase builds on the previous one.
 - [x] The project's checks pass for what this phase touched (see `execute-plan`).
 - [x] On `bun run dev`, typing a link updates the preview, and the page matches A2's generator at desktop and phone widths.
 
-## Phase 3: Add the frame and shape controls
+## Phase 3: Add the frame and shape controls ✅
 
 > Design: https://claude.ai/artifact/2wW9ukFJgUKkkZY7ozi2SA (`AltLauburuGoxoa.dc.html`; `Main.dc.html` for the Forma tab's layout)
 
@@ -166,12 +166,12 @@ None outside this plan. Each phase builds on the previous one.
     - the tile drawings for the five frames, four dot shapes and three corner shapes
     - the "Markoa" and "Forma" panels
     - the tab state in `QrGenerator`
-- [ ] Check the new components against the design system; update the artifact where the code differs.
+- [x] Check the new components against the design system; update the artifact where the code differs.
 
 **Verify:**
 
-- [ ] The project's checks pass for what this phase touched (see `execute-plan`).
-- [ ] A phone scans the preview with every dot shape and corner shape.
+- [x] The project's checks pass for what this phase touched (see `execute-plan`).
+- [x] A phone scans the preview with every dot shape and corner shape.
 
 ## Phase 4: Add the colour controls and the contrast warning
 
@@ -283,4 +283,4 @@ None outside this plan. Each phase builds on the previous one.
 
 ## Next step
 
-Phase 3: update the design-system artifact for `Tabs` (`TabPanel`), `OptionTiles` (`showLegend`) and `TextField` (`onChange` with the text), then scan the preview with every dot shape and corner shape. Run `/execute-plan .agents/plans/qr-generator`.
+Phase 4: add the "Koloreak" tab of step 2, with the palette presets, the four colour pickers and the contrast warning, starting with the `QrGenerator` component test for picking a preset. Run `/execute-plan .agents/plans/qr-generator`.
