@@ -7,9 +7,9 @@ Ship the first version of kode.eus: a landing page with a QR code generator that
 ## Behaviour
 
 - **B1.** A valid http or https link produces a QR code that decodes to exactly the normalised link. — _proved by:_ `src/qr-code/infrastructure/qr-matrix-encoder.contract.test.ts` › QrcodeGeneratorEncoder encodes %s so a reader decodes it back
-- **B2.** A link typed without a scheme (`kode.eus/menua`) gets `https://` added; the helper text says so and shows the full link. — _proved by:_ `src/qr-code/domain/parse-link.test.ts` › adds https:// to a link typed without a scheme
-- **B3.** Any of these shows a Basque error under the field, dims the preview and disables the download button: a scheme other than http or https, a host without a dot, a link with spaces, or a link longer than 1000 characters. — _proved by:_ `src/qr-code/domain/parse-link.test.ts` › rejects a scheme other than http or https, rejects a host without a dot, rejects a link with spaces, rejects a link longer than 1000 characters
-- **B4.** An empty field shows a neutral prompt, not an error, and the download stays disabled. — _proved by:_ `src/qr-code/application/design-qr-code.acceptance.test.ts` › waits for a link while the field is empty, without encoding anything
+- **B2.** A link typed without a scheme (`kode.eus/menua`) gets `https://` added; the helper text says so and shows the full link. — _proved by:_ `src/qr-code/domain/parse-link.test.ts` › adds https:// to a link typed without a scheme; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › says https:// was added and names the preview with the full link
+- **B3.** Any of these shows a Basque error under the field, dims the preview and disables the download button: a scheme other than http or https, a host without a dot, a link with spaces, or a link longer than 1000 characters. — _proved by:_ `src/qr-code/domain/parse-link.test.ts` › rejects a scheme other than http or https, rejects a host without a dot, rejects a link with spaces, rejects a link longer than 1000 characters; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › announces an error for a scheme other than http or https, waits until the field is left before calling a half-typed host wrong
+- **B4.** An empty field shows a neutral prompt, not an error, and the download stays disabled. — _proved by:_ `src/qr-code/application/design-qr-code.acceptance.test.ts` › waits for a link while the field is empty, without encoding anything; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › prompts for a link while the field is empty, without an error
 - **B5.** Changing the frame, dot shape, corner frame shape, corner centre shape, any colour or the frame text updates the preview at once. — _proved by:_ `src/qr-code/domain/render-qr-svg.test.ts` › dots, finder patterns, colours
 - **B6.** The frame text accepts at most 16 characters. With "Markorik ez" (no frame) the text field is hidden and the code has no label. — _proved by:_ `src/qr-code/domain/render-qr-svg.test.ts` › cuts the text to 16 characters, draws no text without a frame
 - **B7.** A warning appears when the QR colour is lighter than the background or their contrast is below 3:1, and disappears once neither holds. — _proved by:_ `src/qr-code/domain/contrast.test.ts` › is low below 3:1, is inverted when the QR is lighter than the background
@@ -19,7 +19,7 @@ Ship the first version of kode.eus: a landing page with a QR code generator that
 - **B11.** Downloading PNG or WebP saves `kode-qr.png` or `kode-qr.webp`, 1024 px on its long side, matching the preview. — _proved by:_
 - **B12.** Where the browser can't encode WebP, the WebP option is disabled with a Basque explanation; PNG and SVG keep working. — _proved by:_
 - **B13.** No network request carries the link: generating, previewing and downloading all happen in the browser. — _proved by:_
-- **B14.** Every control works from the keyboard and has a Basque accessible name: tabs move with the arrow keys, option, format and swatch choices are radio groups, and the preview's accessible name includes the link. — _proved by:_
+- **B14.** Every control works from the keyboard and has a Basque accessible name: tabs move with the arrow keys, option, format and swatch choices are radio groups, and the preview's accessible name includes the link. — _proved by:_ `src/shared/ui/url-field.test.tsx` › is a text field named by its visible label; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › says https:// was added and names the preview with the full link
 - **B15.** The home page shows the logo header with no menu, the headline "QR kodeak. Euskaraz. Doan.", the paragraph from the brief, and a "Hasi orain" link that takes people to the generator, with Basque page metadata and the KODE mark as the favicon. — _proved by:_ `src/shared/ui/logo.test.tsx` › links to the home page with the mark and wordmark, named as such
 
 ## Context
@@ -121,7 +121,7 @@ None outside this plan. Each phase builds on the previous one.
 
 **Outside-in TDD checklist:**
 
-- [ ] Component test (B2, B3, B4, B14): `QrGenerator` covers four cases:
+- [x] Component test (B2, B3, B4, B14): `QrGenerator` covers four cases:
     - typing `kode.eus` shows the "https:// added" hint and a preview named with `https://kode.eus/`
     - typing `ftp://x` shows the error, announced as an alert
     - an empty field shows the prompt
@@ -134,14 +134,14 @@ None outside this plan. Each phase builds on the previous one.
 - [x] Tokens: the design system's colours, radii, border widths and spacing in an `@theme` block in `src/app/globals.css`, with the page background and text colour on `body`.
 - [x] Fonts: Unbounded (600–800) and DM Sans (400, 500, 700) through `next/font/google` in `layout.tsx`, exposed as `--font-display` and `--font-body`.
 - [x] Shared UI: `Logo`, `Icon` (the six icons), `StepLabel`, `UrlField`, `TicketCard`.
-- [ ] Slice UI (`src/qr-code/infrastructure/ui/`): `QrGenerator` (client component) with step 1 and the preview of the default design. It wires `designQrCode` to `QrcodeGeneratorEncoder` and renders the SVG string as is on the peach side, about 250 px wide, so the preview is exactly the file people download (no `QrSticker` around it: that would draw a second frame and label). When the link isn't valid, the preview shows `https://kode.eus/` dimmed.
-- [ ] `page.tsx`: the header with `Logo` (no menu) and the generator section (`id="sortzailea"`).
+- [x] Slice UI (`src/qr-code/infrastructure/ui/`): `QrGenerator` (client component) with step 1 and the preview of the default design. It wires `designQrCode` to `QrcodeGeneratorEncoder` and renders the SVG string as is on the peach side, about 250 px wide, so the preview is exactly the file people download (no `QrSticker` around it: that would draw a second frame and label). When the link isn't valid, the preview shows `https://kode.eus/` dimmed.
+- [x] `page.tsx`: the header with `Logo` (no menu) and the generator section (`id="sortzailea"`).
 - [ ] Check each component against its design-system README; update the artifact where the code differs.
 
 **Verify:**
 
-- [ ] The project's checks pass for what this phase touched (see `execute-plan`).
-- [ ] On `bun run dev`, typing a link updates the preview, and the page matches A2's generator at desktop and phone widths.
+- [x] The project's checks pass for what this phase touched (see `execute-plan`).
+- [x] On `bun run dev`, typing a link updates the preview, and the page matches A2's generator at desktop and phone widths.
 
 ## Phase 3: Add the frame and shape controls
 
