@@ -157,11 +157,11 @@ None outside this plan. Each phase builds on the previous one.
     - "Markorik ez" hides the text field
 - [x] Component test (B14): `Tabs`, where arrow keys, Home and End move and select, only the selected tab is focusable, and the tabs control their panels.
 - [x] Component test (B14): `OptionTiles` is a named radio group (a legend), and arrow keys change the choice.
-- [ ] Component test (B6): `TextField` shows its counter and stops at `maxLength`.
+- [x] Component test (B6): `TextField` shows its counter and stops at `maxLength`.
 
 **To-do:**
 
-- [ ] Shared UI: `Tabs`, `OptionTiles` (sizes `md` and `sm`), `TextField`.
+- [x] Shared UI: `Tabs`, `OptionTiles` (sizes `md` and `sm`), `TextField`.
 - [ ] Slice UI:
     - the tile drawings for the five frames, four dot shapes and three corner shapes
     - the "Markoa" and "Forma" panels
