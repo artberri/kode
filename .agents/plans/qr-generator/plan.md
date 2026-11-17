@@ -220,7 +220,7 @@ None outside this plan. Each phase builds on the previous one.
 
 - [x] Ports: `ImageRasterizer`, `FileSaver`, `FrameTextOutliner`. Use case: `exportQrCode`.
 - [x] Font: `bun add opentype.js@2.0.0` (with a minimal local type declaration for the calls used, as 2.0 ships no types), and the Latin-subset TTF of Unbounded 800 in `public/fonts/`, with `OFL.txt`.
-- [ ] Adapters:
+- [x] Adapters:
     - `CanvasImageRasterizer` draws the SVG through an `<img>` onto a canvas sized to `longSide` and calls `toBlob`. Its `canEncode` checks the returned blob's `type`.
     - `BrowserFileSaver` uses an object URL and a temporary `<a download>`.
     - `OpentypeFrameTextOutliner` imports `opentype.js` and fetches the font on first `load()`, then fits the text to the slot with the glyphs' real advance widths.
