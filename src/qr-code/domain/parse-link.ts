@@ -11,6 +11,15 @@ export type ParsedLink =
 const SCHEME = /^[a-z][a-z0-9+.-]*:(?!\d)/iu;
 const WHITESPACE = /\s/u;
 
+/** `new URL` without throwing. Not `URL.parse`: Safari before 18 and Chrome before 126 lack it. */
+function toUrl(text: string): URL | null {
+	try {
+		return new URL(text);
+	} catch {
+		return null;
+	}
+}
+
 export function parseLink(input: string): ParsedLink {
 	const text = input.trim();
 	if (text === "") {
@@ -24,7 +33,7 @@ export function parseLink(input: string): ParsedLink {
 	}
 
 	const schemeAdded = !SCHEME.test(text);
-	const url = URL.parse(schemeAdded ? `https://${text}` : text);
+	const url = toUrl(schemeAdded ? `https://${text}` : text);
 	if (url !== null && url.protocol !== "http:" && url.protocol !== "https:") {
 		return { status: "invalid", reason: "scheme" };
 	}

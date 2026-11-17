@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 import { parseLink } from "./parse-link";
 
@@ -81,6 +81,26 @@ describe("parseLink", () => {
 		expect(parseLink(`https://kode.eus/${"ñ".repeat(300)}`)).toEqual({
 			status: "invalid",
 			reason: "too-long",
+		});
+	});
+
+	describe("on browsers without URL.parse (Safari 16.4 to 17, Chrome and Firefox 111 to 125)", () => {
+		const original = Object.getOwnPropertyDescriptor(URL, "parse");
+
+		afterEach(() => {
+			if (original !== undefined) {
+				Object.defineProperty(URL, "parse", original);
+			}
+		});
+
+		it("still parses links", () => {
+			Reflect.deleteProperty(URL, "parse");
+			expect(parseLink("kode.eus/menua")).toEqual({
+				status: "valid",
+				link: "https://kode.eus/menua",
+				schemeAdded: true,
+			});
+			expect(parseLink("https://")).toEqual({ status: "invalid", reason: "host" });
 		});
 	});
 });
