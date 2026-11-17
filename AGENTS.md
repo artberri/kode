@@ -20,9 +20,15 @@ KODE (`kode` package, domain `kode.eus`) will host three products: a QR code gen
 The app deploys to Cloudflare Workers through OpenNext (`@opennextjs/cloudflare`), so production runs on `workerd`, not Node.
 
 - `bun run dev` is the fast loop; `bun run preview` builds and serves the real Worker locally. Verify on `preview` anything touching caching, middleware, headers or bindings.
-- Leave `cacheComponents` off in `next.config.ts`: with it on, OpenNext 1.20 builds fine but every request hangs on `workerd`. Re-test with `preview` before enabling it after an OpenNext upgrade.
+- Leave `cacheComponents` off in `next.config.ts`: see [FOOTGUNS.md](docs/FOOTGUNS.md).
 - Read bindings through `getCloudflareContext()`. After editing `wrangler.jsonc`, run `bun run cf-typegen` to refresh `cloudflare-env.d.ts`.
 - No incremental cache is configured (`open-next.config.ts`). Add the R2 cache when a page needs ISR or revalidation.
+
+## Review docs
+
+- [`docs/KNOWN_NON_ISSUES.md`](docs/KNOWN_NON_ISSUES.md): deliberate patterns that look like defects. Read it before acting on a review comment, and before writing code in an area it covers.
+- [`docs/PRE_PR_REVIEW.md`](docs/PRE_PR_REVIEW.md): check your diff against it before opening a pull request.
+- [`docs/FOOTGUNS.md`](docs/FOOTGUNS.md): runtime traps that pass review and type checks. Scan its headings when a change touches the same areas.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
