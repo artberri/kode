@@ -12,6 +12,12 @@ It doesn't replace the formatters, linters, type checks and tests. Run `bun run 
 - **Every consumer of what you changed is updated in the same PR.** Interfaces, config keys, exports, payloads, and the ones the compiler won't catch: test mocks, fixtures and fakes.
 - **Docs that describe what you changed are updated in the same PR.** After a rename, search the Markdown files too.
 
+## When the diff adds or changes a use case
+
+- **The use case has an acceptance test that drives it through its input.** Expensive or unrunnable adapters are replaced by in-memory fakes from the slice's `infrastructure/`, not by mocks of the use case's own collaborators.
+- **No relative import climbs into another slice.** oxlint only catches `@/` aliases; a path like `../../short-links/...` from inside a slice gets past it. Cross-slice code goes through `@/shared`.
+- **A new port is named for what the use case needs, and has a fake.** A port named after a technology (`D1LinkStore`) belongs in `infrastructure/` as an adapter, not in `application/`.
+
 ## When the diff touches Cloudflare, caching, middleware, headers or bindings
 
 - **The change was verified with `bun run preview`, not only `bun run dev`.** `next dev` runs on Node; production runs on `workerd`, and some failures only show there (see [FOOTGUNS.md](./FOOTGUNS.md)).

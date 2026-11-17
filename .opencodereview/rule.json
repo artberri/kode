@@ -18,6 +18,11 @@
 			"rule": "Read the 'When the diff touches Cloudflare, caching, middleware, headers or bindings' section of docs/PRE_PR_REVIEW.md first. Check that a change here comes with a regenerated cloudflare-env.d.ts in the same diff, and that compatibility_flags keeps nodejs_compat."
 		},
 		{
+			"path": "src/*/{domain,application}/**",
+			"merge_system_rule": true,
+			"rule": "Read the 'When the diff adds or changes a use case' section of docs/PRE_PR_REVIEW.md first. domain is pure: no framework, I/O, or imports from application or infrastructure. application holds use cases and their ports and imports only domain. Check that each use case has an acceptance test with in-memory fakes, that no relative import climbs into another slice, and that ports are named for what the use case needs rather than a technology. Also: Server code runs on Cloudflare workerd, not Node: flag Node-only APIs not covered by nodejs_compat, and filesystem access at request time. The QR code generator runs only in the browser: flag any code that sends user input to a server or stores it."
+		},
+		{
 			"path": "src/**/*.{ts,tsx}",
 			"merge_system_rule": true,
 			"rule": "Server code runs on Cloudflare workerd, not Node: flag Node-only APIs not covered by nodejs_compat, and filesystem access at request time. The QR code generator runs only in the browser: flag any code that sends user input to a server or stores it."

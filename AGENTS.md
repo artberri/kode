@@ -7,7 +7,7 @@ The site is in **Basque only** for now: write all user-facing text in Basque, in
 ## Toolchain
 
 - proto pins Node and Bun in `.prototools`. Bun installs packages and runs scripts (`bun add`, `bun run <script>`); Node runs Next.js, OpenNext and Wrangler, which are Node CLIs. Keep `bun.lock` as the only lockfile.
-- `bun run qa` (lint, type check) is the gate: a change is done when it passes with zero warnings. Formatting is left to the `pre-commit` hook. When the project gets a test runner, append its tests to `qa`.
+- `bun run qa` (lint, type check, tests) is the gate: a change is done when it passes with zero warnings. Formatting is left to the `pre-commit` hook. `test` passes with no tests while the project has none; drop `--passWithNoTests` from `test` and `qa` once the first test lands.
 - Format with `bun run format` rather than by hand. Indentation comes from `.editorconfig` (tabs; spaces only for YAML), which oxfmt reads.
 - Claude Code's TypeScript language server is the project plugin in `.claude/marketplace/`, which runs TypeScript 7's built-in `tsc --lsp`. TypeScript 7 ships no `tsserver.js`, so `.claude/settings.json` turns off the official `typescript-lsp` plugin (built on `typescript-language-server`) for this project.
 - Git hooks live in `.githooks/`; `bun install` points `core.hooksPath` at them. `pre-commit` formats staged files and `commit-msg` runs commitlint, so commit messages follow Conventional Commits with body lines of 100 characters or fewer.
@@ -17,6 +17,33 @@ The site is in **Basque only** for now: write all user-facing text in Basque, in
 - oxlint runs type-aware rules (`oxlint-tsgolint`) and treats warnings as errors; TypeScript is strict, including `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes`. Fix the code to satisfy a rule; a disable comment needs a reason next to it.
 - `typescript/prefer-readonly-parameter-types` is off: React props and `ReactNode` can't be deeply readonly.
 - `lint` and `typecheck` run `next typegen` first, so route types such as `LayoutProps` and `PageProps` exist.
+
+## Architecture
+
+Ports and adapters, organised in vertical slices, one per product:
+
+```
+src/
+├── app/                 # Next.js routes: thin, they wire a slice's use cases to its adapters
+├── shared/              # the only code slices share; keep it small, and it imports no slice
+└── <slice>/             # qr-code, short-links, bio-pages
+    ├── domain/          # pure: entities, value objects, rules; no framework, no I/O
+    ├── application/     # use cases and the ports (interfaces) they need; imports only domain
+    └── infrastructure/  # adapters: UI components (`ui/`), storage, external services, and their in-memory fakes
+```
+
+- Slices stay independent: inside a slice, import with relative paths; across slices, only `@/shared` is allowed. oxlint enforces the layers and the `@/` aliases (`no-restricted-imports` overrides in `.oxlintrc.json`); it can't see a relative path that climbs into another slice, so review catches that.
+- A port lives in `application/` and is named for what the use case needs (`QrCodeRenderer`, `LinkStore`), not for the technology behind it.
+
+## Testing
+
+Outside-in TDD with Vitest (`bun run test`, `bun run test:watch`):
+
+1. **Acceptance test per use case**, first: `<use-case>.acceptance.test.ts` next to the use case. It drives the use case through its input and replaces expensive or unrunnable adapters (database, network) with hand-written in-memory fakes from the slice's `infrastructure/`. Prefer a fake to a mock.
+2. **Unit tests** where an inner piece deserves its own: `<name>.test.ts` next to it, pure where possible; `vi.fn()` only when a collaborator can't be faked.
+3. **Component tests** for UI with real logic: `<component>.test.tsx`, with Testing Library in `happy-dom` (`vitest.setup.dom.ts` adds the jest-dom matchers). Query by role and label, as a user would.
+
+Vitest runs `.test.ts` files in Node and `.test.tsx` files in `happy-dom` (`vitest.config.mts`). Test files may import `infrastructure/` to wire fakes; the layer rules don't apply to them, but the slice rule does. When a port gets a real adapter, give the fake and the real adapter one shared contract test suite, so the fake can't drift.
 
 ## Cloudflare
 

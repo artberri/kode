@@ -66,7 +66,7 @@ The brief is the spec: there is no tracker or design tool behind it. **Grill** t
     - Cloudflare configuration and bindings: `wrangler.jsonc`, `open-next.config.ts` and the generated `cloudflare-env.d.ts`
     - Generated outputs users keep: downloaded QR codes (PNG, SVG) and the content scanners read; a printed code can't be changed
     - Database schemas and migrations, once the project has a database
-    - Test suites (and the cases inside them), once the project has a test runner
+    - Test suites: the acceptance test of each use case, and the unit and component tests inside the slice
 
 3. **What must be true when it's done:** the behaviour the work delivers, as rules a test can check: who can do what, what happens on each outcome, which edge cases are refused and how. Draft them from the brief and the answers to the grilling rather than asking the user to write them. Contracts say what the surface looks like; these rules say what it does, and they are what the plan's tests prove.
 

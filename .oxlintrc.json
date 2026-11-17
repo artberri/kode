@@ -9,7 +9,8 @@
 		"react-perf",
 		"jsx-a11y",
 		"nextjs",
-		"promise"
+		"promise",
+		"vitest"
 	],
 	"env": {
 		"browser": true,
@@ -60,10 +61,135 @@
 		"import/no-unassigned-import": [
 			"error",
 			{
-				"allow": ["**/*.css"]
+				"allow": ["**/*.css", "@testing-library/jest-dom/vitest"]
 			}
 		],
 		"typescript/prefer-readonly-parameter-types": "off"
 	},
-	"ignorePatterns": [".next", ".open-next", ".wrangler", "next-env.d.ts", "cloudflare-env.d.ts"]
+	"ignorePatterns": [".next", ".open-next", ".wrangler", "next-env.d.ts", "cloudflare-env.d.ts"],
+	"overrides": [
+		{
+			"files": ["src/*/domain/**"],
+			"rules": {
+				"no-restricted-imports": [
+					"error",
+					{
+						"patterns": [
+							{
+								"group": [
+									"next",
+									"next/*",
+									"react",
+									"react/*",
+									"react-dom",
+									"react-dom/*",
+									"@opennextjs/*",
+									"cloudflare:*",
+									"@testing-library/*",
+									"happy-dom"
+								],
+								"message": "domain is pure: no frameworks, no I/O, and no imports from application or infrastructure."
+							},
+							{
+								"group": [
+									"**/application",
+									"**/application/**",
+									"**/infrastructure",
+									"**/infrastructure/**"
+								],
+								"message": "domain is pure: no frameworks, no I/O, and no imports from application or infrastructure."
+							},
+							{
+								"group": ["@/**", "!@/shared", "!@/shared/**"],
+								"message": "Slices stay independent: import your own slice with relative paths, and shared code from @/shared only."
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"files": ["src/*/application/**"],
+			"rules": {
+				"no-restricted-imports": [
+					"error",
+					{
+						"patterns": [
+							{
+								"group": [
+									"next",
+									"next/*",
+									"react",
+									"react/*",
+									"react-dom",
+									"react-dom/*",
+									"@opennextjs/*",
+									"cloudflare:*",
+									"@testing-library/*",
+									"happy-dom"
+								],
+								"message": "application depends only on domain and its own ports: no frameworks and no imports from infrastructure."
+							},
+							{
+								"group": ["**/infrastructure", "**/infrastructure/**"],
+								"message": "application depends only on domain and its own ports: no frameworks and no imports from infrastructure."
+							},
+							{
+								"group": ["@/**", "!@/shared", "!@/shared/**"],
+								"message": "Slices stay independent: import your own slice with relative paths, and shared code from @/shared only."
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"files": ["src/*/infrastructure/**"],
+			"rules": {
+				"no-restricted-imports": [
+					"error",
+					{
+						"patterns": [
+							{
+								"group": ["@/**", "!@/shared", "!@/shared/**"],
+								"message": "Slices stay independent: import your own slice with relative paths, and shared code from @/shared only."
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"files": ["src/shared/**"],
+			"rules": {
+				"no-restricted-imports": [
+					"error",
+					{
+						"patterns": [
+							{
+								"group": ["@/**", "!@/shared", "!@/shared/**"],
+								"message": "Shared code doesn't depend on any slice."
+							}
+						]
+					}
+				]
+			}
+		},
+		{
+			"files": ["src/**/*.test.ts", "src/**/*.test.tsx"],
+			"rules": {
+				"no-restricted-imports": [
+					"error",
+					{
+						"patterns": [
+							{
+								"group": ["@/**", "!@/shared", "!@/shared/**"],
+								"message": "Slices stay independent: import your own slice with relative paths, and shared code from @/shared only."
+							}
+						]
+					}
+				]
+			}
+		}
+	]
 }
