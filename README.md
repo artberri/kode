@@ -68,6 +68,10 @@ Commit messages follow [Conventional Commits](https://www.conventionalcommits.or
 
 Contributions are welcome: [CONTRIBUTING.md](CONTRIBUTING.md) explains how to set up, check and send a change. Everyone taking part follows the [code of conduct](CODE_OF_CONDUCT.md).
 
+### Developing with AI agents
+
+KODE is developed with AI coding agents, and the repository is set up for them: [AGENTS.md](AGENTS.md) holds the project's conventions, and the skills in [`.agents/skills/`](.agents/skills) (planning, executing a plan, shipping) are templates from [artberri/skills](https://github.com/artberri/skills), adapted to this project and refreshed from there. If you develop with an agent too, install artberri/skills: the project's skills rely on its portable ones for committing and review. [CONTRIBUTING.md](CONTRIBUTING.md#working-with-an-ai-agent) has the details.
+
 ## License
 
 Copyright (C) 2026 Alberto Varela Sánchez

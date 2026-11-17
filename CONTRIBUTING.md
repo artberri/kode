@@ -109,6 +109,23 @@ Every font, image and drawing has a row in [ASSETS.md](ASSETS.md) with its sourc
 
 Changes of more than one step are planned in `.agents/plans/` before they are built: the behaviour as rules a test or a look can check, the decisions with their reasons, and phases that each end in something visible. The `create-plan` and `execute-plan` skills in `.agents/skills/` do this with Claude Code; you can write a plan by hand in the same shape, or skip it for a small fix.
 
+## Working with an AI agent
+
+You don't need an AI agent to contribute. If you use one (Claude Code, Codex, GitHub Copilot CLI and others), the repository is set up for it:
+
+- [AGENTS.md](AGENTS.md) is what the agent reads first: the architecture, the toolchain and the conventions. `CLAUDE.md` links to it.
+- The project's skills live in [`.agents/skills/`](.agents/skills) (`.claude/skills` links to it): `create-plan` and `execute-plan` for plans, and `ship` to commit, check and review a finished change. They come from [artberri/skills](https://github.com/artberri/skills) as templates, adapted to this project with its `adapt-skill` skill; the maintainer refreshes them the same way when the template improves or the project's conventions change, so propose changes to them in an issue rather than editing them by hand.
+- Install the rest of [artberri/skills](https://github.com/artberri/skills#installation) too: its portable skills commit, review and capture learnings the way this project expects, and `ship` relies on one of them (`ocr-review`). In Claude Code:
+
+    ```sh
+    claude plugin marketplace add artberri/claude-plugins
+    claude plugin install artberri-skills@artberri
+    ```
+
+    The skills' README has the steps for Codex, Copilot CLI and other agents.
+
+Whatever the agent writes, you send: review the diff yourself, and keep `bun run qa` green.
+
 ## License
 
 KODE is under the [GNU Affero General Public License, version 3 or later](LICENSE); by contributing you agree your work is licensed the same way. The fonts keep their own license (see [ASSETS.md](ASSETS.md)), and the KODE name and brand are not licensed for reuse (see the [README](README.md#name-and-brand)).
