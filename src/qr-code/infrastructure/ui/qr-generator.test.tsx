@@ -191,7 +191,7 @@ describe("QrGenerator", () => {
 
 		expect(screen.getByRole("radio", { name: "Morea" })).toBeChecked();
 		expect(screen.getByLabelText("QRaren kolorea")).toHaveAccessibleDescription("#2A1740");
-		expect(screen.queryByRole("status")).not.toBeInTheDocument();
+		expect(screen.getByRole("status")).toBeEmptyDOMElement();
 	});
 
 	it("sets the four colours from a palette and selects it", async () => {
@@ -231,13 +231,15 @@ describe("QrGenerator", () => {
 
 	it("warns when the QR and its background are too alike, until they are not", async () => {
 		await openColours();
+		// The live region is there before the warning, so screen readers announce the change.
+		const status = screen.getByRole("status");
 
 		pickColour("QRaren kolorea", "#cdb8ff");
-		expect(screen.getByRole("status")).toHaveTextContent(
+		expect(status).toHaveTextContent(
 			"Kontraste txikia: baliteke mugikor batzuek QRa ez irakurtzea. Erabili kolore ilunagoa hondo argiaren gainean.",
 		);
 
 		pickColour("QRaren kolorea", "#2a1740");
-		expect(screen.queryByRole("status")).not.toBeInTheDocument();
+		expect(status).toBeEmptyDOMElement();
 	});
 });

@@ -22,4 +22,11 @@ describe("Notice", () => {
 		expect(screen.getByRole("alert")).toHaveTextContent("Ezin izan dugu irudia sortu.");
 		expect(screen.queryByRole("status")).not.toBeInTheDocument();
 	});
+
+	it("leaves the announcing to a live region around it when it isn't live", () => {
+		render(<Notice live={false}>Kontraste txikia.</Notice>);
+
+		expect(screen.getByText("Kontraste txikia.")).toBeVisible();
+		expect(screen.queryByRole("status")).not.toBeInTheDocument();
+	});
 });

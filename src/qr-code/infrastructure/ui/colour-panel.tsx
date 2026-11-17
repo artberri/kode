@@ -71,6 +71,21 @@ function ColourInput({
 	);
 }
 
+/** Says when the code may not scan. Its live region is always on the page, so screen readers announce it. */
+function ContrastWarning({ colours }: { readonly colours: QrColours }) {
+	const contrast = contrastOf(colours.qr, colours.background);
+	return (
+		<div
+			// oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- <output> may only hold phrasing content, and the Notice is a <p>
+			role="status"
+			// Rendered even when empty, as display: none would drop it from the accessibility tree.
+			className="empty:-mt-space-6"
+		>
+			{contrast !== "ok" && <Notice live={false}>{WARNINGS[contrast]}</Notice>}
+		</div>
+	);
+}
+
 /** "Koloreak": a palette preset, any of the four colours, and a warning when the code is hard to scan. */
 export function ColourPanel({ design, onChange }: PanelProps) {
 	const { colours } = design;
@@ -84,7 +99,6 @@ export function ColourPanel({ design, onChange }: PanelProps) {
 		},
 		[setColours],
 	);
-	const contrast = contrastOf(colours.qr, colours.background);
 	const hasFrame = design.frame !== "none";
 	return (
 		<div className="flex flex-col gap-space-6">
@@ -113,7 +127,7 @@ export function ColourPanel({ design, onChange }: PanelProps) {
 					Markorik gabe, markoaren eta testuaren koloreak ez dira erabiltzen.
 				</p>
 			)}
-			{contrast !== "ok" && <Notice>{WARNINGS[contrast]}</Notice>}
+			<ContrastWarning colours={colours} />
 		</div>
 	);
 }
