@@ -77,4 +77,22 @@ describe("TextField", () => {
 			"Markoaren behealdean agertzen da.",
 		);
 	});
+
+	it("can be disabled, keeping its text, with a hint that says why", () => {
+		render(
+			<TextField
+				id="testua"
+				label={LABEL}
+				value="Eskaneatu"
+				onChange={vi.fn<(value: string) => void>()}
+				disabled
+				hint="Markorik gabe, ez dago testurik."
+			/>,
+		);
+
+		const field = screen.getByRole("textbox", { name: LABEL });
+		expect(field).toBeDisabled();
+		expect(field).toHaveValue("Eskaneatu");
+		expect(field).toHaveAccessibleDescription("Markorik gabe, ez dago testurik.");
+	});
 });

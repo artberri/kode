@@ -49,4 +49,18 @@ describe("ColorField", () => {
 
 		expect(onChange).toHaveBeenCalledExactlyOnceWith("#123456");
 	});
+
+	it("can be disabled", () => {
+		render(
+			<ColorField
+				id="markoa"
+				label="Markoaren kolorea"
+				value="#6b3fa8"
+				onChange={vi.fn<(value: string) => void>()}
+				disabled
+			/>,
+		);
+
+		expect(screen.getByLabelText("Markoaren kolorea")).toBeDisabled();
+	});
 });

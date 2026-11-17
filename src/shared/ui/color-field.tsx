@@ -7,24 +7,35 @@ export interface ColorFieldProps {
 	readonly value: string;
 	/** Called with the picked colour, as `#rrggbb` in lowercase (the browser's format). */
 	readonly onChange: (value: string) => void;
+	/** Greys the field out; say why next to it. */
+	readonly disabled?: boolean;
 	readonly className?: string;
 }
 
 const CARD =
-	"flex cursor-pointer items-center gap-space-3 rounded-md border-firm border-ink bg-surface-raised " +
-	"py-2.5 pr-3.5 pl-2.5 focus-within:outline-focus focus-within:outline-offset-2 focus-within:outline-violet";
+	"group flex cursor-pointer items-center gap-space-3 rounded-md border-firm border-ink bg-surface-raised " +
+	"py-2.5 pr-3.5 pl-2.5 focus-within:outline-focus focus-within:outline-offset-2 focus-within:outline-violet " +
+	"has-disabled:cursor-not-allowed has-disabled:border-dashed has-disabled:border-line-strong " +
+	"has-disabled:bg-surface has-disabled:text-ink-subtle";
 
 // The browser's own swatch gets no padding or border of its own, so only the ink outline shows.
 const SWATCH =
 	"size-11 flex-none cursor-pointer overflow-hidden rounded-[14px] border-soft border-ink bg-surface-raised p-0 " +
 	"focus-visible:outline-none [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-0 " +
-	"[&::-moz-color-swatch]:border-0";
+	"[&::-moz-color-swatch]:border-0 disabled:cursor-not-allowed disabled:opacity-40";
 
 /**
  * A labelled native colour picker that shows the chosen hex value. The whole card opens the
  * browser's picker; the input is named by the label and described by the hex value.
  */
-export function ColorField({ id, label, value, onChange, className }: ColorFieldProps) {
+export function ColorField({
+	id,
+	label,
+	value,
+	onChange,
+	disabled = false,
+	className,
+}: ColorFieldProps) {
 	const nameId = `${id}-izena`;
 	const hexId = `${id}-hex`;
 	const handleChange = useCallback(
@@ -40,6 +51,7 @@ export function ColorField({ id, label, value, onChange, className }: ColorField
 				type="color"
 				value={value}
 				onChange={handleChange}
+				disabled={disabled}
 				aria-labelledby={nameId}
 				aria-describedby={hexId}
 				className={SWATCH}
@@ -48,7 +60,10 @@ export function ColorField({ id, label, value, onChange, className }: ColorField
 				<span id={nameId} className="text-small font-bold">
 					{label}
 				</span>
-				<span id={hexId} className="font-mono text-code text-ink-muted">
+				<span
+					id={hexId}
+					className="font-mono text-code text-ink-muted group-has-disabled:text-ink-subtle"
+				>
 					{value.toUpperCase()}
 				</span>
 			</span>

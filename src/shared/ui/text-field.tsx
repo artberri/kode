@@ -9,14 +9,17 @@ export interface TextFieldProps {
 	readonly placeholder?: string;
 	/** Caps the text and shows an "n/max" counter. */
 	readonly maxLength?: number;
-	/** Neutral help under the field. */
+	/** Neutral help under the field; when disabled, say why. */
 	readonly hint?: string;
+	/** Greys the field out but keeps its text, so the layout doesn't jump. */
+	readonly disabled?: boolean;
 	readonly className?: string;
 }
 
 const BOX =
 	"flex items-center gap-space-2 rounded-pill border-firm border-ink bg-surface py-1.5 pr-1.5 pl-3.5 " +
-	"focus-within:outline-focus focus-within:outline-offset-2 focus-within:outline-violet";
+	"focus-within:outline-focus focus-within:outline-offset-2 focus-within:outline-violet " +
+	"has-disabled:border-dashed has-disabled:border-line-strong";
 
 /** The input itself stops at `maxLength`, so the counter is a visual aid only. */
 function Counter({ length, max }: { readonly length: number; readonly max: number }) {
@@ -39,6 +42,7 @@ export function TextField({
 	placeholder,
 	maxLength,
 	hint,
+	disabled = false,
 	className,
 }: TextFieldProps) {
 	const hintId = `${id}-laguntza`;
@@ -61,8 +65,9 @@ export function TextField({
 					placeholder={placeholder}
 					maxLength={maxLength}
 					onChange={handleChange}
+					disabled={disabled}
 					aria-describedby={hint === undefined ? undefined : hintId}
-					className="min-w-0 flex-1 bg-transparent px-2 py-2.5 text-lg text-ink placeholder:text-ink-subtle focus-visible:outline-none"
+					className="min-w-0 flex-1 bg-transparent px-2 py-2.5 text-lg text-ink placeholder:text-ink-subtle focus-visible:outline-none disabled:cursor-not-allowed disabled:text-ink-subtle"
 				/>
 				{maxLength !== undefined && <Counter length={value.length} max={maxLength} />}
 			</div>
