@@ -4,7 +4,7 @@ import type { OutlineFrameText } from "../domain/qr-frames";
 export interface FrameTextOutlines {
 	readonly outline: OutlineFrameText;
 	/** The characters of a text the font can't draw, each once, in order. */
-	missing(text: string): readonly string[];
+	readonly missing: (text: string) => readonly string[];
 }
 
 /** Loads the frame font, once, for drawing frame text as outlines. */
