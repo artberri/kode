@@ -46,7 +46,9 @@ export async function exportQrCode(
 		return { status: "webp-unsupported" };
 	}
 	const { outline } = await outliner.load();
-	const svg = renderQrSvg(encoder.encode(parsed.link), design, { outlineFrameText: outline });
+	const matrix = encoder.encode(parsed.link);
+	// The SVG file has no fixed size, so viewers scale it to fit; a canvas needs one to draw it.
+	const svg = renderQrSvg(matrix, design, { outlineFrameText: outline, sized: format !== "svg" });
 	const blob =
 		format === "svg"
 			? new Blob([svg], { type: "image/svg+xml" })

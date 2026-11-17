@@ -26,6 +26,11 @@ function escapeXml(text: string): string {
 export interface RenderQrSvgOptions {
 	/** Draws the frame text as outlines, so the SVG needs no font. Without it, a `<text>` in Unbounded. */
 	readonly outlineFrameText?: OutlineFrameText | undefined;
+	/**
+	 * Gives the root a `width` and `height` in px (the default), as drawing it onto a canvas needs.
+	 * Without them, viewers scale the code to fit and design tools size it from the `viewBox`.
+	 */
+	readonly sized?: boolean;
 }
 
 function frameLabel(
@@ -58,7 +63,7 @@ function frameLabel(
 export function renderQrSvg(
 	matrix: QrMatrix,
 	design: QrDesign,
-	{ outlineFrameText }: RenderQrSvgOptions = {},
+	{ outlineFrameText, sized = true }: RenderQrSvgOptions = {},
 ): string {
 	const layout = FRAME_LAYOUTS[design.frame];
 	const { colours } = design;
@@ -90,7 +95,7 @@ export function renderQrSvg(
 	const width = String(layout.width);
 	const height = String(layout.height);
 	return (
-		`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">` +
+		`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}"${sized ? ` width="${width}" height="${height}"` : ""}>` +
 		`${frame}${area}${modules}${label}</svg>`
 	);
 }

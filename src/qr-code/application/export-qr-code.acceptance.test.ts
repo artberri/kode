@@ -49,6 +49,16 @@ describe("exportQrCode", () => {
 		expect(rasterizer.calls).toEqual([]);
 	});
 
+	it("leaves the SVG's size to its viewBox, so viewers scale it to fit", async () => {
+		const { saver, exportAs } = setup();
+
+		await exportAs("svg");
+
+		const root = /^<svg [^>]*>/u.exec(await savedText(saver))?.[0];
+		expect(root).toMatch(/ viewBox="0 0 [\d.]+ [\d.]+"/u);
+		expect(root).not.toMatch(/ (?:width|height)=/u);
+	});
+
 	it.each(["png", "webp"] as const)(
 		"draws the same outlined SVG at 1024 px and saves kode-qr.%s",
 		async (format) => {
@@ -62,7 +72,16 @@ describe("exportQrCode", () => {
 				fileName: `kode-qr.${format}`,
 			});
 
-			expect(rasterizer.calls).toEqual([{ svg, format, longSide: 1024 }]);
+			// The same drawing, sized: Firefox can't draw an SVG without a size onto a canvas.
+			expect(rasterizer.calls.map((call) => call.svg)).toEqual([
+				expect.stringMatching(/^<svg [^>]* width="[\d.]+" height="[\d.]+">/u),
+			]);
+			expect(
+				rasterizer.calls.map(({ svg: drawn, ...options }) => [
+					drawn.replace(/ width="[\d.]+" height="[\d.]+">/u, ">"),
+					options,
+				]),
+			).toEqual([[svg, { format, longSide: 1024 }]]);
 			expect(saver.saved.map((file) => [file.name, file.blob.type])).toEqual([
 				[`kode-qr.${format}`, `image/${format}`],
 			]);
