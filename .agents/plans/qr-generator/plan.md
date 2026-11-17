@@ -6,7 +6,7 @@ Ship the first version of kode.eus: a landing page with a QR code generator that
 
 ## Behaviour
 
-- **B1.** A valid http or https link produces a QR code that decodes to exactly the normalised link. — _proved by:_
+- **B1.** A valid http or https link produces a QR code that decodes to exactly the normalised link. — _proved by:_ `src/qr-code/infrastructure/qr-matrix-encoder.contract.test.ts` › QrcodeGeneratorEncoder encodes %s so a reader decodes it back
 - **B2.** A link typed without a scheme (`kode.eus/menua`) gets `https://` added; the helper text says so and shows the full link. — _proved by:_ `src/qr-code/domain/parse-link.test.ts` › adds https:// to a link typed without a scheme
 - **B3.** Any of these shows a Basque error under the field, dims the preview and disables the download button: a scheme other than http or https, a host without a dot, a link with spaces, or a link longer than 1000 characters. — _proved by:_ `src/qr-code/domain/parse-link.test.ts` › rejects a scheme other than http or https, rejects a host without a dot, rejects a link with spaces, rejects a link longer than 1000 characters
 - **B4.** An empty field shows a neutral prompt, not an error, and the download stays disabled. — _proved by:_
@@ -97,15 +97,15 @@ None outside this plan. Each phase builds on the previous one.
 - [x] Unit test (B2, B3): `parseLink`, including trimming, uppercase schemes, `ftp:`, `localhost`, spaces and 1001 characters.
 - [ ] Unit test (B5, B6, B9): `renderQrSvg` for each dot shape, corner shape, centre shape and frame. Frame text is cut to 16 characters, and "none" has no `<text>`.
 - [x] Unit test (B7): `contrastOf` gives `ok`, `low` (below 3:1) and `inverted` (QR lighter than background).
-- [ ] Contract test (B1): a `QrMatrixEncoder` suite run against `FixedMatrixEncoder` and `QrcodeGeneratorEncoder`. The matrix is square, odd-sized, at least 21, and has the three finder patterns. For the real adapter only, `jsqr` decodes the matrix (drawn to RGBA with a quiet zone) back to the input.
+- [x] Contract test (B1): a `QrMatrixEncoder` suite run against `FixedMatrixEncoder` and `QrcodeGeneratorEncoder`. The matrix is square, odd-sized, at least 21, and has the three finder patterns. For the real adapter only, `jsqr` decodes the matrix (drawn to RGBA with a quiet zone) back to the input.
 
 **To-do:**
 
-- [ ] `bun add qrcode-generator` and `bun add -d jsqr`.
+- [x] `bun add qrcode-generator` and `bun add -d jsqr`.
 - [ ] Domain: `QrMatrix`, `QrDesign` (with a default design: Zigilua frame, "Eskaneatu", ink QR, violet frame, white background), `parseLink`, `contrastOf`.
 - [ ] Domain: `renderQrSvg` with the dot shapes (square, round, smooth, diamond), finder shapes (square, rounded, circle) and the five frames. Arbela comes from [arbela-frame.svg](./arbela-frame.svg); the others follow the A2 tile drawings and the prototype's geometry.
 - [ ] Application: the `QrMatrixEncoder` port and `designQrCode`.
-- [ ] Infrastructure: `QrcodeGeneratorEncoder` and the `FixedMatrixEncoder` fake.
+- [x] Infrastructure: `QrcodeGeneratorEncoder` and the `FixedMatrixEncoder` fake.
 - [x] Drop `--passWithNoTests` from `test` and `qa` in `package.json`, and delete its entries in `AGENTS.md` (Toolchain) and `docs/KNOWN_NON_ISSUES.md`.
 
 **Verify:**
