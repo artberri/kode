@@ -57,7 +57,7 @@ New code goes in the `qr-code` slice (`src/qr-code/{domain,application,infrastru
     - `QrMatrixEncoder`: `encode(text): QrMatrix`. The real adapter wraps `qrcode-generator` 2.x, which is `export =` with the `qrcode(typeNumber, errorCorrectionLevel)` factory, `addData`, `make`, `getModuleCount` and `isDark`. It uses type number 0 (automatic) and level `"Q"`. The normalised link is ASCII (`new URL().href`), so the default byte encoding is enough.
     - `ImageRasterizer`: `rasterize(svg, { format, longSide })` returns a `Promise<Blob>`, and `canEncode(format)` returns a `Promise<boolean>`.
     - `FileSaver`: `save({ name, blob })`.
-    - `FrameTextOutliner`: `load()` returns `Promise<OutlineFrameText>`, a function that turns the frame text into SVG path data in Unbounded 800, fitted to the frame's label slot. The real adapter loads `opentype.js` and the font on first use.
+    - `FrameTextOutliner`: `load()` returns `Promise<FrameTextOutlines>`, the loaded font as `{ outline, missing }`: `outline` is an `OutlineFrameText` that turns the frame text into SVG path data in Unbounded 800, fitted to the frame's label slot, and `missing(text)` lists the characters it can't draw. The real adapter loads `opentype.js` and the font on first use, and tries again after a failed load.
 - **Domain** (`src/qr-code/domain/`), all pure:
     - `QrDesign`: frame, dots, corner, centre, colours `{ qr, background, frame, frameText }` and frameText.
     - `QrMatrix`: a square `readonly (readonly boolean[])[]`.
