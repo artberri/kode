@@ -50,7 +50,8 @@ function outlinesOf(font: Font): FrameTextOutlines {
 
 /**
  * Draws frame text as Unbounded outlines with opentype.js. The library and the font load on the
- * first `load()` only, so the page doesn't pay for them until someone exports.
+ * first `load()` only: the generator calls it once someone types a link or changes the design, so
+ * a visit that only reads the page doesn't download them.
  */
 export class OpentypeFrameTextOutliner implements FrameTextOutliner {
 	readonly #fontBytes: () => Promise<ArrayBuffer>;
