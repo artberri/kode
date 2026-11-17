@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 
@@ -16,6 +16,16 @@ function setup(): { user: ReturnType<typeof userEvent.setup> } {
 
 function preview(): HTMLElement {
 	return screen.getByRole("img", { name: PREVIEW });
+}
+
+async function openColours(): Promise<ReturnType<typeof userEvent.setup>> {
+	const { user } = setup();
+	await user.click(screen.getByRole("tab", { name: "Koloreak" }));
+	return user;
+}
+
+function pickColour(label: string, hex: string): void {
+	fireEvent.change(screen.getByLabelText(label), { target: { value: hex } });
 }
 
 describe("QrGenerator", () => {
@@ -156,5 +166,60 @@ describe("QrGenerator", () => {
 
 		await user.click(screen.getByRole("radio", { name: "Etiketa" }));
 		expect(screen.getByRole("textbox", { name: FRAME_TEXT })).toHaveValue("Eskaneatu");
+	});
+
+	it("opens the colours on the Morea palette, with no warning", async () => {
+		await openColours();
+
+		expect(screen.getByRole("radio", { name: "Morea" })).toBeChecked();
+		expect(screen.getByLabelText("QRaren kolorea")).toHaveAccessibleDescription("#2A1740");
+		expect(screen.queryByRole("status")).not.toBeInTheDocument();
+	});
+
+	it("sets the four colours from a palette and selects it", async () => {
+		const user = await openColours();
+
+		await user.click(screen.getByRole("radio", { name: "Menda" }));
+
+		expect(screen.getByRole("radio", { name: "Menda" })).toBeChecked();
+		expect(screen.getByLabelText("Markoaren kolorea")).toHaveAccessibleDescription("#8EE6C9");
+		expect(screen.getByLabelText("Testuaren kolorea")).toHaveAccessibleDescription("#2A1740");
+		expect(preview().innerHTML).toContain('"#8EE6C9"');
+	});
+
+	it("leaves no palette selected once a colour is changed by hand", async () => {
+		await openColours();
+
+		pickColour("Markoaren kolorea", "#123456");
+
+		const palettes = within(screen.getByRole("group", { name: "Paleta" }));
+		expect(palettes.getAllByRole("radio").filter((radio) => radio.matches(":checked"))).toEqual(
+			[],
+		);
+		expect(screen.getByLabelText("Markoaren kolorea")).toHaveAccessibleDescription("#123456");
+		expect(preview().innerHTML).toContain('"#123456"');
+	});
+
+	it("warns when the QR is lighter than its background", async () => {
+		await openColours();
+
+		pickColour("QRaren kolorea", "#ffffff");
+		pickColour("Hondoaren kolorea", "#2a1740");
+
+		expect(screen.getByRole("status")).toHaveTextContent(
+			"Kolore argia hondo ilunaren gainean: kamera askok hobeto irakurtzen dute iluna argiaren gainean.",
+		);
+	});
+
+	it("warns when the QR and its background are too alike, until they are not", async () => {
+		await openColours();
+
+		pickColour("QRaren kolorea", "#cdb8ff");
+		expect(screen.getByRole("status")).toHaveTextContent(
+			"Kontraste txikia: baliteke mugikor batzuek QRa ez irakurtzea. Erabili kolore ilunagoa hondo argiaren gainean.",
+		);
+
+		pickColour("QRaren kolorea", "#2a1740");
+		expect(screen.queryByRole("status")).not.toBeInTheDocument();
 	});
 });

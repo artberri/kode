@@ -1,6 +1,13 @@
 /** A colour as `#RRGGBB`, the format colour inputs produce. */
 export type HexColor = `#${string}`;
 
+const HEX_COLOR = /^#[0-9a-f]{6}$/iu;
+
+/** Whether text is a `#RRGGBB` colour, in either case. */
+export function isHexColor(text: string): text is HexColor {
+	return HEX_COLOR.test(text);
+}
+
 type Channels = readonly [number, number, number];
 
 function mapChannels(colour: HexColor, map: (channel: number) => number): Channels {

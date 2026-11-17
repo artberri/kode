@@ -10,10 +10,10 @@ Ship the first version of kode.eus: a landing page with a QR code generator that
 - **B2.** A link typed without a scheme (`kode.eus/menua`) gets `https://` added; the helper text says so and shows the full link. — _proved by:_ `src/qr-code/domain/parse-link.test.ts` › adds https:// to a link typed without a scheme; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › says https:// was added and names the preview with the full link
 - **B3.** Any of these shows a Basque error under the field, dims the preview and disables the download button: a scheme other than http or https, a host without a dot, a link with spaces, or a link longer than 1000 characters. — _proved by:_ `src/qr-code/domain/parse-link.test.ts` › rejects a scheme other than http or https, rejects a host without a dot, rejects a link with spaces, rejects a link longer than 1000 characters; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › announces an error for a scheme other than http or https, waits until the field is left before calling a half-typed host wrong
 - **B4.** An empty field shows a neutral prompt, not an error, and the download stays disabled. — _proved by:_ `src/qr-code/application/design-qr-code.acceptance.test.ts` › waits for a link while the field is empty, without encoding anything; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › prompts for a link while the field is empty, without an error
-- **B5.** Changing the frame, dot shape, corner frame shape, corner centre shape, any colour or the frame text updates the preview at once. — _proved by:_ `src/qr-code/domain/render-qr-svg.test.ts` › dots, finder patterns, colours; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › redraws the preview when $group is set to $option
+- **B5.** Changing the frame, dot shape, corner frame shape, corner centre shape, any colour or the frame text updates the preview at once. — _proved by:_ `src/qr-code/domain/render-qr-svg.test.ts` › dots, finder patterns, colours; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › redraws the preview when $group is set to $option, sets the four colours from a palette and selects it
 - **B6.** The frame text accepts at most 16 characters. With "Markorik ez" (no frame) the text field is hidden and the code has no label. — _proved by:_ `src/qr-code/domain/render-qr-svg.test.ts` › cuts the text to 16 characters, draws no text without a frame; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › cuts the frame text at 16 characters and counts them, hides the frame text without a frame, and draws no label
-- **B7.** A warning appears when the QR colour is lighter than the background or their contrast is below 3:1, and disappears once neither holds. — _proved by:_ `src/qr-code/domain/contrast.test.ts` › is low below 3:1, is inverted when the QR is lighter than the background
-- **B8.** Choosing a palette preset sets the QR, background, frame and frame-text colours; changing any of those colours afterwards leaves no preset selected. — _proved by:_ `src/qr-code/domain/palette-presets.test.ts` › finds $name from its own four colours, matches none once any one colour differs
+- **B7.** A warning appears when the QR colour is lighter than the background or their contrast is below 3:1, and disappears once neither holds. — _proved by:_ `src/qr-code/domain/contrast.test.ts` › is low below 3:1, is inverted when the QR is lighter than the background; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › warns when the QR is lighter than its background, warns when the QR and its background are too alike, until they are not
+- **B8.** Choosing a palette preset sets the QR, background, frame and frame-text colours; changing any of those colours afterwards leaves no preset selected. — _proved by:_ `src/qr-code/domain/palette-presets.test.ts` › finds $name from its own four colours, matches none once any one colour differs; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › sets the four colours from a palette and selects it, leaves no palette selected once a colour is changed by hand
 - **B9.** Every code keeps at least four modules of quiet zone between the modules and the frame or the image edge. — _proved by:_ `src/qr-code/domain/render-qr-svg.test.ts` › keeps four light modules around a $size-module code in the $frame frame
 - **B10.** Downloading SVG saves `kode-qr.svg`: the same design as the preview, with the frame text's font embedded so it renders the same without Unbounded installed. — _proved by:_
 - **B11.** Downloading PNG or WebP saves `kode-qr.png` or `kode-qr.webp`, 1024 px on its long side, matching the preview. — _proved by:_
@@ -181,7 +181,7 @@ None outside this plan. Each phase builds on the previous one.
 
 **Outside-in TDD checklist:**
 
-- [ ] Component test (B5, B7, B8): `QrGenerator` covers four cases:
+- [x] Component test (B5, B7, B8): `QrGenerator` covers four cases:
     - a preset sets the four colours and is selected
     - changing a colour deselects it
     - a light QR colour on a dark background shows the "inverted" warning
@@ -193,7 +193,7 @@ None outside this plan. Each phase builds on the previous one.
 
 - [x] Domain: the palette presets from the design system (Morea, Lila, Menda, Mertxikia, Gurina, Gaua, adjusted so each keeps the QR dark on a light background) and the matching rule.
 - [x] Shared UI: `SwatchPicker`, `ColorField`, `Notice`.
-- [ ] Slice UI: the "Koloreak" panel, and the warning text for `low` and `inverted`.
+- [x] Slice UI: the "Koloreak" panel, and the warning text for `low` and `inverted`.
 - [ ] Check the new components against the design system; update the artifact where the code differs.
 
 **Verify:**
@@ -283,4 +283,4 @@ None outside this plan. Each phase builds on the previous one.
 
 ## Next step
 
-Phase 4: add the "Koloreak" tab of step 2, with the palette presets, the four colour pickers and the contrast warning, starting with the `QrGenerator` component test for picking a preset. Run `/execute-plan .agents/plans/qr-generator`.
+Phase 4: update the design-system artifact for `SwatchPicker` (`showLegend`, no choice), `ColorField` (`onChange` with the value, the four labels) and `Notice`, then close the phase. Run `/execute-plan .agents/plans/qr-generator`.

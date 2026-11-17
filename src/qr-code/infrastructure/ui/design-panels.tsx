@@ -9,13 +9,13 @@ import { CENTRE_TILES, CORNER_TILES, DOT_TILES, FRAME_TILES } from "./design-til
 /** Sets one part of the design. */
 export type DesignChange = <Key extends keyof QrDesign>(key: Key, value: QrDesign[Key]) => void;
 
-interface PanelProps {
+export interface PanelProps {
 	readonly design: QrDesign;
 	readonly onChange: DesignChange;
 }
 
 /** A stable handler that sets one part of the design. */
-function usePick<Key extends keyof QrDesign>(
+export function usePick<Key extends keyof QrDesign>(
 	onChange: DesignChange,
 	key: Key,
 ): (value: QrDesign[Key]) => void {

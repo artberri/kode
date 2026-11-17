@@ -3,7 +3,6 @@
 import { useCallback, useMemo, useState } from "react";
 
 import { StepLabel } from "@/shared/ui/step-label";
-import { TabPanel, Tabs } from "@/shared/ui/tabs";
 import { TicketCard } from "@/shared/ui/ticket-card";
 import { UrlField } from "@/shared/ui/url-field";
 
@@ -11,7 +10,8 @@ import { type DesignQrCodeResult, designQrCode } from "../../application/design-
 import type { InvalidLinkReason } from "../../domain/parse-link";
 import { DEFAULT_DESIGN, type QrDesign } from "../../domain/qr-design";
 import { QrcodeGeneratorEncoder } from "../qrcode-generator-encoder";
-import { type DesignChange, FramePanel, ShapePanel } from "./design-panels";
+import type { DesignChange } from "./design-panels";
+import { DesignStep } from "./design-step";
 
 const encoder = new QrcodeGeneratorEncoder();
 
@@ -72,54 +72,7 @@ function QrPreview({ result, svg }: { readonly result: DesignQrCodeResult; reado
 	);
 }
 
-type DesignTab = "markoa" | "forma";
-
-const DESIGN_TABS = [
-	{ id: "markoa", label: "Markoa" },
-	{ id: "forma", label: "Forma" },
-] as const;
-
 const STEP = "m-0 flex min-w-0 flex-col border-0 p-0";
-
-function DesignStep({
-	design,
-	onChange,
-}: {
-	readonly design: QrDesign;
-	readonly onChange: DesignChange;
-}) {
-	const [tab, setTab] = useState<DesignTab>("markoa");
-	return (
-		<fieldset aria-labelledby="urratsa-diseinua" className={`${STEP} gap-space-4`}>
-			<StepLabel step={2} id="urratsa-diseinua">
-				Diseinua
-			</StepLabel>
-			<Tabs
-				items={DESIGN_TABS}
-				value={tab}
-				onChange={setTab}
-				label="Diseinua"
-				idPrefix="diseinua"
-			/>
-			<TabPanel
-				id="markoa"
-				idPrefix="diseinua"
-				selected={tab === "markoa"}
-				className="pt-space-2"
-			>
-				<FramePanel design={design} onChange={onChange} />
-			</TabPanel>
-			<TabPanel
-				id="forma"
-				idPrefix="diseinua"
-				selected={tab === "forma"}
-				className="pt-space-2"
-			>
-				<ShapePanel design={design} onChange={onChange} />
-			</TabPanel>
-		</fieldset>
-	);
-}
 
 /** The QR code generator: paste a link, design the code and see it as it will be saved. */
 export function QrGenerator() {
