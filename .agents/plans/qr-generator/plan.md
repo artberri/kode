@@ -187,12 +187,12 @@ None outside this plan. Each phase builds on the previous one.
     - a light QR colour on a dark background shows the "inverted" warning
     - a pale QR colour on white shows the "low contrast" warning
 - [x] Unit test (B8): the preset that matches a set of colours, or none.
-- [ ] Component test (B14): `SwatchPicker` is a named radio group whose swatches have colour names. `ColorField` is labelled and shows the hex value. `Notice` warnings use `role="status"` and errors `role="alert"`.
+- [x] Component test (B14): `SwatchPicker` is a named radio group whose swatches have colour names. `ColorField` is labelled and shows the hex value. `Notice` warnings use `role="status"` and errors `role="alert"`.
 
 **To-do:**
 
 - [x] Domain: the palette presets from the design system (Morea, Lila, Menda, Mertxikia, Gurina, Gaua, adjusted so each keeps the QR dark on a light background) and the matching rule.
-- [ ] Shared UI: `SwatchPicker`, `ColorField`, `Notice`.
+- [x] Shared UI: `SwatchPicker`, `ColorField`, `Notice`.
 - [ ] Slice UI: the "Koloreak" panel, and the warning text for `low` and `inverted`.
 - [ ] Check the new components against the design system; update the artifact where the code differs.
 
