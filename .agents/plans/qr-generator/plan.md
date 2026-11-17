@@ -126,7 +126,7 @@ None outside this plan. Each phase builds on the previous one.
     - typing `ftp://x` shows the error, announced as an alert
     - an empty field shows the prompt
     - the preview is an image with the link in its accessible name
-- [ ] Component test (B3, B14): `UrlField` is labelled. Its error is linked by `aria-describedby`, sets `aria-invalid` and is announced; the `https://` chip is hidden from assistive tech.
+- [x] Component test (B3, B14): `UrlField` is labelled. Its error is linked by `aria-describedby`, sets `aria-invalid` and is announced; the `https://` chip is hidden from assistive tech.
 - [x] Component test (B15): `Logo` as a link is named "kode, hasiera", and as a mark alone is an image named "kode".
 
 **To-do:**
