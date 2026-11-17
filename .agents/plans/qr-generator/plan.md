@@ -173,7 +173,7 @@ None outside this plan. Each phase builds on the previous one.
 - [x] The project's checks pass for what this phase touched (see `execute-plan`).
 - [x] A phone scans the preview with every dot shape and corner shape.
 
-## Phase 4: Add the colour controls and the contrast warning
+## Phase 4: Add the colour controls and the contrast warning ✅
 
 > Design: https://claude.ai/artifact/2wW9ukFJgUKkkZY7ozi2SA (`Main.dc.html`, "Koloreak" tab, restyled per A2)
 
@@ -194,11 +194,11 @@ None outside this plan. Each phase builds on the previous one.
 - [x] Domain: the palette presets from the design system (Morea, Lila, Menda, Mertxikia, Gurina, Gaua, adjusted so each keeps the QR dark on a light background) and the matching rule.
 - [x] Shared UI: `SwatchPicker`, `ColorField`, `Notice`.
 - [x] Slice UI: the "Koloreak" panel, and the warning text for `low` and `inverted`.
-- [ ] Check the new components against the design system; update the artifact where the code differs.
+- [x] Check the new components against the design system; update the artifact where the code differs.
 
 **Verify:**
 
-- [ ] The project's checks pass for what this phase touched (see `execute-plan`).
+- [x] The project's checks pass for what this phase touched (see `execute-plan`).
 
 ## Phase 5: Export QR files
 
@@ -283,4 +283,4 @@ None outside this plan. Each phase builds on the previous one.
 
 ## Next step
 
-Phase 4: update the design-system artifact for `SwatchPicker` (`showLegend`, no choice), `ColorField` (`onChange` with the value, the four labels) and `Notice`, then close the phase. Run `/execute-plan .agents/plans/qr-generator`.
+Phase 5: add the `exportQrCode` use case with its `ImageRasterizer`, `FileSaver` and `FrameFontSource` ports, fakes and browser adapters, and the embedded Unbounded subset, starting with the `exportQrCode` acceptance test. Run `/execute-plan .agents/plans/qr-generator`.
