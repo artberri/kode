@@ -19,7 +19,7 @@ Ship the first version of kode.eus: a landing page with a QR code generator that
 - **B11.** Downloading PNG or WebP saves `kode-qr.png` or `kode-qr.webp`, 1024 px on its long side, matching the preview. — _proved by:_
 - **B12.** Where the browser can't encode WebP, the WebP option is disabled with a Basque explanation; PNG and SVG keep working. — _proved by:_
 - **B13.** No network request carries the link: generating, previewing and downloading all happen in the browser. — _proved by:_
-- **B14.** Every control works from the keyboard and has a Basque accessible name: tabs move with the arrow keys, option, format and swatch choices are radio groups, and the preview's accessible name includes the link. — _proved by:_ `src/shared/ui/url-field.test.tsx` › is a text field named by its visible label; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › says https:// was added and names the preview with the full link
+- **B14.** Every control works from the keyboard and has a Basque accessible name: tabs move with the arrow keys, option, format and swatch choices are radio groups, and the preview's accessible name includes the link. — _proved by:_ `src/shared/ui/url-field.test.tsx` › is a text field named by its visible label; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › says https:// was added and names the preview with the full link; `src/shared/ui/tabs.test.tsx` › moves and selects with the arrow keys, wrapping at the ends, keeps only the selected tab in the tab order
 - **B15.** The home page shows the logo header with no menu, the headline "QR kodeak. Euskaraz. Doan.", the paragraph from the brief, and a "Hasi orain" link that takes people to the generator, with Basque page metadata and the KODE mark as the favicon. — _proved by:_ `src/shared/ui/logo.test.tsx` › links to the home page with the mark and wordmark, named as such
 
 ## Context
@@ -155,7 +155,7 @@ None outside this plan. Each phase builds on the previous one.
     - picking each frame and shape changes the preview
     - the frame text is cut at 16 characters, with the counter showing it
     - "Markorik ez" hides the text field
-- [ ] Component test (B14): `Tabs`, where arrow keys, Home and End move and select, only the selected tab is focusable, and the tabs control their panels.
+- [x] Component test (B14): `Tabs`, where arrow keys, Home and End move and select, only the selected tab is focusable, and the tabs control their panels.
 - [ ] Component test (B14): `OptionTiles` is a named radio group (a legend), and arrow keys change the choice.
 - [ ] Component test (B6): `TextField` shows its counter and stops at `maxLength`.
 
