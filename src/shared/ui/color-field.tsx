@@ -14,9 +14,11 @@ const CARD =
 	"flex cursor-pointer items-center gap-space-3 rounded-md border-firm border-ink bg-surface-raised " +
 	"py-2.5 pr-3.5 pl-2.5 focus-within:outline-focus focus-within:outline-offset-2 focus-within:outline-violet";
 
+// The browser's own swatch gets no padding or border of its own, so only the ink outline shows.
 const SWATCH =
-	"size-11 flex-none cursor-pointer rounded-[14px] border-soft border-ink bg-surface-raised p-0 " +
-	"focus-visible:outline-none";
+	"size-11 flex-none cursor-pointer overflow-hidden rounded-[14px] border-soft border-ink bg-surface-raised p-0 " +
+	"focus-visible:outline-none [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:border-0 " +
+	"[&::-moz-color-swatch]:border-0";
 
 /**
  * A labelled native colour picker that shows the chosen hex value. The whole card opens the
