@@ -30,18 +30,18 @@ Ship the first version of kode.eus: a landing page with a QR code generator that
 - [Page designs canvas](https://claude.ai/artifact/2wW9ukFJgUKkkZY7ozi2SA): `AltLauburuGoxoa.dc.html` ("✓ A2") is the design to build. `Main.dc.html` is the interactive prototype: its `renderVals()` holds working path builders for the dot shapes, finder shapes and frames, and the URL and contrast rules, worth reading before Phase 1.
 - [KODE design system](https://claude.ai/artifact/F6S7WRQ3iMjcHHgbProwWe): `project/tokens.json`, `project/README.md` and `project/components/<Component>/README.md` for each component a phase builds. Its `components/bundle.js` and `bundle.css` are the reference implementation to port.
 - [arbela-frame.svg](./arbela-frame.svg): the clipboard frame's exact path data.
-- [Next.js fonts](../../../node_modules/next/dist/docs/01-app/01-getting-started/13-fonts.md) and [app icons](../../../node_modules/next/dist/docs/01-app/03-api-reference/03-file-conventions/01-metadata/app-icons.md): the Next 16 docs to read before Phases 2 and 7.
+- [Next.js fonts](../../../../node_modules/next/dist/docs/01-app/01-getting-started/13-fonts.md) and [app icons](../../../../node_modules/next/dist/docs/01-app/03-api-reference/03-file-conventions/01-metadata/app-icons.md): the Next 16 docs to read before Phases 2 and 7.
 
 ### Key files
 
-| Area                  | Files                                                                                                                            |
-| --------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| Root layout and page  | [src/app/layout.tsx](../../../src/app/layout.tsx), [src/app/page.tsx](../../../src/app/page.tsx)                                 |
-| Tailwind entry        | [src/app/globals.css](../../../src/app/globals.css) (only `@import "tailwindcss";` today)                                        |
-| Layer and slice rules | [.oxlintrc.json](../../../.oxlintrc.json) (`no-restricted-imports` overrides per layer)                                          |
-| Tests                 | [vitest.config.mts](../../../vitest.config.mts) (`node` and `dom` projects), [vitest.setup.dom.ts](../../../vitest.setup.dom.ts) |
-| Scripts               | [package.json](../../../package.json): `test` and `qa` still pass `--passWithNoTests`                                            |
-| Conventions           | [AGENTS.md](../../../AGENTS.md) (Architecture, Testing, Design), [docs/KNOWN_NON_ISSUES.md](../../../docs/KNOWN_NON_ISSUES.md)   |
+| Area                  | Files                                                                                                                                  |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Root layout and page  | [src/app/layout.tsx](../../../../src/app/layout.tsx), [src/app/page.tsx](../../../../src/app/page.tsx)                                 |
+| Tailwind entry        | [src/app/globals.css](../../../../src/app/globals.css) (only `@import "tailwindcss";` today)                                           |
+| Layer and slice rules | [.oxlintrc.json](../../../../.oxlintrc.json) (`no-restricted-imports` overrides per layer)                                             |
+| Tests                 | [vitest.config.mts](../../../../vitest.config.mts) (`node` and `dom` projects), [vitest.setup.dom.ts](../../../../vitest.setup.dom.ts) |
+| Scripts               | [package.json](../../../../package.json): `test` and `qa` still pass `--passWithNoTests`                                               |
+| Conventions           | [AGENTS.md](../../../../AGENTS.md) (Architecture, Testing, Design), [docs/KNOWN_NON_ISSUES.md](../../../../docs/KNOWN_NON_ISSUES.md)   |
 
 New code goes in the `qr-code` slice (`src/qr-code/{domain,application,infrastructure}`) and in `src/shared/ui/`. Files are kebab-case and export PascalCase components (`src/shared/ui/url-field.tsx` exports `UrlField`), with tests next to them.
 
@@ -258,7 +258,7 @@ None outside this plan. Each phase builds on the previous one.
 - [x] The project's checks pass for what this phase touched (see `execute-plan`).
 - [x] Resolve risks 2 and 3 by hand. In Chrome, Firefox and Safari, download every format. The browser's network panel shows no request carrying the link (B13). A phone scans each file.
 
-## Phase 7: Finish the landing page
+## Phase 7: Finish the landing page ✅
 
 > Design: https://claude.ai/artifact/2wW9ukFJgUKkkZY7ozi2SA (`AltLauburuGoxoa.dc.html`, hero)
 
@@ -278,13 +278,13 @@ None outside this plan. Each phase builds on the previous one.
     - the paragraph, "Hasi orain", and the tilted sample `QrSticker` with the "Doan!" stamp. The sample is rendered at build time with `designQrCode` and the real encoder.
 - [x] Metadata: a Basque title and description for `/`, and `public/icon.svg` from the design system's `kode-mark.svg` (see Contracts for why not `src/app/icon.svg`).
 - [x] Footer: "QR Code DENSO WAVE Incorporated-en marka erregistratua da." and kode.eus.
-- [ ] Check the new components against the design system; update the artifact where the code differs.
+- [x] Check the new components against the design system; update the artifact where the code differs. `Stamp` lost `size` and `angle` (always 104px, -14°) and `QrSticker` lost `width` and took the hero's sizes; the artifact says so (version 16).
 
 **Verify:**
 
-- [ ] The project's checks pass for what this phase touched (see `execute-plan`).
-- [ ] On `bun run preview` (the real Worker on `workerd`), the page renders, generates and downloads, and nothing overflows at 360 px wide.
+- [x] The project's checks pass for what this phase touched (see `execute-plan`).
+- [x] On `bun run preview` (the real Worker on `workerd`), the page renders, generates and downloads, and nothing overflows at 360 px wide. Checked in headless Chrome: PNG, SVG and WebP saved, the PNG, WebP and hero sample decode to https://kode.eus/, and the page is no wider than 360 or 1440 px.
 
 ## Next step
 
-Phase 7: check `Tag`, `Stamp` and `QrSticker` against the design system and update the artifact where the code differs, then close the phase and archive the plan. Run `/execute-plan .agents/plans/qr-generator`.
+None: every phase is done, and the plan is archived.

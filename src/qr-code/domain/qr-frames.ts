@@ -50,7 +50,7 @@ function ticketBody(): string {
 
 /**
  * The five frames, drawn after the A2 design's tiles. Arbela keeps the exact paths of the
- * reference clipboard (`.agents/plans/qr-generator/arbela-frame.svg`).
+ * reference clipboard (`.agents/plans/done/2026-11-17-qr-generator/arbela-frame.svg`).
  */
 export const FRAME_LAYOUTS: Record<FrameStyle, FrameLayout> = {
 	none: {
