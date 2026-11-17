@@ -1,4 +1,6 @@
-import { type ChangeEvent, type ReactNode, useCallback } from "react";
+import type { ReactNode } from "react";
+
+import { RadioFieldset, type RadioGroupProps, useRadioChange } from "./radio-group";
 
 export interface OptionTile<Value extends string> {
 	readonly value: Value;
@@ -7,19 +9,11 @@ export interface OptionTile<Value extends string> {
 	readonly icon: ReactNode;
 }
 
-export interface OptionTilesProps<Value extends string> {
-	/** The radios' `name`, unique on the page. */
-	readonly name: string;
-	/** The group's accessible name. */
-	readonly legend: string;
-	/** Shows the legend as a caption above the tiles; it is visually hidden by default. */
-	readonly showLegend?: boolean;
+export interface OptionTilesProps<Value extends string> extends RadioGroupProps<Value> {
 	readonly items: readonly OptionTile<Value>[];
 	readonly value: Value;
-	readonly onChange: (value: Value) => void;
 	/** `md`: 100px tiles with the label under the icon. `sm`: 64px, icon only, label as tooltip. */
 	readonly size?: "md" | "sm";
-	readonly className?: string;
 }
 
 const TILE =
@@ -33,11 +27,6 @@ const LAYOUT = {
 	sm: { group: "flex flex-wrap", tile: "size-16" },
 } as const;
 
-const LEGEND = {
-	hidden: "sr-only",
-	shown: "mb-space-3 p-0 text-small font-semibold text-ink-muted",
-};
-
 /**
  * A radio group drawn as rounded tiles with an icon; the checked tile turns butter. The radios
  * are real, so arrow keys move the choice and the form value is the checked `value`.
@@ -45,26 +34,17 @@ const LEGEND = {
 export function OptionTiles<Value extends string>({
 	name,
 	legend,
-	showLegend = false,
+	showLegend,
 	items,
 	value,
 	onChange,
 	size = "md",
 	className,
 }: OptionTilesProps<Value>) {
-	const handleChange = useCallback(
-		(event: ChangeEvent<HTMLInputElement>) => {
-			const picked = items.find((item) => item.value === event.target.value);
-			if (picked !== undefined) {
-				onChange(picked.value);
-			}
-		},
-		[items, onChange],
-	);
+	const handleChange = useRadioChange(items, onChange);
 	const layout = LAYOUT[size];
 	return (
-		<fieldset className={["m-0 min-w-0 border-0 p-0", className].filter(Boolean).join(" ")}>
-			<legend className={showLegend ? LEGEND.shown : LEGEND.hidden}>{legend}</legend>
+		<RadioFieldset legend={legend} showLegend={showLegend} className={className}>
 			<div className={`${layout.group} gap-space-3`}>
 				{items.map((item) => (
 					<label
@@ -87,6 +67,6 @@ export function OptionTiles<Value extends string>({
 					</label>
 				))}
 			</div>
-		</fieldset>
+		</RadioFieldset>
 	);
 }
