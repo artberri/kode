@@ -64,6 +64,10 @@ bun run preview
 
 Commit messages follow [Conventional Commits](https://www.conventionalcommits.org).
 
+## Contributing
+
+Contributions are welcome: [CONTRIBUTING.md](CONTRIBUTING.md) explains how to set up, check and send a change. Everyone taking part follows the [code of conduct](CODE_OF_CONDUCT.md).
+
 ## License
 
 Copyright (C) 2026 Alberto Varela Sánchez
