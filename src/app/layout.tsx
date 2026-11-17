@@ -8,12 +8,12 @@ export const metadata: Metadata = {
 		default: "KODE",
 		template: "%s · KODE",
 	},
-	description: "QR codes, short links and bio pages.",
+	description: "QR kodeak, esteka laburrak eta bio orriak.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
 	return (
-		<html lang="en">
+		<html lang="eu">
 			<body>{children}</body>
 		</html>
 	);

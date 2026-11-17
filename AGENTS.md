@@ -2,6 +2,8 @@
 
 KODE (`kode` package, domain `kode.eus`) will host three products: a QR code generator, a URL shortener and a bio page builder. Only the **QR code generator** is in scope now: it runs entirely in the browser, with no login, database or stored data. Keep the code ready for the other two (routes, shared UI) without building them yet.
 
+The site is in **Basque only** for now: write all user-facing text in Basque, including metadata, error messages and `alt` text. The root layout declares `lang="eu"`.
+
 ## Toolchain
 
 - proto pins Node and Bun in `.prototools`. Bun installs packages and runs scripts (`bun add`, `bun run <script>`); Node runs Next.js, OpenNext and Wrangler, which are Node CLIs. Keep `bun.lock` as the only lockfile.
