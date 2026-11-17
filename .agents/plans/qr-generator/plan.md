@@ -84,7 +84,7 @@ None outside this plan. Each phase builds on the previous one.
 | 2   | `happy-dom` has no canvas and no downloads, so `CanvasImageRasterizer` and `BrowserFileSaver` can't run in Vitest and get no contract test. Verify them by hand in Chrome, Firefox and Safari, and scan each downloaded file with a phone.                                                                                   | Planning                                                                                                                                                 | Phases 5, 6 | Open     |
 | 3   | Safari may not encode WebP from a canvas: `toBlob(…, "image/webp")` silently returns a PNG. `canEncode("webp")` must check the blob's `type`, not the browser version.                                                                                                                                                       | [WebKit bug 226950](https://bugs.webkit.org/show_bug.cgi?id=226950), [caniuse](https://caniuse.com/mdn-api_htmlcanvaselement_toblob_type_parameter_webp) | Phases 5, 6 | Open     |
 | 4   | The embedded font is a Latin subset of Unbounded 800 under the SIL Open Font License, which allows embedding in documents. Commit the licence text next to the file.                                                                                                                                                         | Planning                                                                                                                                                 | Phase 5     | Resolved |
-| 5   | The design-system artifact must stay in step with `src/shared/ui`. Each phase that builds a component checks it against the artifact and updates the artifact where the code ends up different.                                                                                                                              | AGENTS.md, Design                                                                                                                                        | Phases 2–7  | Open     |
+| 5   | The design-system artifact must stay in step with `src/shared/ui`. Each phase that builds a component checks it against the artifact, and updates the artifact once, at the end of the phase, wherever the code ends up different.                                                                                           | AGENTS.md, Design                                                                                                                                        | Phases 2–7  | Resolved |
 | 6   | Left out on purpose for this version: dark mode, a size picker, a logo inside the code, QR content other than links (Wi-Fi, vCard…), analytics, and an Open Graph image.                                                                                                                                                     | Brief                                                                                                                                                    | —           | Deferred |
 
 ## Phase 1: Render a QR design to SVG ✅
@@ -133,8 +133,8 @@ None outside this plan. Each phase builds on the previous one.
 
 - [ ] Tokens: the design system's colours, radii, border widths and spacing in an `@theme` block in `src/app/globals.css`, with the page background and text colour on `body`.
 - [ ] Fonts: Unbounded (600–800) and DM Sans (400, 500, 700) through `next/font/google` in `layout.tsx`, exposed as `--font-display` and `--font-body`.
-- [ ] Shared UI: `Logo`, `Icon` (the six icons), `StepLabel`, `UrlField`, `TicketCard`, `QrSticker`.
-- [ ] Slice UI (`src/qr-code/infrastructure/ui/`): `QrGenerator` (client component) with step 1 and the preview of the default design. It wires `designQrCode` to `QrcodeGeneratorEncoder` and renders the SVG string inside `QrSticker`. When the link isn't valid, the preview shows `https://kode.eus/` dimmed.
+- [ ] Shared UI: `Logo`, `Icon` (the six icons), `StepLabel`, `UrlField`, `TicketCard`.
+- [ ] Slice UI (`src/qr-code/infrastructure/ui/`): `QrGenerator` (client component) with step 1 and the preview of the default design. It wires `designQrCode` to `QrcodeGeneratorEncoder` and renders the SVG string as is on the peach side, about 250 px wide, so the preview is exactly the file people download (no `QrSticker` around it: that would draw a second frame and label). When the link isn't valid, the preview shows `https://kode.eus/` dimmed.
 - [ ] `page.tsx`: the header with `Logo` (no menu) and the generator section (`id="sortzailea"`).
 - [ ] Check each component against its design-system README; update the artifact where the code differs.
 
@@ -267,7 +267,7 @@ None outside this plan. Each phase builds on the previous one.
 
 **To-do:**
 
-- [ ] Shared UI: `Tag`, `Stamp`.
+- [ ] Shared UI: `Tag`, `Stamp`, `QrSticker`.
 - [ ] Hero in `page.tsx`, with three parts:
     - the dashed tag
     - the headline with the wavy underline on "Doan."
