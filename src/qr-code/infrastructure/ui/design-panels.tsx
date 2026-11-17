@@ -27,10 +27,14 @@ export function usePick<Key extends keyof QrDesign>(
 	);
 }
 
-/** "Markoa": the frame, and the text on it unless there is no frame. */
+const TEXT_LIMIT = `Gehienez ${String(MAX_FRAME_TEXT_LENGTH)} karaktere.`;
+
+/** "Markoa": the frame, and the text on it, which needs a frame. */
 export function FramePanel({ design, onChange }: PanelProps) {
 	const pickFrame = usePick(onChange, "frame");
 	const changeText = usePick(onChange, "frameText");
+	// Disabled rather than hidden without a frame, so the page doesn't jump.
+	const hasFrame = design.frame !== "none";
 	return (
 		<div className="flex flex-col gap-space-6">
 			<OptionTiles
@@ -40,17 +44,17 @@ export function FramePanel({ design, onChange }: PanelProps) {
 				value={design.frame}
 				onChange={pickFrame}
 			/>
-			{design.frame !== "none" && (
-				<TextField
-					id="markoaren-testua"
-					label="Markoaren testua"
-					value={design.frameText}
-					onChange={changeText}
-					placeholder="Eskaneatu"
-					maxLength={MAX_FRAME_TEXT_LENGTH}
-					className="max-w-[420px]"
-				/>
-			)}
+			<TextField
+				id="markoaren-testua"
+				label="Markoaren testua"
+				value={design.frameText}
+				onChange={changeText}
+				placeholder="Eskaneatu"
+				maxLength={MAX_FRAME_TEXT_LENGTH}
+				disabled={!hasFrame}
+				hint={hasFrame ? TEXT_LIMIT : "Markorik gabe, ez dago testurik."}
+				className="max-w-[420px]"
+			/>
 		</div>
 	);
 }

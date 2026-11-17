@@ -21,11 +21,16 @@ const SWATCHES = PALETTE_PRESETS.map((preset) => ({
 	color: preset.colours.frame,
 }));
 
-const FIELDS: readonly { readonly part: keyof QrColours; readonly label: string }[] = [
-	{ part: "qr", label: "QRaren kolorea" },
-	{ part: "background", label: "Hondoaren kolorea" },
-	{ part: "frame", label: "Markoaren kolorea" },
-	{ part: "frameText", label: "Testuaren kolorea" },
+const FIELDS: readonly {
+	readonly part: keyof QrColours;
+	readonly label: string;
+	/** Only drawn on a frame. */
+	readonly needsFrame: boolean;
+}[] = [
+	{ part: "qr", label: "QRaren kolorea", needsFrame: false },
+	{ part: "background", label: "Hondoaren kolorea", needsFrame: false },
+	{ part: "frame", label: "Markoaren kolorea", needsFrame: true },
+	{ part: "frameText", label: "Testuaren kolorea", needsFrame: true },
 ];
 
 const WARNINGS: Record<Exclude<Contrast, "ok">, string> = {
@@ -39,11 +44,13 @@ function ColourInput({
 	label,
 	colours,
 	onChange,
+	disabled,
 }: {
 	readonly part: keyof QrColours;
 	readonly label: string;
 	readonly colours: QrColours;
 	readonly onChange: (colours: QrColours) => void;
+	readonly disabled: boolean;
 }) {
 	const change = useCallback(
 		(value: string) => {
@@ -54,7 +61,13 @@ function ColourInput({
 		[colours, part, onChange],
 	);
 	return (
-		<ColorField id={`kolorea-${part}`} label={label} value={colours[part]} onChange={change} />
+		<ColorField
+			id={`kolorea-${part}`}
+			label={label}
+			value={colours[part]}
+			onChange={change}
+			disabled={disabled}
+		/>
 	);
 }
 
@@ -72,6 +85,7 @@ export function ColourPanel({ design, onChange }: PanelProps) {
 		[setColours],
 	);
 	const contrast = contrastOf(colours.qr, colours.background);
+	const hasFrame = design.frame !== "none";
 	return (
 		<div className="flex flex-col gap-space-6">
 			<SwatchPicker
@@ -90,9 +104,15 @@ export function ColourPanel({ design, onChange }: PanelProps) {
 						label={field.label}
 						colours={colours}
 						onChange={setColours}
+						disabled={field.needsFrame && !hasFrame}
 					/>
 				))}
 			</div>
+			{!hasFrame && (
+				<p className="m-0 -mt-space-3 text-small text-ink-muted">
+					Markorik gabe, markoaren eta testuaren koloreak ez dira erabiltzen.
+				</p>
+			)}
 			{contrast !== "ok" && <Notice>{WARNINGS[contrast]}</Notice>}
 		</div>
 	);

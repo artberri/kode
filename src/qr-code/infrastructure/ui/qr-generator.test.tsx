@@ -156,16 +156,34 @@ describe("QrGenerator", () => {
 		expect(within(preview()).getByText("Begiratu gure me")).toBeInTheDocument();
 	});
 
-	it("hides the frame text without a frame, and draws no label", async () => {
+	it("disables the frame text without a frame, says why, and draws no label", async () => {
 		const { user } = setup();
 
 		await user.click(screen.getByRole("radio", { name: "Markorik ez" }));
 
-		expect(screen.queryByRole("textbox", { name: FRAME_TEXT })).not.toBeInTheDocument();
+		const field = screen.getByRole("textbox", { name: FRAME_TEXT });
+		expect(field).toBeDisabled();
+		expect(field).toHaveAccessibleDescription("Markorik gabe, ez dago testurik.");
 		expect(within(preview()).queryByText("Eskaneatu")).not.toBeInTheDocument();
 
 		await user.click(screen.getByRole("radio", { name: "Etiketa" }));
-		expect(screen.getByRole("textbox", { name: FRAME_TEXT })).toHaveValue("Eskaneatu");
+		expect(field).toBeEnabled();
+		expect(field).toHaveValue("Eskaneatu");
+	});
+
+	it("disables the frame and text colours without a frame, and says why", async () => {
+		const { user } = setup();
+		await user.click(screen.getByRole("radio", { name: "Markorik ez" }));
+
+		await user.click(screen.getByRole("tab", { name: "Koloreak" }));
+
+		expect(screen.getByLabelText("Markoaren kolorea")).toBeDisabled();
+		expect(screen.getByLabelText("Testuaren kolorea")).toBeDisabled();
+		expect(screen.getByLabelText("QRaren kolorea")).toBeEnabled();
+		expect(screen.getByLabelText("Hondoaren kolorea")).toBeEnabled();
+		expect(
+			screen.getByText("Markorik gabe, markoaren eta testuaren koloreak ez dira erabiltzen."),
+		).toBeVisible();
 	});
 
 	it("opens the colours on the Morea palette, with no warning", async () => {
