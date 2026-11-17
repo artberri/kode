@@ -20,7 +20,7 @@ Ship the first version of kode.eus: a landing page with a QR code generator that
 - **B12.** Where the browser can't encode WebP, the WebP option is disabled with a Basque explanation; PNG and SVG keep working. — _proved by:_
 - **B13.** No network request carries the link: generating, previewing and downloading all happen in the browser. — _proved by:_
 - **B14.** Every control works from the keyboard and has a Basque accessible name: tabs move with the arrow keys, option, format and swatch choices are radio groups, and the preview's accessible name includes the link. — _proved by:_
-- **B15.** The home page shows the logo header with no menu, the headline "QR kodeak. Euskaraz. Doan.", the paragraph from the brief, and a "Hasi orain" link that takes people to the generator, with Basque page metadata and the KODE mark as the favicon. — _proved by:_
+- **B15.** The home page shows the logo header with no menu, the headline "QR kodeak. Euskaraz. Doan.", the paragraph from the brief, and a "Hasi orain" link that takes people to the generator, with Basque page metadata and the KODE mark as the favicon. — _proved by:_ `src/shared/ui/logo.test.tsx` › links to the home page with the mark and wordmark, named as such
 
 ## Context
 
@@ -127,7 +127,7 @@ None outside this plan. Each phase builds on the previous one.
     - an empty field shows the prompt
     - the preview is an image with the link in its accessible name
 - [ ] Component test (B3, B14): `UrlField` is labelled. Its error is linked by `aria-describedby`, sets `aria-invalid` and is announced; the `https://` chip is hidden from assistive tech.
-- [ ] Component test (B15): `Logo` as a link is named "kode, hasiera", and as a mark alone is an image named "kode".
+- [x] Component test (B15): `Logo` as a link is named "kode, hasiera", and as a mark alone is an image named "kode".
 
 **To-do:**
 
