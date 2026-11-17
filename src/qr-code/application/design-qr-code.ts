@@ -1,6 +1,7 @@
 import { type Contrast, contrastOf } from "../domain/contrast";
 import { type InvalidLinkReason, parseLink } from "../domain/parse-link";
 import type { QrDesign } from "../domain/qr-design";
+import type { OutlineFrameText } from "../domain/qr-frames";
 import { renderQrSvg } from "../domain/render-qr-svg";
 import type { QrMatrixEncoder } from "./qr-matrix-encoder";
 
@@ -12,6 +13,8 @@ export interface DesignQrCodeInput {
 
 export interface DesignQrCodeDependencies {
 	readonly encoder: QrMatrixEncoder;
+	/** Draws the frame text as outlines, once the frame font has loaded, as the saved files do. */
+	readonly outlineFrameText?: OutlineFrameText | undefined;
 }
 
 export type DesignQrCodeResult =
@@ -29,7 +32,7 @@ export type DesignQrCodeResult =
 /** Turns a typed link and a design into the QR code to preview, or says why it can't. */
 export function designQrCode(
 	{ link, design }: DesignQrCodeInput,
-	{ encoder }: DesignQrCodeDependencies,
+	{ encoder, outlineFrameText }: DesignQrCodeDependencies,
 ): DesignQrCodeResult {
 	const parsed = parseLink(link);
 	if (parsed.status !== "valid") {
@@ -39,7 +42,7 @@ export function designQrCode(
 		status: "ready",
 		link: parsed.link,
 		schemeAdded: parsed.schemeAdded,
-		svg: renderQrSvg(encoder.encode(parsed.link), design),
+		svg: renderQrSvg(encoder.encode(parsed.link), design, { outlineFrameText }),
 		contrast: contrastOf(design.colours.qr, design.colours.background),
 	};
 }

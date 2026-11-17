@@ -25,7 +25,7 @@ function escapeXml(text: string): string {
 
 export interface RenderQrSvgOptions {
 	/** Draws the frame text as outlines, so the SVG needs no font. Without it, a `<text>` in Unbounded. */
-	readonly outlineFrameText?: OutlineFrameText;
+	readonly outlineFrameText?: OutlineFrameText | undefined;
 }
 
 function frameLabel(

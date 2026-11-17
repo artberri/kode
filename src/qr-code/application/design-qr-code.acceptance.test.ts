@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { DEFAULT_DESIGN, type FrameStyle, type QrDesign } from "../domain/qr-design";
+import { BoxFrameTextOutliner } from "../infrastructure/box-frame-text-outliner";
 import { FixedMatrixEncoder } from "../infrastructure/fixed-matrix-encoder";
 import { type DesignQrCodeResult, designQrCode } from "./design-qr-code";
 
@@ -84,6 +85,18 @@ describe("designQrCode", () => {
 		for (const colour of Object.values(colours)) {
 			expect(svg).toContain(`"${colour}"`);
 		}
+	});
+
+	it("draws the frame text as outlines when given them, as the saved files do", async () => {
+		const { outline } = await new BoxFrameTextOutliner().load();
+		const result = designQrCode(
+			{ link: "kode.eus", design: design({ frame: "label", frameText: "Menua" }) },
+			{ encoder: new FixedMatrixEncoder(), outlineFrameText: outline },
+		);
+
+		const svg = svgOf(result);
+		expect(svg).toMatch(/<path class="qr-label" [^>]*d="M[^"]+"\/>/u);
+		expect(svg).not.toContain("<text");
 	});
 
 	it.each([
