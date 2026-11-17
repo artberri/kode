@@ -115,7 +115,32 @@ describe.each([
 	});
 });
 
+/** How wide the points are in the top and bottom fifths of a path: a "T" is wide on top. */
+function widthsAtEnds(d: string): { readonly top: number; readonly bottom: number } {
+	const points = [...d.matchAll(/(-?[\d.]+) (-?[\d.]+)/gu)].map(([, x, y]) => ({
+		x: Number(x),
+		y: Number(y),
+	}));
+	const ys = points.map((point) => point.y);
+	const top = Math.min(...ys);
+	const bottom = Math.max(...ys);
+	const band = (bottom - top) / 5;
+	const spread = (inBand: (y: number) => boolean): number => {
+		const xs = points.filter((point) => inBand(point.y)).map((point) => point.x);
+		return Math.max(...xs) - Math.min(...xs);
+	};
+	return { top: spread((y) => y <= top + band), bottom: spread((y) => y >= bottom - band) };
+}
+
 describe("OpentypeFrameTextOutliner", () => {
+	it("draws the text upright, as SVG's y axis points down", async () => {
+		const { outline } = await new OpentypeFrameTextOutliner(fontBytes).load();
+
+		const { top, bottom } = widthsAtEnds(outline("T", SLOT));
+
+		expect(top).toBeGreaterThan(bottom * 2);
+	});
+
 	it("tries again after the font failed to load", async () => {
 		const loadFont = vi
 			.fn<() => Promise<ArrayBuffer>>()

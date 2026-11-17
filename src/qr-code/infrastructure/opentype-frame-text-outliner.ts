@@ -1,4 +1,4 @@
-import type { Font } from "opentype.js";
+import type { Font } from "opentype.js/dist/opentype.mjs";
 
 import type { FrameTextOutliner, FrameTextOutlines } from "../application/frame-text-outliner";
 import type { LabelSlot } from "../domain/qr-frames";
@@ -35,9 +35,12 @@ function outlinesOf(font: Font): FrameTextOutlines {
 			// Like `dominant-baseline: central`: the middle of the em box sits on the slot's `y`.
 			const baseline =
 				slot.y + ((font.ascender + font.descender) / 2 / font.unitsPerEm) * fontSize;
-			return font
-				.getPath(kept, slot.x - width / 2, baseline, fontSize)
-				.toPathData({ decimalPlaces: DECIMAL_PLACES });
+			return (
+				font
+					.getPath(kept, slot.x - width / 2, baseline, fontSize)
+					// getPath already uses SVG's downward y; the default flip would turn the text upside down.
+					.toPathData({ decimalPlaces: DECIMAL_PLACES, flipY: false })
+			);
 		},
 		missing: (text: string): readonly string[] => [
 			...new Set(Array.from(text).filter((character) => !canDraw(character))),
@@ -58,7 +61,10 @@ export class OpentypeFrameTextOutliner implements FrameTextOutliner {
 	}
 
 	async load(): Promise<FrameTextOutlines> {
-		this.#loaded ??= Promise.all([import("opentype.js"), this.#fontBytes()]).then(
+		this.#loaded ??= Promise.all([
+			import("opentype.js/dist/opentype.mjs"),
+			this.#fontBytes(),
+		]).then(
 			([{ parse }, bytes]) => outlinesOf(parse(bytes)),
 			(error: unknown) => {
 				// Forget the failure, so the next export tries again rather than failing for good.

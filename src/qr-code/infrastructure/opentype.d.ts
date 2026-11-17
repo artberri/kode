@@ -1,7 +1,9 @@
-// opentype.js 2.0 ships no types: these cover only the calls the frame text outliner makes.
-declare module "opentype.js" {
+// opentype.js 2.0 ships no types: these cover only the calls the frame text outliner makes. The
+// outliner imports the ES module build by path, as bundlers otherwise disagree on which build to use.
+declare module "opentype.js/dist/opentype.mjs" {
 	export interface Path {
-		toPathData(options: { readonly decimalPlaces: number }): string;
+		/** `flipY` defaults to true, which flips the path upside down around its own bounds. */
+		toPathData(options: { readonly decimalPlaces: number; readonly flipY: boolean }): string;
 	}
 
 	export interface Font {
