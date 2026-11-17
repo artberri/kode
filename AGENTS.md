@@ -5,7 +5,7 @@ KODE (`kode` package, domain `kode.eus`) will host three products: a QR code gen
 ## Toolchain
 
 - proto pins Node and Bun in `.prototools`. Bun installs packages and runs scripts (`bun add`, `bun run <script>`); Node runs Next.js, OpenNext and Wrangler, which are Node CLIs. Keep `bun.lock` as the only lockfile.
-- `bun run check` (format, lint, type check) is the gate: a change is done when it passes with zero warnings.
+- `bun run qa` (lint, type check) is the gate: a change is done when it passes with zero warnings. Formatting is left to the `pre-commit` hook. When the project gets a test runner, append its tests to `qa`.
 - Format with `bun run format` rather than by hand. Indentation comes from `.editorconfig` (tabs; spaces only for YAML), which oxfmt reads.
 - Git hooks live in `.githooks/`; `bun install` points `core.hooksPath` at them. `pre-commit` formats staged files and `commit-msg` runs commitlint, so commit messages follow Conventional Commits with body lines of 100 characters or fewer.
 

@@ -13,7 +13,7 @@
 		"format": "oxfmt",
 		"format:check": "oxfmt --check",
 		"typecheck": "next typegen && tsc --noEmit",
-		"check": "bun run format:check && bun run lint && bun run typecheck",
+		"qa": "next typegen && oxlint && tsc --noEmit",
 		"prepare": "git rev-parse --git-dir >/dev/null 2>&1 && git config core.hooksPath .githooks || true"
 	},
 	"dependencies": {
