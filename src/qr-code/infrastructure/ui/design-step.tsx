@@ -24,9 +24,12 @@ const PANELS: Record<DesignTab, ComponentType<PanelProps>> = {
 /** Step 2, "Diseinua": the frame, shape and colour tabs. */
 export function DesignStep({
 	design,
+	undrawable,
 	onChange,
 }: {
 	readonly design: QrDesign;
+	/** The characters of the frame text that won't be drawn. */
+	readonly undrawable: readonly string[];
 	readonly onChange: DesignChange;
 }) {
 	const [tab, setTab] = useState<DesignTab>("markoa");
@@ -55,7 +58,7 @@ export function DesignStep({
 						selected={tab === id}
 						className="pt-space-2"
 					>
-						<Panel design={design} onChange={onChange} />
+						<Panel design={design} undrawable={undrawable} onChange={onChange} />
 					</TabPanel>
 				);
 			})}

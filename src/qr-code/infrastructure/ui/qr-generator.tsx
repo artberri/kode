@@ -2,111 +2,56 @@
 
 import { useCallback, useMemo, useState } from "react";
 
-import { StepLabel } from "@/shared/ui/step-label";
 import { TicketCard } from "@/shared/ui/ticket-card";
-import { UrlField } from "@/shared/ui/url-field";
 
-import { type DesignQrCodeResult, designQrCode } from "../../application/design-qr-code";
-import type { InvalidLinkReason } from "../../domain/parse-link";
+import type { ExportQrCodeDependencies } from "../../application/export-qr-code";
 import { DEFAULT_DESIGN, type QrDesign } from "../../domain/qr-design";
-import { QrcodeGeneratorEncoder } from "../qrcode-generator-encoder";
+import { BROWSER_ADAPTERS } from "./browser-adapters";
 import type { DesignChange } from "./design-panels";
 import { DesignStep } from "./design-step";
+import { DownloadStep } from "./download-step";
+import { LinkStep } from "./link-step";
+import { QrPreview, usePreview } from "./qr-preview";
 
-const encoder = new QrcodeGeneratorEncoder();
+/** The browser's adapters by default; tests pass in-memory fakes. */
+export type QrGeneratorProps = Partial<
+	Pick<ExportQrCodeDependencies, "rasterizer" | "saver" | "outliner">
+>;
 
-/** What the preview shows, dimmed, until the link is valid. */
-const PLACEHOLDER_LINK = "https://kode.eus/";
-
-const ERRORS: Record<InvalidLinkReason, string> = {
-	scheme: "Estekak http:// edo https:// izan behar du. Adibidez: kode.eus",
-	host: "Helbide hori ez da baliozkoa. Adibidez: kode.eus",
-	spaces: "Estekak ezin du hutsunerik izan. Adibidez: kode.eus/nire-menua",
-	"too-long": "Esteka luzeegia da: gehienez 1000 karaktere.",
-};
-
-type FieldMessages =
-	| { readonly hint: string }
-	| { readonly success: string }
-	| { readonly error: string };
-
-function fieldMessages(result: DesignQrCodeResult, left: boolean): FieldMessages {
-	if (result.status === "empty") {
-		return { hint: "Itsatsi esteka bat zure QRa sortzeko." };
-	}
-	if (result.status === "ready") {
-		return result.schemeAdded
-			? { success: `https:// gehitu diogu hasieran: ${result.link}` }
-			: { success: `Zure QRak esteka hau irekiko du: ${result.link}` };
-	}
-	// "kode" is a host without a dot until ".eus" is typed: only call it wrong once the field is left.
-	return result.reason === "host" && !left
-		? { hint: "Adibidez: kode.eus/menua" }
-		: { error: ERRORS[result.reason] };
-}
-
-/** The code to show: the link's, or the placeholder's in the same design until the link is valid. */
-function previewSvg(result: DesignQrCodeResult, design: QrDesign): string {
-	if (result.status === "ready") {
-		return result.svg;
-	}
-	const placeholder = designQrCode({ link: PLACEHOLDER_LINK, design }, { encoder });
-	return placeholder.status === "ready" ? placeholder.svg : "";
-}
-
-function QrPreview({ result, svg }: { readonly result: DesignQrCodeResult; readonly svg: string }) {
-	const ready = result.status === "ready";
-	const label = ready
-		? `QR kodearen aurrebista: ${result.link}`
-		: "QR kodearen aurrebista, esteka baliozko baten zain";
-	const markup = useMemo(() => ({ __html: svg }), [svg]);
-	return (
-		<div
-			// Inline SVG rather than an <img>, so the frame text uses the page's Unbounded font.
-			// oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- an <img> can't use the page's fonts
-			role="img"
-			aria-label={label}
-			className={`w-[250px] max-w-full self-center [&>svg]:block [&>svg]:h-auto [&>svg]:w-full ${ready ? "" : "opacity-20"}`}
-			dangerouslySetInnerHTML={markup}
-		/>
-	);
-}
-
-const STEP = "m-0 flex min-w-0 flex-col border-0 p-0";
-
-/** The QR code generator: paste a link, design the code and see it as it will be saved. */
-export function QrGenerator() {
+/** The QR code generator: paste a link, design the code, see it as it will be saved and save it. */
+export function QrGenerator({
+	rasterizer = BROWSER_ADAPTERS.rasterizer,
+	saver = BROWSER_ADAPTERS.saver,
+	outliner = BROWSER_ADAPTERS.outliner,
+}: QrGeneratorProps) {
 	const [link, setLink] = useState("");
-	const [left, setLeft] = useState(false);
 	const [design, setDesign] = useState<QrDesign>(DEFAULT_DESIGN);
-	const result = useMemo(() => designQrCode({ link, design }, { encoder }), [link, design]);
-	const preview = useMemo(
-		() => <QrPreview result={result} svg={previewSvg(result, design)} />,
-		[result, design],
+	const dependencies = useMemo(
+		() => ({ encoder: BROWSER_ADAPTERS.encoder, rasterizer, saver, outliner }),
+		[rasterizer, saver, outliner],
 	);
-	const leaveField = useCallback(() => {
-		setLeft(true);
-	}, []);
+	const { result, svg, undrawable } = usePreview({ link, design }, dependencies);
 	const changeDesign = useCallback<DesignChange>((key, value) => {
 		setDesign((current) => ({ ...current, [key]: value }));
 	}, []);
+	const preview = useMemo(() => <QrPreview result={result} svg={svg} />, [result, svg]);
+	const side = useMemo(
+		() => (
+			<DownloadStep
+				link={link}
+				design={design}
+				ready={result.status === "ready"}
+				preview={preview}
+				dependencies={dependencies}
+			/>
+		),
+		[link, design, result.status, preview, dependencies],
+	);
 
 	return (
-		<TicketCard label="QR sortzailea" side={preview}>
-			<fieldset aria-labelledby="urratsa-esteka" className={`${STEP} gap-space-3`}>
-				<StepLabel step={1} id="urratsa-esteka">
-					Esteka
-				</StepLabel>
-				<UrlField
-					id="esteka"
-					label="Nora eraman behar du zure QRak?"
-					value={link}
-					onChange={setLink}
-					onBlur={leaveField}
-					{...fieldMessages(result, left)}
-				/>
-			</fieldset>
-			<DesignStep design={design} onChange={changeDesign} />
+		<TicketCard label="QR sortzailea" side={side}>
+			<LinkStep link={link} onChange={setLink} result={result} />
+			<DesignStep design={design} undrawable={undrawable} onChange={changeDesign} />
 		</TicketCard>
 	);
 }

@@ -1,21 +1,13 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { fireEvent, screen, within } from "@testing-library/react";
+import type userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 
-import { QrGenerator } from "./qr-generator";
+import { BoxFrameTextOutliner } from "../box-frame-text-outliner";
+import { FIELD, FRAME_TEXT, preview, setup, typeLink } from "./qr-generator.harness";
 
-const FIELD = "Nora eraman behar du zure QRak?";
-const FRAME_TEXT = "Markoaren testua";
-const PREVIEW = /^QR kodearen aurrebista/u;
-
-function setup(): { user: ReturnType<typeof userEvent.setup> } {
-	const user = userEvent.setup();
-	render(<QrGenerator />);
-	return { user };
-}
-
-function preview(): HTMLElement {
-	return screen.getByRole("img", { name: PREVIEW });
+/** The colour tab's live region, which holds the contrast warning. */
+function contrastStatus(): HTMLElement {
+	return within(screen.getByRole("tabpanel", { name: "Koloreak" })).getByRole("status");
 }
 
 async function openColours(): Promise<ReturnType<typeof userEvent.setup>> {
@@ -191,7 +183,7 @@ describe("QrGenerator", () => {
 
 		expect(screen.getByRole("radio", { name: "Morea" })).toBeChecked();
 		expect(screen.getByLabelText("QRaren kolorea")).toHaveAccessibleDescription("#2A1740");
-		expect(screen.getByRole("status")).toBeEmptyDOMElement();
+		expect(contrastStatus()).toBeEmptyDOMElement();
 	});
 
 	it("sets the four colours from a palette and selects it", async () => {
@@ -224,7 +216,7 @@ describe("QrGenerator", () => {
 		pickColour("QRaren kolorea", "#ffffff");
 		pickColour("Hondoaren kolorea", "#2a1740");
 
-		expect(screen.getByRole("status")).toHaveTextContent(
+		expect(contrastStatus()).toHaveTextContent(
 			"Kolore argia hondo ilunaren gainean: kamera askok hobeto irakurtzen dute iluna argiaren gainean.",
 		);
 	});
@@ -232,7 +224,7 @@ describe("QrGenerator", () => {
 	it("warns when the QR and its background are too alike, until they are not", async () => {
 		await openColours();
 		// The live region is there before the warning, so screen readers announce the change.
-		const status = screen.getByRole("status");
+		const status = contrastStatus();
 
 		pickColour("QRaren kolorea", "#cdb8ff");
 		expect(status).toHaveTextContent(
@@ -241,5 +233,25 @@ describe("QrGenerator", () => {
 
 		pickColour("QRaren kolorea", "#2a1740");
 		expect(status).toBeEmptyDOMElement();
+	});
+
+	it("draws the preview's frame text as outlines once the font has loaded", async () => {
+		const { user } = setup({ outliner: new BoxFrameTextOutliner() });
+		await typeLink(user);
+
+		await expect.poll(() => preview().querySelector("path.qr-label")).not.toBeNull();
+		expect(preview().querySelector("text")).toBeNull();
+	});
+
+	it("names the characters the frame text can't draw", async () => {
+		const { user } = setup({ outliner: new BoxFrameTextOutliner() });
+		const field = screen.getByRole("textbox", { name: FRAME_TEXT });
+
+		await user.clear(field);
+		await user.type(field, "Kaixo 🙂");
+
+		expect(
+			await screen.findByText("Gehienez 16 karaktere. Hauek ez dira agertuko: 🙂"),
+		).toBeVisible();
 	});
 });

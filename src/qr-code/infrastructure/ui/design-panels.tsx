@@ -11,6 +11,8 @@ export type DesignChange = <Key extends keyof QrDesign>(key: Key, value: QrDesig
 
 export interface PanelProps {
 	readonly design: QrDesign;
+	/** The characters of the frame text that won't be drawn, because the frame font lacks them. */
+	readonly undrawable: readonly string[];
 	readonly onChange: DesignChange;
 }
 
@@ -29,8 +31,17 @@ export function usePick<Key extends keyof QrDesign>(
 
 const TEXT_LIMIT = `Gehienez ${String(MAX_FRAME_TEXT_LENGTH)} karaktere.`;
 
+function frameTextHint(hasFrame: boolean, undrawable: readonly string[]): string {
+	if (!hasFrame) {
+		return "Markorik gabe, ez dago testurik.";
+	}
+	return undrawable.length === 0
+		? TEXT_LIMIT
+		: `${TEXT_LIMIT} Hauek ez dira agertuko: ${undrawable.join(" ")}`;
+}
+
 /** "Markoa": the frame, and the text on it, which needs a frame. */
-export function FramePanel({ design, onChange }: PanelProps) {
+export function FramePanel({ design, undrawable, onChange }: PanelProps) {
 	const pickFrame = usePick(onChange, "frame");
 	const changeText = usePick(onChange, "frameText");
 	// Disabled rather than hidden without a frame, so the page doesn't jump.
@@ -52,7 +63,7 @@ export function FramePanel({ design, onChange }: PanelProps) {
 				placeholder="Eskaneatu"
 				maxLength={MAX_FRAME_TEXT_LENGTH}
 				disabled={!hasFrame}
-				hint={hasFrame ? TEXT_LIMIT : "Markorik gabe, ez dago testurik."}
+				hint={frameTextHint(hasFrame, undrawable)}
 				className="max-w-[420px]"
 			/>
 		</div>
