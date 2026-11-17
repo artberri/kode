@@ -15,6 +15,9 @@ export const metadata: Metadata = {
 		template: "%s · KODE",
 	},
 	description: "QR kodeak, esteka laburrak eta bio orriak.",
+	// From public/, not app/icon.svg: as a metadata route, `next dev` writes a type validator with
+	// unused imports, which fails the type check.
+	icons: { icon: { url: "/icon.svg", type: "image/svg+xml" } },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

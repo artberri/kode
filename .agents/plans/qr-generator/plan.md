@@ -20,7 +20,7 @@ Ship the first version of kode.eus: a landing page with a QR code generator that
 - **B12.** Where the browser can't encode WebP, the WebP option is disabled with a Basque explanation; PNG and SVG keep working. — _proved by:_ `src/qr-code/application/export-qr-code.acceptance.test.ts` › saves no WebP where the browser can't encode it; `src/qr-code/infrastructure/ui/qr-generator.download.test.tsx` › disables WebP where the browser can't encode it, and says why
 - **B13.** No network request carries the link: generating, previewing and downloading all happen in the browser. — _proved by:_
 - **B14.** Every control works from the keyboard and has a Basque accessible name: tabs move with the arrow keys, option, format and swatch choices are radio groups, and the preview's accessible name includes the link. — _proved by:_ `src/shared/ui/url-field.test.tsx` › is a text field named by its visible label; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › says https:// was added and names the preview with the full link; `src/shared/ui/tabs.test.tsx` › moves and selects with the arrow keys, wrapping at the ends, keeps only the selected tab in the tab order; `src/shared/ui/option-tiles.test.tsx` › is a radio group named by its legend, with the value checked, changes the choice with the arrow keys; `src/shared/ui/swatch-picker.test.tsx` › is a radio group named by its legend, with swatches named by their colour; `src/shared/ui/segmented-control.test.tsx` › is a radio group named by its legend, with the value checked, changes the choice with the arrow keys, disables one option and says why; `src/shared/ui/button.test.tsx` › can't be clicked while disabled
-- **B15.** The home page shows the logo header with no menu, the headline "QR kodeak. Euskaraz. Doan.", the paragraph from the brief, and a "Hasi orain" link that takes people to the generator, with Basque page metadata and the KODE mark as the favicon. — _proved by:_ `src/shared/ui/logo.test.tsx` › links to the home page with the mark and wordmark, named as such
+- **B15.** The home page shows the logo header with no menu, the headline "QR kodeak. Euskaraz. Doan.", the paragraph from the brief, and a "Hasi orain" link that takes people to the generator, with Basque page metadata and the KODE mark as the favicon. — _proved by:_ `src/shared/ui/logo.test.tsx` › links to the home page with the mark and wordmark, named as such; `src/app/page.test.tsx` › opens with the headline, the lead and a link to the generator, shows a sample code that scans to kode.eus, credits the QR Code trademark in the footer
 
 ## Context
 
@@ -47,7 +47,7 @@ New code goes in the `qr-code` slice (`src/qr-code/{domain,application,infrastru
 
 ### Contracts
 
-- **Page:** `/` (`src/app/page.tsx`), static. The metadata title and description are in Basque, and `src/app/icon.svg` is the KODE mark.
+- **Page:** `/` (`src/app/page.tsx`), static. The metadata title and description are in Basque, and `public/icon.svg`, declared in the root layout's `metadata.icons`, is the KODE mark (not `src/app/icon.svg`: as a metadata route, `next dev` 16.4 writes a type validator with unused imports, which fails the type check).
 - **Use case `designQrCode`** (`src/qr-code/application/design-qr-code.ts`): input `{ link: string; design: QrDesign }`. It returns one of three states:
     - `{ status: "empty" }`
     - `{ status: "invalid"; reason: "scheme" | "host" | "spaces" | "too-long" }`
@@ -266,18 +266,18 @@ None outside this plan. Each phase builds on the previous one.
 
 **Outside-in TDD checklist:**
 
-- [ ] Component test (B15): the home page's hero has the `h1` "QR kodeak. Euskaraz. Doan.", the paragraph from the brief, and a "Hasi orain" link to `#sortzailea`.
-- [ ] Component test: `Stamp` and `Tag` render their text (only if they end up with logic; otherwise covered by the page test).
+- [x] Component test (B15): the home page's hero has the `h1` "QR kodeak. Euskaraz. Doan.", the paragraph from the brief, and a "Hasi orain" link to `#sortzailea`.
+- [x] Component test: `Stamp` and `Tag` render their text (only if they end up with logic; otherwise covered by the page test). They have none: the page test covers them.
 
 **To-do:**
 
-- [ ] Shared UI: `Tag`, `Stamp`, `QrSticker`.
-- [ ] Hero in `page.tsx`, with three parts:
+- [x] Shared UI: `Tag`, `Stamp`, `QrSticker`.
+- [x] Hero in `page.tsx`, with three parts:
     - the dashed tag
     - the headline with the wavy underline on "Doan."
     - the paragraph, "Hasi orain", and the tilted sample `QrSticker` with the "Doan!" stamp. The sample is rendered at build time with `designQrCode` and the real encoder.
-- [ ] Metadata: a Basque title and description for `/`, and `src/app/icon.svg` from the design system's `kode-mark.svg`.
-- [ ] Footer: "QR Code DENSO WAVE Incorporated-en marka erregistratua da." and kode.eus.
+- [x] Metadata: a Basque title and description for `/`, and `public/icon.svg` from the design system's `kode-mark.svg` (see Contracts for why not `src/app/icon.svg`).
+- [x] Footer: "QR Code DENSO WAVE Incorporated-en marka erregistratua da." and kode.eus.
 - [ ] Check the new components against the design system; update the artifact where the code differs.
 
 **Verify:**
@@ -287,4 +287,4 @@ None outside this plan. Each phase builds on the previous one.
 
 ## Next step
 
-Phase 7: build `Tag`, `Stamp` and `QrSticker`, then the A2 hero in `page.tsx`, starting with the home page component test for the `h1` and the "Hasi orain" link. Run `/execute-plan .agents/plans/qr-generator`.
+Phase 7: check `Tag`, `Stamp` and `QrSticker` against the design system and update the artifact where the code differs, then close the phase and archive the plan. Run `/execute-plan .agents/plans/qr-generator`.
