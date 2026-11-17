@@ -19,7 +19,7 @@ Ship the first version of kode.eus: a landing page with a QR code generator that
 - **B11.** Downloading PNG or WebP saves `kode-qr.png` or `kode-qr.webp`, 1024 px on its long side, matching the preview. — _proved by:_ `src/qr-code/application/export-qr-code.acceptance.test.ts` › draws the same outlined SVG at 1024 px and saves kode-qr.%s
 - **B12.** Where the browser can't encode WebP, the WebP option is disabled with a Basque explanation; PNG and SVG keep working. — _proved by:_ `src/qr-code/application/export-qr-code.acceptance.test.ts` › saves no WebP where the browser can't encode it
 - **B13.** No network request carries the link: generating, previewing and downloading all happen in the browser. — _proved by:_
-- **B14.** Every control works from the keyboard and has a Basque accessible name: tabs move with the arrow keys, option, format and swatch choices are radio groups, and the preview's accessible name includes the link. — _proved by:_ `src/shared/ui/url-field.test.tsx` › is a text field named by its visible label; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › says https:// was added and names the preview with the full link; `src/shared/ui/tabs.test.tsx` › moves and selects with the arrow keys, wrapping at the ends, keeps only the selected tab in the tab order; `src/shared/ui/option-tiles.test.tsx` › is a radio group named by its legend, with the value checked, changes the choice with the arrow keys; `src/shared/ui/swatch-picker.test.tsx` › is a radio group named by its legend, with swatches named by their colour
+- **B14.** Every control works from the keyboard and has a Basque accessible name: tabs move with the arrow keys, option, format and swatch choices are radio groups, and the preview's accessible name includes the link. — _proved by:_ `src/shared/ui/url-field.test.tsx` › is a text field named by its visible label; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › says https:// was added and names the preview with the full link; `src/shared/ui/tabs.test.tsx` › moves and selects with the arrow keys, wrapping at the ends, keeps only the selected tab in the tab order; `src/shared/ui/option-tiles.test.tsx` › is a radio group named by its legend, with the value checked, changes the choice with the arrow keys; `src/shared/ui/swatch-picker.test.tsx` › is a radio group named by its legend, with swatches named by their colour; `src/shared/ui/segmented-control.test.tsx` › is a radio group named by its legend, with the value checked, changes the choice with the arrow keys, disables one option and says why; `src/shared/ui/button.test.tsx` › can't be clicked while disabled
 - **B15.** The home page shows the logo header with no menu, the headline "QR kodeak. Euskaraz. Doan.", the paragraph from the brief, and a "Hasi orain" link that takes people to the generator, with Basque page metadata and the KODE mark as the favicon. — _proved by:_ `src/shared/ui/logo.test.tsx` › links to the home page with the mark and wordmark, named as such
 
 ## Context
@@ -244,11 +244,11 @@ None outside this plan. Each phase builds on the previous one.
     - an invalid link disables the button
     - on a rasterizer without WebP the WebP option is disabled and the explanation shown
     - a success message names the saved file
-- [ ] Component test (B14): `SegmentedControl` is a named radio group that can disable one option. `Button` renders `<a>` with `href` and `<button>` without, and a disabled button can't be clicked.
+- [x] Component test (B14): `SegmentedControl` is a named radio group that can disable one option. `Button` renders `<a>` with `href` and `<button>` without, and a disabled button can't be clicked.
 
 **To-do:**
 
-- [ ] Shared UI: `SegmentedControl` (with a disabled option), `Button` (`primary`, `secondary`, `outline`; `md`, `lg`).
+- [x] Shared UI: `SegmentedControl` (with a disabled option), `Button` (`primary`, `secondary`, `outline`; `md`, `lg`).
 - [ ] Slice UI: step 3 in `QrGenerator`, with the adapters passed in as props so tests can inject fakes, and the success and WebP messages.
 - [ ] Slice UI: once the outliner has loaded, the preview draws the frame text with the same outlines, so it stays exactly the file people download, and the hint under the frame text field names any characters that won't be drawn.
 - [ ] Check the new components against the design system; update the artifact where the code differs.
