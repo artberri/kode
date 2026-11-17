@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { DEFAULT_DESIGN, type FrameStyle, type QrDesign } from "./qr-design";
+import { FRAME_LAYOUTS, type LabelSlot, type OutlineFrameText } from "./qr-frames";
 import type { QrMatrix } from "./qr-matrix";
 import { renderQrSvg } from "./render-qr-svg";
 
@@ -52,6 +53,21 @@ function quietZone(svg: string): {
 			radius: Number(attribute(svg, areaTag, "rx")),
 		},
 		modules: { x: Number(x), y: Number(y), unit: Number(unit) },
+	};
+}
+
+/** An outliner that draws the same path for any text, and remembers what it was asked. */
+function outliner(): {
+	readonly calls: { text: string; slot: LabelSlot }[];
+	readonly outline: OutlineFrameText;
+} {
+	const calls: { text: string; slot: LabelSlot }[] = [];
+	return {
+		calls,
+		outline: (text, slot) => {
+			calls.push({ text, slot });
+			return "M1 2H3V4Z";
+		},
 	};
 }
 
@@ -209,6 +225,53 @@ describe("renderQrSvg", () => {
 			const short = renderQrSvg(matrixWith(21), design({ frameText: "Kaixo" }));
 			const long = renderQrSvg(matrixWith(21), design({ frameText: "Eskaneatu hemen!" }));
 			expect(fontSizeOf(long)).toBeLessThan(fontSizeOf(short));
+		});
+	});
+
+	describe("frame text as outlines", () => {
+		it.each(FRAMES.filter((frame) => frame !== "none"))(
+			"draws the text on the %s frame as a path in the text colour, at its label slot",
+			(frame) => {
+				const { calls, outline } = outliner();
+				const svg = renderQrSvg(matrixWith(21), design({ frame, frameText: "Menua" }), {
+					outlineFrameText: outline,
+				});
+
+				expect(svg).toContain('<path class="qr-label" fill="#FFFFFF" d="M1 2H3V4Z"/>');
+				expect(svg).not.toContain("<text");
+				expect(calls).toEqual([{ text: "Menua", slot: FRAME_LAYOUTS[frame].label }]);
+			},
+		);
+
+		it("passes the text cut to 16 characters", () => {
+			const { calls, outline } = outliner();
+			renderQrSvg(matrixWith(21), design({ frameText: "Eskaneatu hau, mesedez" }), {
+				outlineFrameText: outline,
+			});
+
+			expect(calls.map((call) => call.text)).toEqual(["Eskaneatu hau, m"]);
+		});
+
+		it.each([
+			{ case: "without a frame", overrides: { frame: "none", frameText: "Menua" } },
+			{ case: "when the text is blank", overrides: { frameText: "  " } },
+		] as const)("draws no label $case", ({ overrides }) => {
+			const { calls, outline } = outliner();
+			const svg = renderQrSvg(matrixWith(21), design(overrides), {
+				outlineFrameText: outline,
+			});
+
+			expect(svg).not.toContain("qr-label");
+			expect(calls).toEqual([]);
+		});
+
+		it("draws no label when the outliner has nothing to draw", () => {
+			const svg = renderQrSvg(matrixWith(21), design({ frameText: "🙂" }), {
+				outlineFrameText: () => "",
+			});
+
+			expect(svg).not.toContain("qr-label");
+			expect(svg).not.toContain("<text");
 		});
 	});
 

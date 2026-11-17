@@ -15,9 +15,9 @@ Ship the first version of kode.eus: a landing page with a QR code generator that
 - **B7.** A warning appears when the QR colour is lighter than the background or their contrast is below 3:1, and disappears once neither holds. — _proved by:_ `src/qr-code/domain/contrast.test.ts` › is low below 3:1, is inverted when the QR is lighter than the background; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › warns when the QR is lighter than its background, warns when the QR and its background are too alike, until they are not
 - **B8.** Choosing a palette preset sets the QR, background, frame and frame-text colours; changing any of those colours afterwards leaves no preset selected. — _proved by:_ `src/qr-code/domain/palette-presets.test.ts` › finds $name from its own four colours, matches none once any one colour differs; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › sets the four colours from a palette and selects it, leaves no palette selected once a colour is changed by hand
 - **B9.** Every code keeps at least four modules of quiet zone between the modules and the frame or the image edge. — _proved by:_ `src/qr-code/domain/render-qr-svg.test.ts` › keeps four light modules around a $size-module code in the $frame frame
-- **B10.** Downloading SVG saves `kode-qr.svg`: the same design as the preview, with the frame text drawn as Unbounded outlines, so it looks the same in any browser, design tool or print shop without the font installed. — _proved by:_
-- **B11.** Downloading PNG or WebP saves `kode-qr.png` or `kode-qr.webp`, 1024 px on its long side, matching the preview. — _proved by:_
-- **B12.** Where the browser can't encode WebP, the WebP option is disabled with a Basque explanation; PNG and SVG keep working. — _proved by:_
+- **B10.** Downloading SVG saves `kode-qr.svg`: the same design as the preview, with the frame text drawn as Unbounded outlines, so it looks the same in any browser, design tool or print shop without the font installed. — _proved by:_ `src/qr-code/application/export-qr-code.acceptance.test.ts` › saves the SVG as kode-qr.svg, with the frame text as outlines; `src/qr-code/domain/render-qr-svg.test.ts` › draws the text on the %s frame as a path in the text colour, at its label slot
+- **B11.** Downloading PNG or WebP saves `kode-qr.png` or `kode-qr.webp`, 1024 px on its long side, matching the preview. — _proved by:_ `src/qr-code/application/export-qr-code.acceptance.test.ts` › draws the same outlined SVG at 1024 px and saves kode-qr.%s
+- **B12.** Where the browser can't encode WebP, the WebP option is disabled with a Basque explanation; PNG and SVG keep working. — _proved by:_ `src/qr-code/application/export-qr-code.acceptance.test.ts` › saves no WebP where the browser can't encode it
 - **B13.** No network request carries the link: generating, previewing and downloading all happen in the browser. — _proved by:_
 - **B14.** Every control works from the keyboard and has a Basque accessible name: tabs move with the arrow keys, option, format and swatch choices are radio groups, and the preview's accessible name includes the link. — _proved by:_ `src/shared/ui/url-field.test.tsx` › is a text field named by its visible label; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › says https:// was added and names the preview with the full link; `src/shared/ui/tabs.test.tsx` › moves and selects with the arrow keys, wrapping at the ends, keeps only the selected tab in the tab order; `src/shared/ui/option-tiles.test.tsx` › is a radio group named by its legend, with the value checked, changes the choice with the arrow keys; `src/shared/ui/swatch-picker.test.tsx` › is a radio group named by its legend, with swatches named by their colour
 - **B15.** The home page shows the logo header with no menu, the headline "QR kodeak. Euskaraz. Doan.", the paragraph from the brief, and a "Hasi orain" link that takes people to the generator, with Basque page metadata and the KODE mark as the favicon. — _proved by:_ `src/shared/ui/logo.test.tsx` › links to the home page with the mark and wordmark, named as such
@@ -87,7 +87,7 @@ None outside this plan. Each phase builds on the previous one.
 | 4   | The outlines come from the Latin subset of Unbounded 800 as TrueType (51 KB, from Google Fonts' `css?family=Unbounded:800&subset=latin`; `opentype.js` can't read WOFF2). It is under the SIL Open Font License with no Reserved Font Name, so it can be served as is. Commit `OFL.txt` next to the file.                                                                                                                                             | Planning, spike                                                                                                                                          | Phase 5     | Resolved |
 | 5   | The design-system artifact must stay in step with `src/shared/ui`. Each phase that builds a component checks it against the artifact, and updates the artifact once, at the end of the phase, wherever the code ends up different.                                                                                                                                                                                                                    | AGENTS.md, Design                                                                                                                                        | Phases 2–7  | Resolved |
 | 6   | Left out on purpose for this version: dark mode, a size picker, a logo inside the code, QR content other than links (Wi-Fi, vCard…), analytics, and an Open Graph image.                                                                                                                                                                                                                                                                              | Brief                                                                                                                                                    | —           | Deferred |
-| 7   | The Latin subset has no glyph for characters outside Latin-1 and a few extras (emoji, Cyrillic, CJK). Decide what the outlines do with them: leave them out and say so under the frame text field, or refuse them as they are typed.                                                                                                                                                                                                                  | Spike                                                                                                                                                    | Phases 5, 6 | Open     |
+| 7   | The Latin subset has no glyph for characters outside Latin-1 and a few extras (emoji, Cyrillic, CJK). Decided: the outlines leave them out, the outliner lists them (`missing`), and the hint under the frame text field names them, so the preview shows exactly what will be drawn.                                                                                                                                                                 | Spike                                                                                                                                                    | Phases 5, 6 | Resolved |
 
 ## Phase 1: Render a QR design to SVG ✅
 
@@ -208,23 +208,23 @@ None outside this plan. Each phase builds on the previous one.
 
 **Outside-in TDD checklist:**
 
-- [ ] Acceptance test (B10, B11, B12): `exportQrCode` with `FakeImageRasterizer`, `InMemoryFileSaver` and `BoxFrameTextOutliner`.
+- [x] Acceptance test (B10, B11, B12): `exportQrCode` with `FakeImageRasterizer`, `InMemoryFileSaver` and `BoxFrameTextOutliner`.
     - SVG saves `kode-qr.svg`, whose label is the outliner's `<path>` in the frame-text colour, with no `<text>` and no external URL.
     - PNG and WebP pass that same outlined SVG to the rasterizer with `longSide: 1024` and save `kode-qr.png` and `kode-qr.webp`.
     - WebP on a rasterizer that can't encode it saves nothing and answers `"webp-unsupported"`.
     - An invalid link saves nothing.
-- [ ] Unit test (B10): `renderQrSvg` with `outlineFrameText` draws the label as a `<path>` from it, given the label slot, and without it as a `<text>`; no frame, or blank text, draws neither.
-- [ ] Contract test (B10): a `FrameTextOutliner` suite run against `BoxFrameTextOutliner` and `OpentypeFrameTextOutliner` (reading the TTF from disk): blank text gives no path, and a long text stays within the slot's `maxWidth`, centred on its `x`.
+- [x] Unit test (B10): `renderQrSvg` with `outlineFrameText` draws the label as a `<path>` from it, given the label slot, and without it as a `<text>`; no frame, or blank text, draws neither.
+- [ ] Contract test (B10): a `FrameTextOutliner` suite run against `BoxFrameTextOutliner` and `OpentypeFrameTextOutliner` (reading the TTF from disk): blank text gives no path, a long text stays within the slot's `maxWidth`, centred on its `x`, and characters the font can't draw are left out and listed by `missing`.
 
 **To-do:**
 
-- [ ] Ports: `ImageRasterizer`, `FileSaver`, `FrameTextOutliner`. Use case: `exportQrCode`.
+- [x] Ports: `ImageRasterizer`, `FileSaver`, `FrameTextOutliner`. Use case: `exportQrCode`.
 - [ ] Font: `bun add opentype.js@2.0.0` (with a minimal local type declaration for the calls used, as 2.0 ships no types), and the Latin-subset TTF of Unbounded 800 in `public/fonts/`, with `OFL.txt`.
 - [ ] Adapters:
     - `CanvasImageRasterizer` draws the SVG through an `<img>` onto a canvas sized to `longSide` and calls `toBlob`. Its `canEncode` checks the returned blob's `type`.
     - `BrowserFileSaver` uses an object URL and a temporary `<a download>`.
     - `OpentypeFrameTextOutliner` imports `opentype.js` and fetches the font on first `load()`, then fits the text to the slot with the glyphs' real advance widths.
-- [ ] Fakes: `FakeImageRasterizer`, `InMemoryFileSaver`, `BoxFrameTextOutliner` (one box per character, so fitting is easy to check).
+- [x] Fakes: `FakeImageRasterizer`, `InMemoryFileSaver`, `BoxFrameTextOutliner` (one box per character, so fitting is easy to check).
 
 **Verify:**
 
@@ -250,7 +250,7 @@ None outside this plan. Each phase builds on the previous one.
 
 - [ ] Shared UI: `SegmentedControl` (with a disabled option), `Button` (`primary`, `secondary`, `outline`; `md`, `lg`).
 - [ ] Slice UI: step 3 in `QrGenerator`, with the adapters passed in as props so tests can inject fakes, and the success and WebP messages.
-- [ ] Slice UI: once the outliner has loaded, the preview draws the frame text with the same outlines, so it stays exactly the file people download.
+- [ ] Slice UI: once the outliner has loaded, the preview draws the frame text with the same outlines, so it stays exactly the file people download, and the hint under the frame text field names any characters that won't be drawn.
 - [ ] Check the new components against the design system; update the artifact where the code differs.
 
 **Verify:**
@@ -287,4 +287,4 @@ None outside this plan. Each phase builds on the previous one.
 
 ## Next step
 
-Phase 5: add the `exportQrCode` use case with its `ImageRasterizer`, `FileSaver` and `FrameTextOutliner` ports, fakes and adapters, and the frame text as Unbounded outlines, starting with the `exportQrCode` acceptance test. Decide open question 7 first. Run `/execute-plan .agents/plans/qr-generator`.
+Phase 5: add `opentype.js` and the Unbounded TTF, then the `OpentypeFrameTextOutliner` with its contract test, then `CanvasImageRasterizer` and `BrowserFileSaver`. Run `/execute-plan .agents/plans/qr-generator`.

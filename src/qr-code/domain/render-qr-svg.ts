@@ -1,5 +1,5 @@
 import { MAX_FRAME_TEXT_LENGTH, type QrDesign } from "./qr-design";
-import { FRAME_LAYOUTS, type LabelSlot } from "./qr-frames";
+import { FRAME_LAYOUTS, type LabelSlot, type OutlineFrameText } from "./qr-frames";
 import type { QrMatrix } from "./qr-matrix";
 import { dotsPath, finderPath } from "./qr-shapes";
 import { num } from "./svg-path";
@@ -23,10 +23,24 @@ function escapeXml(text: string): string {
 	return text.replaceAll(/[&<>"']/gu, (character) => XML_ESCAPES[character] ?? character);
 }
 
-function frameLabel(text: string, slot: LabelSlot, colour: string): string {
+export interface RenderQrSvgOptions {
+	/** Draws the frame text as outlines, so the SVG needs no font. Without it, a `<text>` in Unbounded. */
+	readonly outlineFrameText?: OutlineFrameText;
+}
+
+function frameLabel(
+	text: string,
+	slot: LabelSlot,
+	colour: string,
+	outline: OutlineFrameText | undefined,
+): string {
 	const cut = Array.from(text).slice(0, MAX_FRAME_TEXT_LENGTH).join("");
 	if (cut.trim() === "") {
 		return "";
+	}
+	if (outline !== undefined) {
+		const d = outline(cut, slot);
+		return d === "" ? "" : `<path class="qr-label" fill="${colour}" d="${d}"/>`;
 	}
 	const fitted = slot.maxWidth / (Array.from(cut).length * AVERAGE_GLYPH_WIDTH);
 	const fontSize = Math.min(slot.fontSize, Math.floor(fitted));
@@ -41,7 +55,11 @@ function frameLabel(text: string, slot: LabelSlot, colour: string): string {
  * Draws a QR code in a design as a standalone SVG document. The code sits in its frame's QR area
  * with at least four modules of quiet zone on every side, so it scans however it is framed.
  */
-export function renderQrSvg(matrix: QrMatrix, design: QrDesign): string {
+export function renderQrSvg(
+	matrix: QrMatrix,
+	design: QrDesign,
+	{ outlineFrameText }: RenderQrSvgOptions = {},
+): string {
 	const layout = FRAME_LAYOUTS[design.frame];
 	const { colours } = design;
 	const { qrArea } = layout;
@@ -67,7 +85,7 @@ export function renderQrSvg(matrix: QrMatrix, design: QrDesign): string {
 	const label =
 		layout.label === undefined
 			? ""
-			: frameLabel(design.frameText, layout.label, colours.frameText);
+			: frameLabel(design.frameText, layout.label, colours.frameText, outlineFrameText);
 
 	const width = String(layout.width);
 	const height = String(layout.height);

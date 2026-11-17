@@ -18,6 +18,13 @@ export interface LabelSlot {
 	readonly fontSize: number;
 }
 
+/**
+ * Draws frame text as SVG path data, in the frame's units: centred on the slot's `x`, its middle on
+ * `y`, no wider than `maxWidth` and no larger than `fontSize`. Characters it can't draw are left
+ * out; text with none it can draw gives "".
+ */
+export type OutlineFrameText = (text: string, slot: LabelSlot) => string;
+
 export interface FrameLayout {
 	readonly width: number;
 	readonly height: number;
