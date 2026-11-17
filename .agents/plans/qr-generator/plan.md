@@ -251,11 +251,11 @@ None outside this plan. Each phase builds on the previous one.
 - [x] Shared UI: `SegmentedControl` (with a disabled option), `Button` (`primary`, `secondary`, `outline`; `md`, `lg`).
 - [x] Slice UI: step 3 in `QrGenerator`, with the adapters passed in as props so tests can inject fakes, and the success and WebP messages.
 - [x] Slice UI: once the outliner has loaded, the preview draws the frame text with the same outlines, so it stays exactly the file people download, and the hint under the frame text field names any characters that won't be drawn.
-- [ ] Check the new components against the design system; update the artifact where the code differs.
+- [x] Check the new components against the design system; update the artifact where the code differs.
 
 **Verify:**
 
-- [ ] The project's checks pass for what this phase touched (see `execute-plan`).
+- [x] The project's checks pass for what this phase touched (see `execute-plan`).
 - [ ] Resolve risks 2 and 3 by hand. In Chrome, Firefox and Safari, download every format. The browser's network panel shows no request carrying the link (B13). A phone scans each file.
 
 ## Phase 7: Finish the landing page
@@ -287,4 +287,4 @@ None outside this plan. Each phase builds on the previous one.
 
 ## Next step
 
-Phase 6: check `Button` and `SegmentedControl` against the design system and update the artifact (SegmentedControl's disabled options, `hint` and `centred`), then the hand checks in Verify: every format in Chrome, Firefox and Safari, the network panel, and a phone scan. Run `/execute-plan .agents/plans/qr-generator`.
+Phase 6: the hand checks in Verify: every format in Chrome, Firefox and Safari, the network panel, and a phone scan. Run `/execute-plan .agents/plans/qr-generator`.
