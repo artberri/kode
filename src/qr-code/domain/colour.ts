@@ -8,6 +8,10 @@ function mapChannels(colour: HexColor, map: (channel: number) => number): Channe
 	return [map((value >> 16) & 0xff), map((value >> 8) & 0xff), map(value & 0xff)];
 }
 
+function toHex(channel: number): string {
+	return Math.round(channel).toString(16).padStart(2, "0").toUpperCase();
+}
+
 /** WCAG 2 relative luminance, from 0 (black) to 1 (white). */
 export function relativeLuminance(colour: HexColor): number {
 	const [r, g, b] = mapChannels(colour, (channel) => {
@@ -15,4 +19,10 @@ export function relativeLuminance(colour: HexColor): number {
 		return c <= 0.040_45 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
 	});
 	return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+/** Mixes a colour towards white: 0 keeps it, 1 gives white. */
+export function tint(colour: HexColor, amount: number): HexColor {
+	const [r, g, b] = mapChannels(colour, (c) => c + (255 - c) * amount);
+	return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 }

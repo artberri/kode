@@ -10,11 +10,11 @@ Ship the first version of kode.eus: a landing page with a QR code generator that
 - **B2.** A link typed without a scheme (`kode.eus/menua`) gets `https://` added; the helper text says so and shows the full link. — _proved by:_ `src/qr-code/domain/parse-link.test.ts` › adds https:// to a link typed without a scheme
 - **B3.** Any of these shows a Basque error under the field, dims the preview and disables the download button: a scheme other than http or https, a host without a dot, a link with spaces, or a link longer than 1000 characters. — _proved by:_ `src/qr-code/domain/parse-link.test.ts` › rejects a scheme other than http or https, rejects a host without a dot, rejects a link with spaces, rejects a link longer than 1000 characters
 - **B4.** An empty field shows a neutral prompt, not an error, and the download stays disabled. — _proved by:_
-- **B5.** Changing the frame, dot shape, corner frame shape, corner centre shape, any colour or the frame text updates the preview at once. — _proved by:_
-- **B6.** The frame text accepts at most 16 characters. With "Markorik ez" (no frame) the text field is hidden and the code has no label. — _proved by:_
+- **B5.** Changing the frame, dot shape, corner frame shape, corner centre shape, any colour or the frame text updates the preview at once. — _proved by:_ `src/qr-code/domain/render-qr-svg.test.ts` › dots, finder patterns, colours
+- **B6.** The frame text accepts at most 16 characters. With "Markorik ez" (no frame) the text field is hidden and the code has no label. — _proved by:_ `src/qr-code/domain/render-qr-svg.test.ts` › cuts the text to 16 characters, draws no text without a frame
 - **B7.** A warning appears when the QR colour is lighter than the background or their contrast is below 3:1, and disappears once neither holds. — _proved by:_ `src/qr-code/domain/contrast.test.ts` › is low below 3:1, is inverted when the QR is lighter than the background
 - **B8.** Choosing a palette preset sets the QR, background, frame and frame-text colours; changing any of those colours afterwards leaves no preset selected. — _proved by:_
-- **B9.** Every code keeps at least four modules of quiet zone between the modules and the frame or the image edge. — _proved by:_
+- **B9.** Every code keeps at least four modules of quiet zone between the modules and the frame or the image edge. — _proved by:_ `src/qr-code/domain/render-qr-svg.test.ts` › keeps four light modules around a $size-module code in the $frame frame
 - **B10.** Downloading SVG saves `kode-qr.svg`: the same design as the preview, with the frame text's font embedded so it renders the same without Unbounded installed. — _proved by:_
 - **B11.** Downloading PNG or WebP saves `kode-qr.png` or `kode-qr.webp`, 1024 px on its long side, matching the preview. — _proved by:_
 - **B12.** Where the browser can't encode WebP, the WebP option is disabled with a Basque explanation; PNG and SVG keep working. — _proved by:_
@@ -95,15 +95,15 @@ None outside this plan. Each phase builds on the previous one.
 
 - [ ] Acceptance test (B1, B2, B3, B4, B9): `designQrCode` with `FixedMatrixEncoder`. It covers empty, invalid (each reason), scheme added, a ready SVG that contains the frame text and colours, and the quiet zone for each frame.
 - [x] Unit test (B2, B3): `parseLink`, including trimming, uppercase schemes, `ftp:`, `localhost`, spaces and 1001 characters.
-- [ ] Unit test (B5, B6, B9): `renderQrSvg` for each dot shape, corner shape, centre shape and frame. Frame text is cut to 16 characters, and "none" has no `<text>`.
+- [x] Unit test (B5, B6, B9): `renderQrSvg` for each dot shape, corner shape, centre shape and frame. Frame text is cut to 16 characters, and "none" has no `<text>`.
 - [x] Unit test (B7): `contrastOf` gives `ok`, `low` (below 3:1) and `inverted` (QR lighter than background).
 - [x] Contract test (B1): a `QrMatrixEncoder` suite run against `FixedMatrixEncoder` and `QrcodeGeneratorEncoder`. The matrix is square, odd-sized, at least 21, and has the three finder patterns. For the real adapter only, `jsqr` decodes the matrix (drawn to RGBA with a quiet zone) back to the input.
 
 **To-do:**
 
 - [x] `bun add qrcode-generator` and `bun add -d jsqr`.
-- [ ] Domain: `QrMatrix`, `QrDesign` (with a default design: Zigilua frame, "Eskaneatu", ink QR, violet frame, white background), `parseLink`, `contrastOf`.
-- [ ] Domain: `renderQrSvg` with the dot shapes (square, round, smooth, diamond), finder shapes (square, rounded, circle) and the five frames. Arbela comes from [arbela-frame.svg](./arbela-frame.svg); the others follow the A2 tile drawings and the prototype's geometry.
+- [x] Domain: `QrMatrix`, `QrDesign` (with a default design: Zigilua frame, "Eskaneatu", ink QR, violet frame, white background), `parseLink`, `contrastOf`.
+- [x] Domain: `renderQrSvg` with the dot shapes (square, round, smooth, diamond), finder shapes (square, rounded, circle) and the five frames. Arbela comes from [arbela-frame.svg](./arbela-frame.svg); the others follow the A2 tile drawings and the prototype's geometry.
 - [ ] Application: the `QrMatrixEncoder` port and `designQrCode`.
 - [x] Infrastructure: `QrcodeGeneratorEncoder` and the `FixedMatrixEncoder` fake.
 - [x] Drop `--passWithNoTests` from `test` and `qa` in `package.json`, and delete its entries in `AGENTS.md` (Toolchain) and `docs/KNOWN_NON_ISSUES.md`.
