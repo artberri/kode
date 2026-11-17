@@ -13,7 +13,7 @@ Ship the first version of kode.eus: a landing page with a QR code generator that
 - **B5.** Changing the frame, dot shape, corner frame shape, corner centre shape, any colour or the frame text updates the preview at once. — _proved by:_ `src/qr-code/domain/render-qr-svg.test.ts` › dots, finder patterns, colours; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › redraws the preview when $group is set to $option
 - **B6.** The frame text accepts at most 16 characters. With "Markorik ez" (no frame) the text field is hidden and the code has no label. — _proved by:_ `src/qr-code/domain/render-qr-svg.test.ts` › cuts the text to 16 characters, draws no text without a frame; `src/qr-code/infrastructure/ui/qr-generator.test.tsx` › cuts the frame text at 16 characters and counts them, hides the frame text without a frame, and draws no label
 - **B7.** A warning appears when the QR colour is lighter than the background or their contrast is below 3:1, and disappears once neither holds. — _proved by:_ `src/qr-code/domain/contrast.test.ts` › is low below 3:1, is inverted when the QR is lighter than the background
-- **B8.** Choosing a palette preset sets the QR, background, frame and frame-text colours; changing any of those colours afterwards leaves no preset selected. — _proved by:_
+- **B8.** Choosing a palette preset sets the QR, background, frame and frame-text colours; changing any of those colours afterwards leaves no preset selected. — _proved by:_ `src/qr-code/domain/palette-presets.test.ts` › finds $name from its own four colours, matches none once any one colour differs
 - **B9.** Every code keeps at least four modules of quiet zone between the modules and the frame or the image edge. — _proved by:_ `src/qr-code/domain/render-qr-svg.test.ts` › keeps four light modules around a $size-module code in the $frame frame
 - **B10.** Downloading SVG saves `kode-qr.svg`: the same design as the preview, with the frame text's font embedded so it renders the same without Unbounded installed. — _proved by:_
 - **B11.** Downloading PNG or WebP saves `kode-qr.png` or `kode-qr.webp`, 1024 px on its long side, matching the preview. — _proved by:_
@@ -186,12 +186,12 @@ None outside this plan. Each phase builds on the previous one.
     - changing a colour deselects it
     - a light QR colour on a dark background shows the "inverted" warning
     - a pale QR colour on white shows the "low contrast" warning
-- [ ] Unit test (B8): the preset that matches a set of colours, or none.
+- [x] Unit test (B8): the preset that matches a set of colours, or none.
 - [ ] Component test (B14): `SwatchPicker` is a named radio group whose swatches have colour names. `ColorField` is labelled and shows the hex value. `Notice` warnings use `role="status"` and errors `role="alert"`.
 
 **To-do:**
 
-- [ ] Domain: the palette presets from the design system (Morea, Lila, Menda, Mertxikia, Gurina, Gaua, adjusted so each keeps the QR dark on a light background) and the matching rule.
+- [x] Domain: the palette presets from the design system (Morea, Lila, Menda, Mertxikia, Gurina, Gaua, adjusted so each keeps the QR dark on a light background) and the matching rule.
 - [ ] Shared UI: `SwatchPicker`, `ColorField`, `Notice`.
 - [ ] Slice UI: the "Koloreak" panel, and the warning text for `low` and `inverted`.
 - [ ] Check the new components against the design system; update the artifact where the code differs.
