@@ -13,9 +13,9 @@
 		"format": "oxfmt",
 		"format:check": "oxfmt --check",
 		"typecheck": "next typegen && tsc --noEmit",
-		"qa": "next typegen && oxlint && tsc --noEmit && vitest run --passWithNoTests",
+		"qa": "next typegen && oxlint && tsc --noEmit && vitest run",
 		"prepare": "git rev-parse --git-dir >/dev/null 2>&1 && git config core.hooksPath .githooks || true",
-		"test": "vitest run --passWithNoTests",
+		"test": "vitest run",
 		"test:watch": "vitest"
 	},
 	"dependencies": {

@@ -25,8 +25,6 @@ Add an entry when a finding is rejected with a reason that will hold next time. 
 
 **Test files in `application/` import from `infrastructure/`.** A test is where a use case gets wired to its fakes, so the layer rules in `.oxlintrc.json` are lifted for `*.test.ts` and `*.test.tsx`; the slice rule still applies.
 
-**`test` and `qa` pass with `--passWithNoTests`.** The project has no tests yet; the flag goes once the first test lands. Settled in `AGENTS.md`, Toolchain.
-
 ## Cloudflare and Next.js
 
 **`cloudflare-env.d.ts` is a committed generated file.** Cloudflare recommends committing it so type checks work straight after a clone. Regenerate it with `bun run cf-typegen` after editing `wrangler.jsonc`; never edit it by hand. Settled in commit `0a09ccd`.

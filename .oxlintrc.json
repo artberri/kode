@@ -178,6 +178,7 @@
 		{
 			"files": ["src/**/*.test.ts", "src/**/*.test.tsx"],
 			"rules": {
+				"max-lines-per-function": "off",
 				"no-restricted-imports": [
 					"error",
 					{
