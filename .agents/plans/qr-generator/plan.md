@@ -113,7 +113,7 @@ None outside this plan. Each phase builds on the previous one.
 - [x] The project's checks pass for what this phase touched (see `execute-plan`).
 - [x] A one-off script prints the SVG for `https://kode.eus/` in each frame, and a phone scans each one.
 
-## Phase 2: Show the link step and a live preview
+## Phase 2: Show the link step and a live preview ✅
 
 > Design: https://claude.ai/artifact/2wW9ukFJgUKkkZY7ozi2SA (`AltLauburuGoxoa.dc.html`), design system https://claude.ai/artifact/F6S7WRQ3iMjcHHgbProwWe
 
@@ -136,7 +136,7 @@ None outside this plan. Each phase builds on the previous one.
 - [x] Shared UI: `Logo`, `Icon` (the six icons), `StepLabel`, `UrlField`, `TicketCard`.
 - [x] Slice UI (`src/qr-code/infrastructure/ui/`): `QrGenerator` (client component) with step 1 and the preview of the default design. It wires `designQrCode` to `QrcodeGeneratorEncoder` and renders the SVG string as is on the peach side, about 250 px wide, so the preview is exactly the file people download (no `QrSticker` around it: that would draw a second frame and label). When the link isn't valid, the preview shows `https://kode.eus/` dimmed.
 - [x] `page.tsx`: the header with `Logo` (no menu) and the generator section (`id="sortzailea"`).
-- [ ] Check each component against its design-system README; update the artifact where the code differs.
+- [x] Check each component against its design-system README; update the artifact where the code differs.
 
 **Verify:**
 
@@ -283,4 +283,4 @@ None outside this plan. Each phase builds on the previous one.
 
 ## Next step
 
-Phase 2: put the link step and the live preview on the page, with the design tokens, the fonts and the first shared components, starting with the `QrGenerator` component test. Run `/execute-plan .agents/plans/qr-generator`.
+Phase 3: add the "Markoa" and "Forma" tabs of step 2, with the `Tabs`, `OptionTiles` and `TextField` components, starting with the `QrGenerator` component test for picking frames and shapes. Run `/execute-plan .agents/plans/qr-generator`.
