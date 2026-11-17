@@ -1,12 +1,22 @@
 import type { Metadata } from "next";
-import { DM_Sans, Unbounded } from "next/font/google";
+import localFont from "next/font/local";
 
 import "./globals.css";
 
-// Both are variable fonts: one file each covers the weights the design uses
-// (Unbounded 600–800, DM Sans 400–700).
-const unbounded = Unbounded({ subsets: ["latin", "latin-ext"], variable: "--font-unbounded" });
-const dmSans = DM_Sans({ subsets: ["latin", "latin-ext"], variable: "--font-dm-sans" });
+// Self-hosted OFL fonts only, never the Google Fonts CDN: see ASSETS.md. Both are the Latin
+// subset of a variable font, so one file each covers the weights the design uses
+// (Unbounded 600–800, DM Sans 400–700). `weight` declares the file's full range, so the
+// browser never synthesizes bold.
+const unbounded = localFont({
+	src: "./fonts/unbounded-latin-wght-normal.woff2",
+	weight: "200 900",
+	variable: "--font-unbounded",
+});
+const dmSans = localFont({
+	src: "./fonts/dm-sans-latin-wght-normal.woff2",
+	weight: "100 1000",
+	variable: "--font-dm-sans",
+});
 
 export const metadata: Metadata = {
 	metadataBase: new URL("https://kode.eus"),
