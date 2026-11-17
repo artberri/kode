@@ -72,6 +72,8 @@ KODE is free software: you can redistribute it and/or modify it under the terms 
 
 In short: you may use, study, change and share this code. If you distribute a modified version, or run one as a service that other people use over a network, you must publish its full source code under the same license.
 
+The fonts are not covered by the AGPL: they are under the SIL Open Font License, and [ASSETS.md](ASSETS.md) lists every font, image and drawing in the repository with its source and license.
+
 KODE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the [license](LICENSE) for details.
 
 ### Name and brand

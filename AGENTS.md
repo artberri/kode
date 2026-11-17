@@ -62,6 +62,10 @@ The design lives in two Claude Design artifacts. Read them with the Artifact too
 - **Keep the two in step:** when code adds or changes a token or a shared component, update the artifact in the same piece of work (`tokens.json`, the component's `README.md` and `preview.html`, and `components/bundle.js`, `bundle.css` and `index.d.ts`), and say so in your summary.
 - **Page designs** (<https://claude.ai/artifact/2wW9ukFJgUKkkZY7ozi2SA>): a canvas of artboards. `AltLauburuGoxoa.dc.html` ("✓ A2") is the approved home page; the other artboards are discarded explorations.
 
+## Assets
+
+[`ASSETS.md`](ASSETS.md) gives every font, image and drawing a row with its source and license: add the row in the same change that adds or replaces an asset, and read its font rules before touching a font. Fonts are self-hosted OFL files, committed and loaded with `next/font/local`.
+
 ## Review docs
 
 - [`docs/KNOWN_NON_ISSUES.md`](docs/KNOWN_NON_ISSUES.md): deliberate patterns that look like defects. Read it before acting on a review comment, and before writing code in an area it covers.
