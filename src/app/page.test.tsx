@@ -29,6 +29,30 @@ describe("the home page", () => {
 		expect(sample).toHaveAttribute("src", expect.stringMatching(/^data:image\/svg\+xml,/u));
 	});
 
+	it("lists the four reasons to choose KODE, in order", () => {
+		render(<Home />);
+		// happy-dom puts a space before the ".eus" span in the accessible name, so match the rest.
+		const reasons = within(screen.getByRole("region", { name: /aukeratzeko lau arrazoi\.$/u }));
+		expect(reasons.getByRole("heading", { level: 2 })).toHaveTextContent(
+			"KODE.eus aukeratzeko lau arrazoi.",
+		);
+		const items = reasons.getAllByRole("listitem");
+		expect(
+			items.map((item) => within(item).getByRole("heading", { level: 3 }).textContent),
+		).toEqual([
+			"Lehenengo euskaraz",
+			"Muxutruk betirako",
+			"Pribatutasuna lehenestea",
+			"Iragarkirik gabe",
+		]);
+		expect(items.map((item) => within(item).getByRole("paragraph").textContent)).toEqual([
+			"Hasieratik euskaraz pentsatua, ez itzulia.",
+			"Beti egongo da doako bertsio bat, ordainpeko aukerak etortzen badira ere.",
+			"Inoiz ez ditugu zure datuak salduko, eta inoiz ez dizkizugu behar baino gehiago eskatuko.",
+			"Zu ez zara inoiz produktua izango, erabiltzailea baizik.",
+		]);
+	});
+
 	it("says in the footer to love free software, linking to the source code", () => {
 		render(<Home />);
 		const footer = within(screen.getByRole("contentinfo"));
