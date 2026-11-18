@@ -137,7 +137,11 @@ function Reasons() {
 			className={`${COLUMN} flex flex-wrap items-start gap-x-[72px] gap-y-space-7 pb-space-10`}
 		>
 			<ReasonsIntro id="arrazoiak" />
-			<ol className="m-0 min-w-0 flex-[999_1_520px] list-none border-b-firm border-ink p-0">
+			<ol
+				// oxlint-disable-next-line jsx-a11y/no-redundant-roles -- Safari drops the list role from a list-style: none list unless it is explicit
+				role="list"
+				className="m-0 min-w-0 flex-[999_1_520px] list-none border-b-firm border-ink p-0"
+			>
 				{REASONS.map(({ title, text, marker }, index) => (
 					<li
 						key={title}
