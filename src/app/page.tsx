@@ -98,11 +98,10 @@ export default function Home() {
 			<footer className={COLUMN}>
 				<div className="flex flex-wrap justify-between gap-space-3 border-t-soft border-line py-space-6 text-small text-ink-muted">
 					<p className="m-0">
-						KODE.eus{" "}
 						<a href={SOURCE_URL} className={FOOTER_LINK}>
-							software librea
+							Software librea
 						</a>{" "}
-						da
+						maitatu, faxismoa gorrotatu
 					</p>
 					<p className="m-0">
 						{/* The ergative -k stays outside the link, which names the person. */}

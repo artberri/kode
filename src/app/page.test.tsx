@@ -29,11 +29,13 @@ describe("the home page", () => {
 		expect(sample).toHaveAttribute("src", expect.stringMatching(/^data:image\/svg\+xml,/u));
 	});
 
-	it("says in the footer that KODE.eus is free software, linking to its source", () => {
+	it("says in the footer to love free software, linking to the source code", () => {
 		render(<Home />);
 		const footer = within(screen.getByRole("contentinfo"));
-		expect(screen.getByRole("contentinfo")).toHaveTextContent("KODE.eus software librea da");
-		expect(footer.getByRole("link", { name: "software librea" })).toHaveAttribute(
+		expect(screen.getByRole("contentinfo")).toHaveTextContent(
+			"Software librea maitatu, faxismoa gorrotatu",
+		);
+		expect(footer.getByRole("link", { name: "Software librea" })).toHaveAttribute(
 			"href",
 			"https://github.com/artberri/kode",
 		);
