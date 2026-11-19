@@ -29,13 +29,13 @@ function fieldMessages(result: DesignQrCodeResult, left: boolean): FieldMessages
 	if (result.status === "empty") {
 		return { hint: "Itsatsi esteka bat zure QRa sortzeko." };
 	}
-	if (result.status === "ready") {
+	if (result.status === "ready" && result.encoded.type === "esteka") {
 		const { link, schemeAdded } = result.encoded;
 		return schemeAdded
 			? { success: `https:// gehitu diogu hasieran: ${link}` }
 			: { success: `Zure QRak esteka hau irekiko du: ${link}` };
 	}
-	const reason = linkReason(result.problems);
+	const reason = linkReason(result.status === "invalid" ? result.problems : []);
 	// "kode" is a host without a dot until ".eus" is typed: only call it wrong once the field is left.
 	return reason === "host" && !left
 		? { hint: "Adibidez: kode.eus/menua" }

@@ -104,7 +104,9 @@ export function usePreview(
 /** How the preview names itself, and whether it is dimmed. */
 function previewState(result: DesignQrCodeResult): { label: string; dimmed: boolean } {
 	if (result.status === "ready") {
-		return { label: `QR kodearen aurrebista: ${result.encoded.link}`, dimmed: false };
+		const { encoded } = result;
+		const named = encoded.type === "esteka" ? encoded.link : "testua";
+		return { label: `QR kodearen aurrebista: ${named}`, dimmed: false };
 	}
 	// Nothing typed yet: the placeholder is a sample of the design, not a waiting state.
 	if (result.status === "empty") {

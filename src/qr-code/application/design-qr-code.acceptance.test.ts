@@ -16,6 +16,10 @@ function esteka(link: string): QrContent {
 	return { type: "esteka", link };
 }
 
+function testua(text: string): QrContent {
+	return { type: "testua", text };
+}
+
 function svgOf(result: DesignQrCodeResult): string {
 	if (result.status !== "ready") {
 		throw new Error(`Expected a ready QR code, got ${result.status}`);
@@ -77,6 +81,36 @@ describe("designQrCode", () => {
 			status: "ready",
 			encoded: { link: "http://kode.eus/", schemeAdded: false },
 		});
+	});
+
+	it("encodes a text exactly as typed, line breaks and accents included", () => {
+		const encoder = new FixedMatrixEncoder();
+		const text = " Kaixo!\nGoñi · Azpeitia — 19:00 ";
+		const result = designQrCode({ content: testua(text), design: design() }, { encoder });
+		expect(result).toMatchObject({
+			status: "ready",
+			encoded: { type: "testua", payload: text },
+		});
+		expect(encoder.encoded).toEqual([text]);
+	});
+
+	it("waits for a text that is only whitespace, without encoding anything", () => {
+		const encoder = new FixedMatrixEncoder();
+		expect(designQrCode({ content: testua(" \n\t "), design: design() }, { encoder })).toEqual({
+			status: "empty",
+		});
+		expect(encoder.encoded).toEqual([]);
+	});
+
+	it("refuses a text over 1000 UTF-8 bytes, without encoding anything", () => {
+		const encoder = new FixedMatrixEncoder();
+		// 334 dashes of three bytes each: 1002 bytes in 334 characters.
+		const text = "—".repeat(334);
+		expect(designQrCode({ content: testua(text), design: design() }, { encoder })).toEqual({
+			status: "invalid",
+			problems: [{ field: "payload", reason: "too-long", excessBytes: 2 }],
+		});
+		expect(encoder.encoded).toEqual([]);
 	});
 
 	it("draws the code as an SVG with the design's frame text and colours", () => {

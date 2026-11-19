@@ -18,16 +18,23 @@ export const QR_CONTENT_TYPES = [
 export type QrContentType = (typeof QR_CONTENT_TYPES)[number];
 
 /** What people filled in for one type, as they typed it. */
-export type QrContent = { readonly type: "esteka"; readonly link: string };
+export type QrContent =
+	| { readonly type: "esteka"; readonly link: string }
+	| { readonly type: "testua"; readonly text: string };
+
+/** The content of one type. */
+export type ContentOf<Type extends QrContent["type"]> = Extract<QrContent, { type: Type }>;
 
 /** The text a code holds, with what the UI needs to describe it, per type. */
-export type EncodedContent = {
-	readonly type: "esteka";
-	readonly payload: string;
-	/** The normalised link. */
-	readonly link: string;
-	readonly schemeAdded: boolean;
-};
+export type EncodedContent =
+	| {
+			readonly type: "esteka";
+			readonly payload: string;
+			/** The normalised link. */
+			readonly link: string;
+			readonly schemeAdded: boolean;
+	  }
+	| { readonly type: "testua"; readonly payload: string };
 
 /** A field that is wrong, with a reason code; the UI words it. */
 export type ContentProblem =

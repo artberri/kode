@@ -1,5 +1,6 @@
 import { encodeEsteka } from "./content/esteka";
-import type { ContentEncoding, EncodedContent, QrContent } from "./qr-content";
+import { encodeTestua } from "./content/testua";
+import type { ContentEncoding, ContentOf, EncodedContent, QrContent } from "./qr-content";
 
 /**
  * The most a code may hold, in UTF-8 bytes, the same as the link limit. At level Q that is up to
@@ -23,6 +24,18 @@ export function limitPayload(encoded: EncodedContent): ContentEncoding {
 
 /** Turns what people filled in into the text the code holds, or says what is missing or wrong. */
 export function encodeContent(content: QrContent): ContentEncoding {
-	const result = encodeEsteka(content);
+	const result = encodeByType(content.type, content);
 	return result.status === "valid" ? limitPayload(result.encoded) : result;
+}
+
+/** One encoder per type, so adding a type is one line here. */
+const ENCODERS: {
+	readonly [Type in QrContent["type"]]: (content: ContentOf<Type>) => ContentEncoding;
+} = { esteka: encodeEsteka, testua: encodeTestua };
+
+function encodeByType<Type extends QrContent["type"]>(
+	type: Type,
+	content: ContentOf<Type>,
+): ContentEncoding {
+	return ENCODERS[type](content);
 }

@@ -10,7 +10,7 @@ Turn the generator from "a link" into "content of a type". This means a domain c
 
 - **B1.** Esteka behaves as today: the same errors, the same "https:// gehitu diogu hasieran" confirmation, the same preview label and the same encoded link. — _proved by:_ `design-qr-code.acceptance.test.ts`, "rejects $link as $reason, without encoding anything" and "encodes the normalised link and says whether https:// was added"; `qr-generator.test.tsx`, "says https:// was added and names the preview with the full link" and the error cases, unchanged
 - **B2.** A download is named after its type and format: `kode-esteka.png`, `kode-testua.svg`. — _proved by:_ `export-qr-code.acceptance.test.ts`, "saves the SVG as kode-esteka.svg, …" and "draws the same outlined SVG at 1024 px and saves kode-esteka.%s"; `qr-generator.download.test.tsx`, "downloads kode-esteka.png, …"
-- **B3.** Content whose payload is over 1,000 UTF-8 bytes is refused as too long, without encoding anything, with a message that says how much to cut. — _proved by:_ `encode-content.test.ts`, "limitPayload › counts UTF-8 bytes, so ñ counts as two, and says how many bytes to cut" (the domain refusal, with `excessBytes`); the message comes with Testua in phase 2
+- **B3.** Content whose payload is over 1,000 UTF-8 bytes is refused as too long, without encoding anything, with a message that says how much to cut. — _proved by:_ `encode-content.test.ts`, "limitPayload › counts UTF-8 bytes, so ñ counts as two, and says how many bytes to cut" (the domain refusal, with `excessBytes`); `design-qr-code.acceptance.test.ts`, "refuses a text over 1000 UTF-8 bytes, without encoding anything"; the message comes with the Testua form in phase 2
 - **B4.** A scanner reads the code back byte for byte, accents and symbols included ("Goñi · Azpeitia — 19:00"). — _proved by:_ `qr-matrix-encoder.contract.test.ts`, "QrcodeGeneratorEncoder › encodes Goñi · Azpeitia — 19:00 🎶 so a reader decodes it back" and "writes the text as UTF-8 bytes, as phone cameras expect"
 - **B5.** "1 · Edukia" opens with the pills "Zer partekatu nahi duzu?" and Esteka selected. The pills list only the types that work. — _proved by:_
 - **B6.** Switching type keeps what was typed in each type for the visit. Switching back shows it again, and the preview follows the selected type. Nothing is stored. — _proved by:_
@@ -97,20 +97,20 @@ Turn the generator from "a link" into "content of a type". This means a domain c
 
 **Outside-in TDD checklist:**
 
-- [ ] Acceptance test `design-qr-code` (B3, B7): `{ type: "testua", text }` encodes the text as typed; whitespace-only text is `empty`; a text over 1,000 UTF-8 bytes is refused as too long, with nothing encoded.
+- [x] Acceptance test `design-qr-code` (B3, B7): `{ type: "testua", text }` encodes the text as typed; whitespace-only text is `empty`; a text over 1,000 UTF-8 bytes is refused as too long, with nothing encoded.
 - [ ] Component test `qr-generator` (B5, B6, B7):
     - the pills show with Esteka checked;
     - choosing Testua shows its field;
     - text typed there and a link typed in Esteka both survive switching back and forth;
     - the preview label follows the selected type.
 - [ ] Component tests: `choice-chips.test.tsx` covers a radio group with a legend, arrow keys and an optional icon. `text-area.test.tsx` covers the label, "(aukerakoa)", the counter beside the hint and `maxLength`.
-- [ ] Unit test `content/testua`: the payload equals the text, and line breaks are kept.
+- [x] Unit test `content/testua`: the payload equals the text, and line breaks are kept.
 
 **To-do:**
 
 - [ ] Build `src/shared/ui/choice-chips.tsx` and `src/shared/ui/text-area.tsx` to the design system's README and `bundle.js`. Use `radio-group.tsx`'s `useRadioChange` for the chips.
 - [ ] Add the `text` icon to `icon.tsx`, with its path from the design system.
-- [ ] Add `domain/content/testua.ts` and its member of `QrContent`.
+- [x] Add `domain/content/testua.ts` and its member of `QrContent`. `encodeContent` picks the encoder from a table typed per type (`ENCODERS`) rather than a `switch`, which `consistent-return` refuses.
 - [ ] Add `infrastructure/ui/content-types.tsx`, the registry, with Esteka and Testua. Add `infrastructure/ui/forms/testua-form.tsx`: TextArea "Zure testua", max 500, hint "Testua bera gordetzen da QRan: ez du ezer irekitzen."
 - [ ] Replace `link-step.tsx` with `content-step.tsx`: StepLabel "Edukia", the ChoiceChips and the selected form. Move the Esteka field and its messages into `forms/esteka-form.tsx` unchanged.
 - [ ] Keep one value object per type in `qr-generator.tsx`, so switching keeps what was typed.
