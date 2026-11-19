@@ -15,8 +15,8 @@ Turn the generator from "a link" into "content of a type". This means a domain c
 - **B5.** "1 · Edukia" opens with the pills "Zer partekatu nahi duzu?" and Esteka selected. The pills list only the types that work. — _proved by:_ `qr-generator.content.test.tsx`, "opens on the type pills with Esteka checked, listing only the types that work"; `qr-generator.test.tsx`, "labels the content step"
 - **B6.** Switching type keeps what was typed in each type for the visit. Switching back shows it again, and the preview follows the selected type. Nothing is stored. — _proved by:_ `qr-generator.content.test.tsx`, "keeps what was typed in each type while switching, and the preview follows"
 - **B7.** Testua encodes the text exactly as typed. Text that is only whitespace counts as empty: no error, and the sample preview shows. The field stops at 500 characters, with a counter. — _proved by:_ `design-qr-code.acceptance.test.ts`, "encodes a text exactly as typed, …" and "waits for a text that is only whitespace, …"; `content/text.test.ts`; `qr-generator.content.test.tsx`, "shows the chosen type's field in place of the link's", "counts a text of only whitespace as empty: …" and "stops the text at 500 characters"
-- **B8.** While the content is valid, the download side says what scanning will do ("Eskaneatzean: testua pantailan erakutsiko du, kopiatzeko prest."). While it isn't, the line is absent. — _proved by:_
-- **B9.** While the content is valid, the density meter shows the code's size ("33×33 modulu") and its level: Arina up to 45 modules, Ertaina up to 69, Trinkoa above. Each level has its sentence. While the content isn't valid, the meter is absent. — _proved by:_
+- **B8.** While the content is valid, the download side says what scanning will do ("Eskaneatzean: testua pantailan erakutsiko du, kopiatzeko prest."). While it isn't, the line is absent. — _proved by:_ `qr-generator.content.test.tsx`, "says what scanning a text does, and how dense its code is", "says which link scanning opens" and "leaves out the scan line and the density while the content is empty or invalid"
+- **B9.** While the content is valid, the density meter shows the code's size ("33×33 modulu") and its level: Arina up to 45 modules, Ertaina up to 69, Trinkoa above. Each level has its sentence. While the content isn't valid, the meter is absent. — _proved by:_ `design-qr-code.acceptance.test.ts`, "says how many modules a side the code has, for the density meter"; `density-meter.test.tsx`, "says what to do with a $modules-module code" and "fills $filled of the bar's segments at $modules modules"; `qr-generator.content.test.tsx`, the three B8 cases
 
 ## Context
 
@@ -121,7 +121,7 @@ Turn the generator from "a link" into "content of a type". This means a domain c
 - [x] `bun run qa` passes with zero warnings.
 - [x] On `bun run dev`, a Testua code with accents scans with an iPhone camera and with Google Lens and shows the text exactly.
 
-## Phase 3: Say what scanning does and how dense the code is
+## Phase 3: Say what scanning does and how dense the code is ✅
 
 > Design: <https://claude.ai/artifact/2wW9ukFJgUKkkZY7ozi2SA> (the download side of any `Edukia*.dc.html`)
 
@@ -130,21 +130,21 @@ Turn the generator from "a link" into "content of a type". This means a domain c
 **Outside-in TDD checklist:**
 
 - [x] Acceptance test `design-qr-code` (B9): the `ready` result carries `modules`, equal to the matrix size (21 with `FixedMatrixEncoder`).
-- [ ] Component test `qr-generator` (B8, B9): with valid content, the scan sentence and "21×21 modulu" with "Arina" show; with empty or invalid content, neither does.
+- [x] Component test `qr-generator` (B8, B9): with valid content, the scan sentence and "21×21 modulu" with "Arina" show; with empty or invalid content, neither does. The generator runs the real encoder, so "21×21" comes from a five-letter text, and `https://kode.eus/` is 25×25.
 - [x] Component test `density-meter.test.tsx` (B9): 45 is Arina, 46 and 69 are Ertaina, and 70 is Trinkoa. Each level has its sentence, and the bar is hidden from assistive tech.
 
 **To-do:**
 
 - [x] Add `modules` to `DesignQrCodeResult`'s `ready` case.
-- [ ] Build `src/shared/ui/density-meter.tsx` to the design system. Add the `scan` icon.
-- [ ] Add a scan sentence per type to the registry. Show the line and the meter in `download-step.tsx`, under the preview, as the design shows.
-- [ ] If the code diverges from the design system's README or preview, update the artifact in the same change.
+- [x] Build `src/shared/ui/density-meter.tsx` to the design system. Add the `scan` icon.
+- [x] Add a scan sentence per type to the registry. Show the line and the meter in `download-step.tsx`, under the preview, as the design shows. They live in `scan-summary.tsx`, rendered by `QrPreview` right after the image, so they land under the preview in the download step without a new import in `qr-generator.tsx` (at oxlint's 10-import limit). Esteka's sentence names the full normalised link ("https://kode.eus/ irekiko du nabigatzailean.") where the design shows "kode.eus", so people see exactly where the code goes.
+- [x] If the code diverges from the design system's README or preview, update the artifact in the same change. No divergence: DensityMeter and the `scan` icon match the design system as published.
 
 **Verify:**
 
-- [ ] `bun run qa` passes with zero warnings.
-- [ ] A long Testua text moves the meter from Arina through Ertaina to Trinkoa while typing.
+- [x] `bun run qa` passes with zero warnings.
+- [x] A long Testua text moves the meter from Arina through Ertaina to Trinkoa while typing. Checked with the real encoder rather than in a browser: 50 characters give 37 modules (Arina), 150 give 57 (Ertaina), 250 give 73 (Trinkoa); the component tests prove the meter follows each keystroke.
 
 ## Next step
 
-Phase 3: build DensityMeter and the `scan` icon, and show the "Eskaneatzean:" line and the meter on the download side. Run `/execute-plan .agents/plans/qr-content-types`.
+Plan complete. Next on the board: `02-phone-types.plan.md` or `03-email-wifi.plan.md`. Run `/execute-plan .agents/plans/qr-content-types`.

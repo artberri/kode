@@ -29,6 +29,8 @@ interface ContentTypeUi<Type extends OfferedType> {
 	readonly previewName: (encoded: EncodedOf<Type>) => string;
 	/** The preview's name while the content is invalid. */
 	readonly waitingLabel: string;
+	/** What scanning the code does, after "Eskaneatzean:". */
+	readonly scanSentence: (encoded: EncodedOf<Type>) => string;
 }
 
 const CONTENT_TYPES: { readonly [Type in OfferedType]: ContentTypeUi<Type> } = {
@@ -39,6 +41,7 @@ const CONTENT_TYPES: { readonly [Type in OfferedType]: ContentTypeUi<Type> } = {
 		empty: { type: "link", link: "" },
 		previewName: ({ link }) => link,
 		waitingLabel: "QR kodearen aurrebista, esteka baliozko baten zain",
+		scanSentence: ({ link }) => `${link} irekiko du nabigatzailean.`,
 	},
 	text: {
 		label: "Testua",
@@ -47,6 +50,7 @@ const CONTENT_TYPES: { readonly [Type in OfferedType]: ContentTypeUi<Type> } = {
 		empty: { type: "text", text: "" },
 		previewName: () => "testua",
 		waitingLabel: "QR kodearen aurrebista, testu laburrago baten zain",
+		scanSentence: () => "testua pantailan erakutsiko du, kopiatzeko prest.",
 	},
 };
 
@@ -74,4 +78,13 @@ function previewNameAs<Type extends OfferedType>(type: Type, encoded: EncodedOf<
 /** What the preview of valid content is named after: the link, or the type. */
 export function previewNameOf(encoded: EncodedContent): string {
 	return previewNameAs(encoded.type, encoded);
+}
+
+function scanSentenceAs<Type extends OfferedType>(type: Type, encoded: EncodedOf<Type>): string {
+	return contentTypeUi(type).scanSentence(encoded);
+}
+
+/** What scanning a code with this content does, in the person's terms. */
+export function scanSentenceOf(encoded: EncodedContent): string {
+	return scanSentenceAs(encoded.type, encoded);
 }

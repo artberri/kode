@@ -8,6 +8,7 @@ import type { QrContent } from "../../domain/qr-content";
 import { DEFAULT_DESIGN, type QrDesign } from "../../domain/qr-design";
 import type { OutlineFrameText } from "../../domain/qr-frames";
 import { contentTypeUi, type OfferedType, previewNameOf } from "./content-types";
+import { ScanSummary } from "./scan-summary";
 
 /** What the preview shows until the content is valid. */
 const PLACEHOLDER_LINK = "https://kode.eus/";
@@ -119,8 +120,9 @@ function previewState(
 }
 
 /**
- * The code as an image named by its content. While nothing is filled in it shows the kode.eus
- * sample in the same design; while the content is invalid, that sample dimmed.
+ * The code as an image named by its content, then what scanning it does and how dense it is. While
+ * nothing is filled in it shows the kode.eus sample in the same design; while the content is
+ * invalid, that sample dimmed, and neither the scan line nor the density.
  */
 export function QrPreview({
 	type,
@@ -130,14 +132,17 @@ export function QrPreview({
 	const { label, dimmed } = previewState(type, result);
 	const markup = useMemo(() => ({ __html: svg }), [svg]);
 	return (
-		<div
-			// Inline SVG rather than an <img>, so the frame text uses the page's Unbounded font until
-			// the outlines have loaded.
-			// oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- an <img> can't use the page's fonts
-			role="img"
-			aria-label={label}
-			className={`w-[250px] max-w-full self-center [&>svg]:block [&>svg]:h-auto [&>svg]:w-full ${dimmed ? "opacity-20" : ""}`}
-			dangerouslySetInnerHTML={markup}
-		/>
+		<>
+			<div
+				// Inline SVG rather than an <img>, so the frame text uses the page's Unbounded font until
+				// the outlines have loaded.
+				// oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- an <img> can't use the page's fonts
+				role="img"
+				aria-label={label}
+				className={`w-[250px] max-w-full self-center [&>svg]:block [&>svg]:h-auto [&>svg]:w-full ${dimmed ? "opacity-20" : ""}`}
+				dangerouslySetInnerHTML={markup}
+			/>
+			<ScanSummary result={result} />
+		</>
 	);
 }

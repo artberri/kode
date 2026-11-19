@@ -12,6 +12,11 @@ import {
 	typeLink,
 } from "./qr-generator.harness";
 
+/** The "Eskaneatzean:" line on the download side, if it shows. */
+function scanLine(): HTMLElement | null {
+	return screen.queryByText("Eskaneatzean:")?.closest("p") ?? null;
+}
+
 describe("QrGenerator's content types", () => {
 	it("opens on the type pills with Esteka checked, listing only the types that work", () => {
 		setup();
@@ -100,5 +105,41 @@ describe("QrGenerator's content types", () => {
 		});
 		expect(waiting).toHaveClass("opacity-20");
 		expect(downloadButton()).toBeDisabled();
+	});
+
+	it("says what scanning a text does, and how dense its code is", async () => {
+		const { user } = setup();
+		await pickType(user, "Testua");
+
+		await user.type(screen.getByRole("textbox", { name: TEXT_FIELD }), "Kaixo");
+
+		expect(scanLine()).toHaveTextContent(
+			"Eskaneatzean: testua pantailan erakutsiko du, kopiatzeko prest.",
+		);
+		expect(screen.getByText("21×21 modulu")).toBeVisible();
+		expect(screen.getByText("Arina: edozein mugikorrek erraz irakurriko du.")).toBeVisible();
+	});
+
+	it("says which link scanning opens", async () => {
+		const { user } = setup();
+
+		await typeLink(user);
+
+		expect(scanLine()).toHaveTextContent(
+			"Eskaneatzean: https://kode.eus/ irekiko du nabigatzailean.",
+		);
+		expect(screen.getByText("25×25 modulu")).toBeVisible();
+	});
+
+	it("leaves out the scan line and the density while the content is empty or invalid", async () => {
+		const { user } = setup();
+		expect(scanLine()).not.toBeInTheDocument();
+		expect(screen.queryByText("Dentsitatea")).not.toBeInTheDocument();
+
+		await typeLink(user, "localhost:3000");
+		await user.tab();
+
+		expect(scanLine()).not.toBeInTheDocument();
+		expect(screen.queryByText("Dentsitatea")).not.toBeInTheDocument();
 	});
 });
