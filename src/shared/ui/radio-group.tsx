@@ -32,12 +32,15 @@ export function useRadioChange<Value extends string>(
 export function RadioFieldset({
 	legend,
 	showLegend = false,
+	legendClassName = "mb-space-3 p-0 text-small font-semibold text-ink-muted",
 	describedBy,
 	className,
 	children,
 }: {
 	readonly legend: string;
 	readonly showLegend?: boolean | undefined;
+	/** How the legend looks when shown; a caption by default. */
+	readonly legendClassName?: string;
 	/** The id of the text that describes the whole group. */
 	readonly describedBy?: string | undefined;
 	readonly className?: string | undefined;
@@ -48,15 +51,7 @@ export function RadioFieldset({
 			aria-describedby={describedBy}
 			className={["m-0 min-w-0 border-0 p-0", className].filter(Boolean).join(" ")}
 		>
-			<legend
-				className={
-					showLegend
-						? "mb-space-3 p-0 text-small font-semibold text-ink-muted"
-						: "sr-only"
-				}
-			>
-				{legend}
-			</legend>
+			<legend className={showLegend ? legendClassName : "sr-only"}>{legend}</legend>
 			{children}
 		</fieldset>
 	);

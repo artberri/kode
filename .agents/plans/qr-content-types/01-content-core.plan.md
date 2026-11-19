@@ -109,7 +109,7 @@ Turn the generator from "a link" into "content of a type". This means a domain c
 **To-do:**
 
 - [ ] Build `src/shared/ui/choice-chips.tsx` and `src/shared/ui/text-area.tsx` to the design system's README and `bundle.js`. Use `radio-group.tsx`'s `useRadioChange` for the chips.
-- [ ] Add the `text` icon to `icon.tsx`, with its path from the design system.
+- [x] Add the `text` icon to `icon.tsx`, with its path from the design system.
 - [x] Add `domain/content/testua.ts` and its member of `QrContent`. `encodeContent` picks the encoder from a table typed per type (`ENCODERS`) rather than a `switch`, which `consistent-return` refuses.
 - [ ] Add `infrastructure/ui/content-types.tsx`, the registry, with Esteka and Testua. Add `infrastructure/ui/forms/testua-form.tsx`: TextArea "Zure testua", max 500, hint "Testua bera gordetzen da QRan: ez du ezer irekitzen."
 - [ ] Replace `link-step.tsx` with `content-step.tsx`: StepLabel "Edukia", the ChoiceChips and the selected form. Move the Esteka field and its messages into `forms/esteka-form.tsx` unchanged.

@@ -1,4 +1,12 @@
-export type IconName = "link" | "download" | "warning" | "check" | "error" | "none";
+export type IconName =
+	| "link"
+	| "download"
+	| "warning"
+	| "check"
+	| "error"
+	| "none"
+	/** QR content types. */
+	| "text";
 
 const PATHS: Record<IconName, readonly string[]> = {
 	link: [
@@ -10,6 +18,7 @@ const PATHS: Record<IconName, readonly string[]> = {
 	check: ["M5 12.5 L10 17 L19 7"],
 	error: ["M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18", "M12 8 V13", "M12 16.5 V17"],
 	none: ["M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18", "M5.6 18.4 L18.4 5.6"],
+	text: ["M5 6 H19", "M5 10 H19", "M5 14 H15", "M5 18 H12"],
 };
 
 export interface IconProps {
