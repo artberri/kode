@@ -4,6 +4,8 @@ KODE (`kode` package, domain `kode.eus`) will host three products: a QR code gen
 
 The site is in **Basque only** for now: write all user-facing text in Basque, including metadata, error messages and `alt` text. The root layout declares `lang="eu"`.
 
+**Code is in English**, even where it names a Basque concept: file names, identifiers, union and enum values, HTML `id` and `name` attributes, and test fixtures (`LinkForm`, `type: "link"`, `id="step-content"`). Basque goes only where people see it: copy, download file names and URL fragments such as `#sortzailea`. When a value is both, keep the code value in English and map it to its Basque form in one table, as `DOWNLOAD_NAMES` does for the content types.
+
 ## Toolchain
 
 - proto pins Node and Bun in `.prototools`. Bun installs packages and runs scripts (`bun add`, `bun run <script>`); Node runs Next.js, OpenNext and Wrangler, which are Node CLIs. Keep `bun.lock` as the only lockfile.
