@@ -89,7 +89,7 @@ Turn the generator from "a link" into "content of a type". This means a domain c
 - [x] `bun run qa` passes with zero warnings.
 - [x] On `bun run dev`, a link still previews and downloads as before, now as `kode-esteka.png`. The page, the field, the sample preview and the hero code render on dev; the download name is proved by `qr-generator.download.test.tsx`, not by a click in a real browser.
 
-## Phase 2: Pick the type and write a text
+## Phase 2: Pick the type and write a text ✅
 
 > Design: <https://claude.ai/artifact/2wW9ukFJgUKkkZY7ozi2SA> (`MotaB.dc.html`, `EdukiaTestua.dc.html`)
 
@@ -119,7 +119,7 @@ Turn the generator from "a link" into "content of a type". This means a domain c
 **Verify:**
 
 - [x] `bun run qa` passes with zero warnings.
-- [ ] On `bun run dev`, a Testua code with accents scans with an iPhone camera and with Google Lens and shows the text exactly.
+- [x] On `bun run dev`, a Testua code with accents scans with an iPhone camera and with Google Lens and shows the text exactly.
 
 ## Phase 3: Say what scanning does and how dense the code is
 
@@ -147,4 +147,4 @@ Turn the generator from "a link" into "content of a type". This means a domain c
 
 ## Next step
 
-Phase 2: scan a Testua code with accents on `bun run dev` with an iPhone camera and Google Lens, then mark the phase ✅. After that, phase 3: the scan line and the density meter. Run `/execute-plan .agents/plans/qr-content-types`.
+Phase 3: add `modules` to the `ready` result, build DensityMeter and the `scan` icon, and show the "Eskaneatzean:" line and the meter on the download side. Run `/execute-plan .agents/plans/qr-content-types`.
