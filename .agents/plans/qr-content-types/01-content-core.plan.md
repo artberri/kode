@@ -131,7 +131,7 @@ Turn the generator from "a link" into "content of a type". This means a domain c
 
 - [x] Acceptance test `design-qr-code` (B9): the `ready` result carries `modules`, equal to the matrix size (21 with `FixedMatrixEncoder`).
 - [ ] Component test `qr-generator` (B8, B9): with valid content, the scan sentence and "21×21 modulu" with "Arina" show; with empty or invalid content, neither does.
-- [ ] Component test `density-meter.test.tsx` (B9): 45 is Arina, 46 and 69 are Ertaina, and 70 is Trinkoa. Each level has its sentence, and the bar is hidden from assistive tech.
+- [x] Component test `density-meter.test.tsx` (B9): 45 is Arina, 46 and 69 are Ertaina, and 70 is Trinkoa. Each level has its sentence, and the bar is hidden from assistive tech.
 
 **To-do:**
 
