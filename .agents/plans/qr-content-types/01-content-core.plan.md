@@ -62,7 +62,7 @@ Turn the generator from "a link" into "content of a type". This means a domain c
 | #   | Question or risk                                                                                                                                                                                                                                                         | Source           | Affects | Status   |
 | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------- | ------- | -------- |
 | 1   | Does `jsqr` give UTF-8 back in `data`, or only raw bytes in `binaryData`? Resolved: `data` is the UTF-8-decoded text, and the contract test checks `binaryData` against `TextEncoder` too.                                                                               | Encoder contract | Phase 1 | Resolved |
-| 2   | The density thresholds (45 and 69 modules at level Q) are an estimate. Check them by scanning printed codes at 3 cm on a few phones and adjust the design system if they're wrong.                                                                                       | Design           | Phase 3 | Open     |
+| 2   | The density thresholds (45 and 69 modules at level Q) are an estimate. Check them by scanning printed codes at 3 cm on a few phones and adjust the design system if they're wrong. Deferred: phase 3 ships the design system's thresholds; check them on paper later.    | Design           | Phase 3 | Deferred |
 | 3   | `MAX_LINK_LENGTH` and `MAX_PAYLOAD_BYTES` are both 1,000. A link with non-ASCII characters is percent-encoded by `new URL`, so it stays ASCII and the two limits agree. Resolved: pinned by `encode-content.test.ts`, "keeps every valid link within the byte limit, …". | Domain           | Phase 1 | Resolved |
 
 ## Phase 1: Encode content by type ✅
@@ -129,13 +129,13 @@ Turn the generator from "a link" into "content of a type". This means a domain c
 
 **Outside-in TDD checklist:**
 
-- [ ] Acceptance test `design-qr-code` (B9): the `ready` result carries `modules`, equal to the matrix size (21 with `FixedMatrixEncoder`).
+- [x] Acceptance test `design-qr-code` (B9): the `ready` result carries `modules`, equal to the matrix size (21 with `FixedMatrixEncoder`).
 - [ ] Component test `qr-generator` (B8, B9): with valid content, the scan sentence and "21×21 modulu" with "Arina" show; with empty or invalid content, neither does.
 - [ ] Component test `density-meter.test.tsx` (B9): 45 is Arina, 46 and 69 are Ertaina, and 70 is Trinkoa. Each level has its sentence, and the bar is hidden from assistive tech.
 
 **To-do:**
 
-- [ ] Add `modules` to `DesignQrCodeResult`'s `ready` case.
+- [x] Add `modules` to `DesignQrCodeResult`'s `ready` case.
 - [ ] Build `src/shared/ui/density-meter.tsx` to the design system. Add the `scan` icon.
 - [ ] Add a scan sentence per type to the registry. Show the line and the meter in `download-step.tsx`, under the preview, as the design shows.
 - [ ] If the code diverges from the design system's README or preview, update the artifact in the same change.
@@ -147,4 +147,4 @@ Turn the generator from "a link" into "content of a type". This means a domain c
 
 ## Next step
 
-Phase 3: add `modules` to the `ready` result, build DensityMeter and the `scan` icon, and show the "Eskaneatzean:" line and the meter on the download side. Run `/execute-plan .agents/plans/qr-content-types`.
+Phase 3: build DensityMeter and the `scan` icon, and show the "Eskaneatzean:" line and the meter on the download side. Run `/execute-plan .agents/plans/qr-content-types`.

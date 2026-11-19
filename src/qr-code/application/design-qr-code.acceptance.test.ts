@@ -98,6 +98,15 @@ describe("designQrCode", () => {
 		expect(encoder.encoded).toEqual([text]);
 	});
 
+	it("says how many modules a side the code has, for the density meter", () => {
+		const encoder = new FixedMatrixEncoder();
+		const result = designQrCode(
+			{ content: textContent("Kaixo"), design: design() },
+			{ encoder },
+		);
+		expect(result).toMatchObject({ status: "ready", modules: 21 });
+	});
+
 	it("waits for a text that is only whitespace, without encoding anything", () => {
 		const encoder = new FixedMatrixEncoder();
 		expect(

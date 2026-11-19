@@ -27,6 +27,8 @@ export type DesignQrCodeResult =
 			readonly encoded: EncodedContent;
 			readonly svg: string;
 			readonly contrast: Contrast;
+			/** The code's size, in modules a side. */
+			readonly modules: number;
 	  };
 
 /** Turns typed content and a design into the QR code to preview, or says why it can't. */
@@ -39,10 +41,12 @@ export function designQrCode(
 		return encoding;
 	}
 	const { encoded } = encoding;
+	const matrix = encoder.encode(encoded.payload);
 	return {
 		status: "ready",
 		encoded,
-		svg: renderQrSvg(encoder.encode(encoded.payload), design, { outlineFrameText }),
+		svg: renderQrSvg(matrix, design, { outlineFrameText }),
 		contrast: contrastOf(design.colours.qr, design.colours.background),
+		modules: matrix.length,
 	};
 }
