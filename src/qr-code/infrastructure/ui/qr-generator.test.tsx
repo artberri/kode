@@ -100,10 +100,10 @@ describe("QrGenerator", () => {
 		expect(downloadButton()).toBeDisabled();
 	});
 
-	it("labels the link step", () => {
+	it("labels the content step", () => {
 		setup();
 
-		expect(screen.getByRole("group", { name: "1 · Esteka" })).toContainElement(
+		expect(screen.getByRole("group", { name: "1 · Edukia" })).toContainElement(
 			screen.getByRole("textbox", { name: FIELD }),
 		);
 	});

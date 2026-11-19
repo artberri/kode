@@ -7,6 +7,7 @@ import { encodeContent } from "../../domain/encode-content";
 import type { QrContent } from "../../domain/qr-content";
 import { DEFAULT_DESIGN, type QrDesign } from "../../domain/qr-design";
 import type { OutlineFrameText } from "../../domain/qr-frames";
+import { contentTypeUi, type OfferedType, previewNameOf } from "./content-types";
 
 /** What the preview shows until the content is valid. */
 const PLACEHOLDER_LINK = "https://kode.eus/";
@@ -102,26 +103,31 @@ export function usePreview(
 }
 
 /** How the preview names itself, and whether it is dimmed. */
-function previewState(result: DesignQrCodeResult): { label: string; dimmed: boolean } {
+function previewState(
+	type: OfferedType,
+	result: DesignQrCodeResult,
+): { label: string; dimmed: boolean } {
 	if (result.status === "ready") {
-		const { encoded } = result;
-		const named = encoded.type === "esteka" ? encoded.link : "testua";
-		return { label: `QR kodearen aurrebista: ${named}`, dimmed: false };
+		return { label: `QR kodearen aurrebista: ${previewNameOf(result.encoded)}`, dimmed: false };
 	}
 	// Nothing typed yet: the placeholder is a sample of the design, not a waiting state.
 	if (result.status === "empty") {
 		return { label: `QR kodearen aurrebista (adibidea): ${PLACEHOLDER_LINK}`, dimmed: false };
 	}
-	// Dimmed, so a link that doesn't work never looks like a finished code.
-	return { label: "QR kodearen aurrebista, esteka baliozko baten zain", dimmed: true };
+	// Dimmed, so content that doesn't work never looks like a finished code.
+	return { label: contentTypeUi(type).waitingLabel, dimmed: true };
 }
 
 /**
- * The code as an image named by its link. While the field is empty it shows the kode.eus sample in
- * the same design; while the link is invalid, that sample dimmed.
+ * The code as an image named by its content. While nothing is filled in it shows the kode.eus
+ * sample in the same design; while the content is invalid, that sample dimmed.
  */
-export function QrPreview({ result, svg }: Pick<Preview, "result" | "svg">) {
-	const { label, dimmed } = previewState(result);
+export function QrPreview({
+	type,
+	result,
+	svg,
+}: Pick<Preview, "result" | "svg"> & { readonly type: OfferedType }) {
+	const { label, dimmed } = previewState(type, result);
 	const markup = useMemo(() => ({ __html: svg }), [svg]);
 	return (
 		<div

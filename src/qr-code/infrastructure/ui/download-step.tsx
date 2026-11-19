@@ -45,7 +45,7 @@ function outcomeOf(result: ExportQrCodeResult): Outcome {
 		return { tone: "warning", text: NO_WEBP };
 	}
 	// The button is disabled without valid content, so only a race gets here.
-	return { tone: "error", text: "Itsatsi esteka baliozko bat lehenago." };
+	return { tone: "error", text: "Osatu edukia lehenago." };
 }
 
 /** Whether the browser can encode WebP; assumed until its canvas says otherwise. */

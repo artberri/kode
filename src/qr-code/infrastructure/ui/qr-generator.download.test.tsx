@@ -2,7 +2,15 @@ import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { BoxFrameTextOutliner } from "../box-frame-text-outliner";
-import { BrokenRasterizer, downloadButton, FIELD, setup, typeLink } from "./qr-generator.harness";
+import {
+	BrokenRasterizer,
+	downloadButton,
+	FIELD,
+	pickType,
+	setup,
+	TEXT_FIELD,
+	typeLink,
+} from "./qr-generator.harness";
 
 describe("QrGenerator's download step", () => {
 	it("downloads kode-esteka.png, and the button follows the chosen format", async () => {
@@ -20,6 +28,18 @@ describe("QrGenerator's download step", () => {
 			"kode-esteka.png",
 			"kode-esteka.svg",
 		]);
+	});
+
+	it("names a text's file kode-testua", async () => {
+		const { user, saver } = setup({ outliner: new BoxFrameTextOutliner() });
+		await pickType(user, "Testua");
+		await user.type(screen.getByRole("textbox", { name: TEXT_FIELD }), "Kaixo");
+
+		await user.click(screen.getByRole("radio", { name: "SVG" }));
+		await user.click(screen.getByRole("button", { name: "Deskargatu SVG" }));
+
+		expect(await screen.findByText("Deskargatuta: kode-testua.svg")).toBeVisible();
+		expect(saver.saved.map((file) => file.name)).toEqual(["kode-testua.svg"]);
 	});
 
 	it("labels the download step and starts on PNG", () => {

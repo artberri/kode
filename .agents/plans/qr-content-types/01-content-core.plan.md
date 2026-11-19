@@ -9,12 +9,12 @@ Turn the generator from "a link" into "content of a type". This means a domain c
 ## Behaviour
 
 - **B1.** Esteka behaves as today: the same errors, the same "https:// gehitu diogu hasieran" confirmation, the same preview label and the same encoded link. — _proved by:_ `design-qr-code.acceptance.test.ts`, "rejects $link as $reason, without encoding anything" and "encodes the normalised link and says whether https:// was added"; `qr-generator.test.tsx`, "says https:// was added and names the preview with the full link" and the error cases, unchanged
-- **B2.** A download is named after its type and format: `kode-esteka.png`, `kode-testua.svg`. — _proved by:_ `export-qr-code.acceptance.test.ts`, "saves the SVG as kode-esteka.svg, …" and "draws the same outlined SVG at 1024 px and saves kode-esteka.%s"; `qr-generator.download.test.tsx`, "downloads kode-esteka.png, …"
-- **B3.** Content whose payload is over 1,000 UTF-8 bytes is refused as too long, without encoding anything, with a message that says how much to cut. — _proved by:_ `encode-content.test.ts`, "limitPayload › counts UTF-8 bytes, so ñ counts as two, and says how many bytes to cut" (the domain refusal, with `excessBytes`); `design-qr-code.acceptance.test.ts`, "refuses a text over 1000 UTF-8 bytes, without encoding anything"; the message comes with the Testua form in phase 2
+- **B2.** A download is named after its type and format: `kode-esteka.png`, `kode-testua.svg`. — _proved by:_ `export-qr-code.acceptance.test.ts`, "saves the SVG as kode-esteka.svg, …" and "draws the same outlined SVG at 1024 px and saves kode-esteka.%s"; `qr-generator.download.test.tsx`, "downloads kode-esteka.png, …" and "names a text's file kode-testua"
+- **B3.** Content whose payload is over 1,000 UTF-8 bytes is refused as too long, without encoding anything, with a message that says how much to cut. — _proved by:_ `encode-content.test.ts`, "limitPayload › counts UTF-8 bytes, so ñ counts as two, and says how many bytes to cut" (the domain refusal, with `excessBytes`); `design-qr-code.acceptance.test.ts`, "refuses a text over 1000 UTF-8 bytes, without encoding anything": the message, `qr-generator.content.test.tsx`, "says how much to cut from a text over 1000 bytes, and dims the preview"
 - **B4.** A scanner reads the code back byte for byte, accents and symbols included ("Goñi · Azpeitia — 19:00"). — _proved by:_ `qr-matrix-encoder.contract.test.ts`, "QrcodeGeneratorEncoder › encodes Goñi · Azpeitia — 19:00 🎶 so a reader decodes it back" and "writes the text as UTF-8 bytes, as phone cameras expect"
-- **B5.** "1 · Edukia" opens with the pills "Zer partekatu nahi duzu?" and Esteka selected. The pills list only the types that work. — _proved by:_
-- **B6.** Switching type keeps what was typed in each type for the visit. Switching back shows it again, and the preview follows the selected type. Nothing is stored. — _proved by:_
-- **B7.** Testua encodes the text exactly as typed. Text that is only whitespace counts as empty: no error, and the sample preview shows. The field stops at 500 characters, with a counter. — _proved by:_
+- **B5.** "1 · Edukia" opens with the pills "Zer partekatu nahi duzu?" and Esteka selected. The pills list only the types that work. — _proved by:_ `qr-generator.content.test.tsx`, "opens on the type pills with Esteka checked, listing only the types that work"; `qr-generator.test.tsx`, "labels the content step"
+- **B6.** Switching type keeps what was typed in each type for the visit. Switching back shows it again, and the preview follows the selected type. Nothing is stored. — _proved by:_ `qr-generator.content.test.tsx`, "keeps what was typed in each type while switching, and the preview follows"
+- **B7.** Testua encodes the text exactly as typed. Text that is only whitespace counts as empty: no error, and the sample preview shows. The field stops at 500 characters, with a counter. — _proved by:_ `design-qr-code.acceptance.test.ts`, "encodes a text exactly as typed, …" and "waits for a text that is only whitespace, …"; `content/testua.test.ts`; `qr-generator.content.test.tsx`, "shows the chosen type's field in place of the link's", "counts a text of only whitespace as empty: …" and "stops the text at 500 characters"
 - **B8.** While the content is valid, the download side says what scanning will do ("Eskaneatzean: testua pantailan erakutsiko du, kopiatzeko prest."). While it isn't, the line is absent. — _proved by:_
 - **B9.** While the content is valid, the density meter shows the code's size ("33×33 modulu") and its level: Arina up to 45 modules, Ertaina up to 69, Trinkoa above. Each level has its sentence. While the content isn't valid, the meter is absent. — _proved by:_
 
@@ -98,7 +98,7 @@ Turn the generator from "a link" into "content of a type". This means a domain c
 **Outside-in TDD checklist:**
 
 - [x] Acceptance test `design-qr-code` (B3, B7): `{ type: "testua", text }` encodes the text as typed; whitespace-only text is `empty`; a text over 1,000 UTF-8 bytes is refused as too long, with nothing encoded.
-- [ ] Component test `qr-generator` (B5, B6, B7):
+- [x] Component test `qr-generator` (B5, B6, B7), in `qr-generator.content.test.tsx` so `qr-generator.test.tsx` stays under oxlint's 300 lines:
     - the pills show with Esteka checked;
     - choosing Testua shows its field;
     - text typed there and a link typed in Esteka both survive switching back and forth;
@@ -111,14 +111,14 @@ Turn the generator from "a link" into "content of a type". This means a domain c
 - [x] Build `src/shared/ui/choice-chips.tsx` and `src/shared/ui/text-area.tsx` to the design system's README and `bundle.js`. Use `radio-group.tsx`'s `useRadioChange` for the chips. TextArea gained `error` (500 characters of three-byte text go over 1,000 bytes), and the design system with it (version 26); `UrlField`'s message moved to `field-message.tsx` to share it.
 - [x] Add the `text` icon to `icon.tsx`, with its path from the design system.
 - [x] Add `domain/content/testua.ts` and its member of `QrContent`. `encodeContent` picks the encoder from a table typed per type (`ENCODERS`) rather than a `switch`, which `consistent-return` refuses.
-- [ ] Add `infrastructure/ui/content-types.tsx`, the registry, with Esteka and Testua. Add `infrastructure/ui/forms/testua-form.tsx`: TextArea "Zure testua", max 500, hint "Testua bera gordetzen da QRan: ez du ezer irekitzen."
-- [ ] Replace `link-step.tsx` with `content-step.tsx`: StepLabel "Edukia", the ChoiceChips and the selected form. Move the Esteka field and its messages into `forms/esteka-form.tsx` unchanged.
-- [ ] Keep one value object per type in `qr-generator.tsx`, so switching keeps what was typed.
-- [ ] If the code diverges from the design system's README or preview, update the artifact in the same change.
+- [x] Add `infrastructure/ui/content-types.tsx`, the registry, with Esteka and Testua. Add `infrastructure/ui/forms/testua-form.tsx`: TextArea "Zure testua", max 500, hint "Testua bera gordetzen da QRan: ez du ezer irekitzen." Each type's error messages stay in its form module, next to the logic that picks them (Esteka's waits for the field to be left), rather than in the registry; the registry holds the label, icon, form, empty content, preview name and waiting label.
+- [x] Replace `link-step.tsx` with `content-step.tsx`: StepLabel "Edukia", the ChoiceChips and the selected form. Move the Esteka field and its messages into `forms/esteka-form.tsx` unchanged.
+- [x] Keep one value object per type in `qr-generator.tsx`, so switching keeps what was typed. The state lives in `useContent()` in `content-step.tsx`, as `qr-generator.tsx` hit oxlint's 10-import limit.
+- [x] If the code diverges from the design system's README or preview, update the artifact in the same change. TextArea's `error` went into the design system (version 26) with TextArea's commit.
 
 **Verify:**
 
-- [ ] `bun run qa` passes with zero warnings.
+- [x] `bun run qa` passes with zero warnings.
 - [ ] On `bun run dev`, a Testua code with accents scans with an iPhone camera and with Google Lens and shows the text exactly.
 
 ## Phase 3: Say what scanning does and how dense the code is
@@ -147,4 +147,4 @@ Turn the generator from "a link" into "content of a type". This means a domain c
 
 ## Next step
 
-Phase 2: build ChoiceChips and TextArea, add Testua and the content registry, and turn "1 · Esteka" into "1 · Edukia". Run `/execute-plan .agents/plans/qr-content-types`.
+Phase 2: scan a Testua code with accents on `bun run dev` with an iPhone camera and Google Lens, then mark the phase ✅. After that, phase 3: the scan line and the density meter. Run `/execute-plan .agents/plans/qr-content-types`.

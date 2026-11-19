@@ -1,5 +1,5 @@
 /** Renders the generator on in-memory fakes, and finds its parts as people would. */
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import type { FrameTextOutliner } from "../../application/frame-text-outliner";
@@ -9,6 +9,8 @@ import { InMemoryFileSaver } from "../in-memory-file-saver";
 import { QrGenerator } from "./qr-generator";
 
 export const FIELD = "Nora eraman behar du zure QRak?";
+export const TEXT_FIELD = "Zure testua";
+export const TYPES = "Zer partekatu nahi duzu?";
 export const FRAME_TEXT = "Markoaren testua";
 const PREVIEW = /^QR kodearen aurrebista/u;
 
@@ -57,4 +59,11 @@ export async function typeLink(user: ReturnType<typeof userEvent.setup>, link = 
 
 export function preview(): HTMLElement {
 	return screen.getByRole("img", { name: PREVIEW });
+}
+
+/** Picks a content type from the pills in step 1. */
+export async function pickType(user: ReturnType<typeof userEvent.setup>, label: string) {
+	await user.click(
+		within(screen.getByRole("group", { name: TYPES })).getByRole("radio", { name: label }),
+	);
 }
