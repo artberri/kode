@@ -14,7 +14,7 @@ Let people make a QR code from eleven kinds of content, not only links: Esteka, 
 
 - Type picker: pills (ChoiceChips) at the top of "1 · Edukia", Esteka selected by default. The steps stay Edukia · Diseinua · Deskarga.
 - Switching type keeps what was typed in each type for the visit, in memory only.
-- Content over 1,000 UTF-8 bytes is refused before encoding (the link limit today), which keeps every code at version 25 or below at level Q.
+- Content over 1,000 UTF-8 bytes is refused before encoding (the link limit today), which keeps every code at version 31 (141 modules) or below at level Q. Version 25 (117 modules) would mean 715 bytes; the density meter flags dense codes instead.
 - Phone numbers: a country chip with the browser's own country list in Basque; the default country comes from the browser (language region, then time zone, then Spain). 6–15 digits.
 - Validation: Posta needs a valid recipient; WiFi needs a network name and, unless the network is open, a password (WPA 8–63 characters); Kontaktua needs a first name; Ekitaldia needs a title and a start, and the end can't be before the start; Kokapena needs an address or coordinates in range; Sare sozialak needs a username, and Mastodon also its server.
 - Kokapena ships both modes (Helbidea, Koordenatuak) and both maps (Google Maps, OpenStreetMap).

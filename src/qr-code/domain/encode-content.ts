@@ -2,8 +2,8 @@ import { encodeEsteka } from "./content/esteka";
 import type { ContentEncoding, EncodedContent, QrContent } from "./qr-content";
 
 /**
- * The most a code may hold, in UTF-8 bytes: it keeps every code at version 25 or below at level Q,
- * small enough to scan from a sticker.
+ * The most a code may hold, in UTF-8 bytes, the same as the link limit. At level Q that is up to
+ * version 31 (141 modules); version 25 (117 modules) stops at 715 bytes.
  */
 export const MAX_PAYLOAD_BYTES = 1000;
 
