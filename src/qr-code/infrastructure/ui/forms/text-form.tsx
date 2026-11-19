@@ -23,16 +23,16 @@ function errorOf(result: DesignQrCodeResult): string | undefined {
 }
 
 /** Testua: the text the code holds, as typed. */
-export function TestuaForm({ content, onChange, result }: ContentFormProps<"testua">) {
+export function TextForm({ content, onChange, result }: ContentFormProps<"text">) {
 	const changeText = useCallback(
 		(text: string) => {
-			onChange({ type: "testua", text });
+			onChange({ type: "text", text });
 		},
 		[onChange],
 	);
 	return (
 		<TextArea
-			id="testua"
+			id="text"
 			label="Zure testua"
 			value={content.text}
 			onChange={changeText}

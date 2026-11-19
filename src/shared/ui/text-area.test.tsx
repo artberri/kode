@@ -10,7 +10,7 @@ const HINT = "Testua bera gordetzen da QRan: ez du ezer irekitzen.";
 
 function Harness(props: Partial<Omit<TextAreaProps, "value" | "onChange">>) {
 	const [value, setValue] = useState("Kaixo");
-	return <TextArea id="testua" label={LABEL} value={value} onChange={setValue} {...props} />;
+	return <TextArea id="text" label={LABEL} value={value} onChange={setValue} {...props} />;
 }
 
 describe("TextArea", () => {
@@ -32,7 +32,7 @@ describe("TextArea", () => {
 	it("passes the typed text, line breaks included, to onChange", async () => {
 		const user = userEvent.setup();
 		const onChange = vi.fn<(value: string) => void>();
-		render(<TextArea id="testua" label={LABEL} value="" onChange={onChange} />);
+		render(<TextArea id="text" label={LABEL} value="" onChange={onChange} />);
 
 		await user.type(screen.getByRole("textbox", { name: LABEL }), "{Enter}");
 

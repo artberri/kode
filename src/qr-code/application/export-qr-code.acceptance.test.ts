@@ -8,7 +8,7 @@ import { FixedMatrixEncoder } from "../infrastructure/fixed-matrix-encoder";
 import { InMemoryFileSaver } from "../infrastructure/in-memory-file-saver";
 import { exportQrCode, type ExportFormat } from "./export-qr-code";
 
-const CONTENT: QrContent = { type: "esteka", link: "kode.eus/menua" };
+const CONTENT: QrContent = { type: "link", link: "kode.eus/menua" };
 
 /** The text of the one file the saver holds. */
 async function savedText(saver: InMemoryFileSaver): Promise<string> {
@@ -103,7 +103,7 @@ describe("exportQrCode", () => {
 
 		expect(
 			await exportQrCode(
-				{ content: { type: "esteka", link }, design: DEFAULT_DESIGN, format: "png" },
+				{ content: { type: "link", link }, design: DEFAULT_DESIGN, format: "png" },
 				dependencies,
 			),
 		).toEqual({ status: "invalid-content" });

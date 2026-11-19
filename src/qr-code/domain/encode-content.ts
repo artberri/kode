@@ -1,5 +1,5 @@
-import { encodeEsteka } from "./content/esteka";
-import { encodeTestua } from "./content/testua";
+import { encodeLink } from "./content/link";
+import { encodeText } from "./content/text";
 import type { ContentEncoding, ContentOf, EncodedContent, QrContent } from "./qr-content";
 
 /**
@@ -31,7 +31,7 @@ export function encodeContent(content: QrContent): ContentEncoding {
 /** One encoder per type, so adding a type is one line here. */
 const ENCODERS: {
 	readonly [Type in QrContent["type"]]: (content: ContentOf<Type>) => ContentEncoding;
-} = { esteka: encodeEsteka, testua: encodeTestua };
+} = { link: encodeLink, text: encodeText };
 
 function encodeByType<Type extends QrContent["type"]>(
 	type: Type,

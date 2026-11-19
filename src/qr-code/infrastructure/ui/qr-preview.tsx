@@ -11,7 +11,7 @@ import { contentTypeUi, type OfferedType, previewNameOf } from "./content-types"
 
 /** What the preview shows until the content is valid. */
 const PLACEHOLDER_LINK = "https://kode.eus/";
-const PLACEHOLDER: QrContent = { type: "esteka", link: PLACEHOLDER_LINK };
+const PLACEHOLDER: QrContent = { type: "link", link: PLACEHOLDER_LINK };
 
 const NONE: readonly string[] = [];
 

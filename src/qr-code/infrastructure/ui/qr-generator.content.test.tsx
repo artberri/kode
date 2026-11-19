@@ -18,8 +18,8 @@ describe("QrGenerator's content types", () => {
 
 		const types = within(screen.getByRole("group", { name: TYPES }));
 		expect(types.getAllByRole("radio").map((radio) => radio.getAttribute("value"))).toEqual([
-			"esteka",
-			"testua",
+			"link",
+			"text",
 		]);
 		expect(types.getByRole("radio", { name: "Esteka" })).toBeChecked();
 	});

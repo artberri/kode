@@ -2,7 +2,7 @@ import { parseLink } from "../parse-link";
 import type { ContentEncoding, QrContent } from "../qr-content";
 
 /** A link, normalised by `parseLink`: the code opens it. */
-export function encodeEsteka({ link }: Extract<QrContent, { type: "esteka" }>): ContentEncoding {
+export function encodeLink({ link }: Extract<QrContent, { type: "link" }>): ContentEncoding {
 	const parsed = parseLink(link);
 	if (parsed.status === "empty") {
 		return parsed;
@@ -13,7 +13,7 @@ export function encodeEsteka({ link }: Extract<QrContent, { type: "esteka" }>): 
 	return {
 		status: "valid",
 		encoded: {
-			type: "esteka",
+			type: "link",
 			payload: parsed.link,
 			link: parsed.link,
 			schemeAdded: parsed.schemeAdded,

@@ -11,7 +11,7 @@ function Harness({ maxLength }: { readonly maxLength?: number }) {
 	const [value, setValue] = useState("Kaixo");
 	return (
 		<TextField
-			id="testua"
+			id="text"
 			label={LABEL}
 			value={value}
 			onChange={setValue}
@@ -33,7 +33,7 @@ describe("TextField", () => {
 	it("passes the typed text to onChange", async () => {
 		const user = userEvent.setup();
 		const onChange = vi.fn<(value: string) => void>();
-		render(<TextField id="testua" label={LABEL} value="" onChange={onChange} />);
+		render(<TextField id="text" label={LABEL} value="" onChange={onChange} />);
 
 		await user.type(screen.getByRole("textbox", { name: LABEL }), "M");
 
@@ -65,7 +65,7 @@ describe("TextField", () => {
 	it("describes the field with its hint", () => {
 		render(
 			<TextField
-				id="testua"
+				id="text"
 				label={LABEL}
 				value=""
 				onChange={vi.fn<(value: string) => void>()}
@@ -81,7 +81,7 @@ describe("TextField", () => {
 	it("can be disabled, keeping its text, with a hint that says why", () => {
 		render(
 			<TextField
-				id="testua"
+				id="text"
 				label={LABEL}
 				value="Eskaneatu"
 				onChange={vi.fn<(value: string) => void>()}

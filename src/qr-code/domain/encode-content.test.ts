@@ -5,7 +5,7 @@ import { MAX_LINK_LENGTH } from "./parse-link";
 import type { ContentEncoding } from "./qr-content";
 
 function encoded(payload: string) {
-	return { type: "esteka", payload, link: payload, schemeAdded: false } as const;
+	return { type: "link", payload, link: payload, schemeAdded: false } as const;
 }
 
 function payloadOf(result: ContentEncoding): string {
@@ -17,10 +17,10 @@ function payloadOf(result: ContentEncoding): string {
 
 describe("encodeContent", () => {
 	it("encodes a link as its normalised form", () => {
-		expect(encodeContent({ type: "esteka", link: "kode.eus/menua" })).toEqual({
+		expect(encodeContent({ type: "link", link: "kode.eus/menua" })).toEqual({
 			status: "valid",
 			encoded: {
-				type: "esteka",
+				type: "link",
 				payload: "https://kode.eus/menua",
 				link: "https://kode.eus/menua",
 				schemeAdded: true,
@@ -29,11 +29,11 @@ describe("encodeContent", () => {
 	});
 
 	it("waits for a link while it is blank", () => {
-		expect(encodeContent({ type: "esteka", link: "  " })).toEqual({ status: "empty" });
+		expect(encodeContent({ type: "link", link: "  " })).toEqual({ status: "empty" });
 	});
 
 	it("names the link as the wrong field, with the reason", () => {
-		expect(encodeContent({ type: "esteka", link: "ftp://kode.eus/" })).toEqual({
+		expect(encodeContent({ type: "link", link: "ftp://kode.eus/" })).toEqual({
 			status: "invalid",
 			problems: [{ field: "link", reason: "scheme" }],
 		});
@@ -45,7 +45,7 @@ describe("encodeContent", () => {
 		// Each ñ becomes %C3%B1, six characters, so this link sits just under the length limit.
 		const accented = `${base}${"ñ".repeat(Math.floor((MAX_LINK_LENGTH - base.length) / 6))}`;
 
-		const payload = payloadOf(encodeContent({ type: "esteka", link: accented }));
+		const payload = payloadOf(encodeContent({ type: "link", link: accented }));
 
 		expect(payload).toMatch(/^[ -~]+$/u);
 		expect(new TextEncoder().encode(payload).length).toBeLessThanOrEqual(MAX_PAYLOAD_BYTES);

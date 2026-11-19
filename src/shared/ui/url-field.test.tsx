@@ -10,7 +10,7 @@ describe("UrlField", () => {
 	it("is a text field named by its visible label", () => {
 		render(
 			<UrlField
-				id="esteka"
+				id="link"
 				label={LABEL}
 				value=""
 				onChange={vi.fn<(value: string) => void>()}
@@ -23,7 +23,7 @@ describe("UrlField", () => {
 	it("hides the https:// chip from assistive tech", () => {
 		render(
 			<UrlField
-				id="esteka"
+				id="link"
 				label={LABEL}
 				value=""
 				onChange={vi.fn<(value: string) => void>()}
@@ -37,7 +37,7 @@ describe("UrlField", () => {
 	it("announces an error, links it to the field and marks the field invalid", () => {
 		render(
 			<UrlField
-				id="esteka"
+				id="link"
 				label={LABEL}
 				value="ftp://x"
 				onChange={vi.fn<(value: string) => void>()}
@@ -56,7 +56,7 @@ describe("UrlField", () => {
 	it("describes the field with a success message over a hint, without an alert", () => {
 		render(
 			<UrlField
-				id="esteka"
+				id="link"
 				label={LABEL}
 				value="kode.eus"
 				onChange={vi.fn<(value: string) => void>()}
@@ -74,7 +74,7 @@ describe("UrlField", () => {
 	it("describes the field with a hint alone", () => {
 		render(
 			<UrlField
-				id="esteka"
+				id="link"
 				label={LABEL}
 				value=""
 				onChange={vi.fn<(value: string) => void>()}
@@ -91,7 +91,7 @@ describe("UrlField", () => {
 		const user = userEvent.setup();
 		const onChange = vi.fn<(value: string) => void>();
 		const onBlur = vi.fn<() => void>();
-		render(<UrlField id="esteka" label={LABEL} value="" onChange={onChange} onBlur={onBlur} />);
+		render(<UrlField id="link" label={LABEL} value="" onChange={onChange} onBlur={onBlur} />);
 
 		await user.type(screen.getByRole("textbox", { name: LABEL }), "k");
 		await user.tab();

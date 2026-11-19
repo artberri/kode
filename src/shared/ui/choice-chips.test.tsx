@@ -5,18 +5,18 @@ import { describe, expect, it, vi } from "vitest";
 
 import { ChoiceChips, type ChoiceChipsProps } from "./choice-chips";
 
-type Kind = "esteka" | "testua" | "wifi";
+type Kind = "link" | "text" | "wifi";
 
 const ITEMS = [
-	{ value: "esteka", label: "Esteka", icon: "link" },
-	{ value: "testua", label: "Testua", icon: "text" },
+	{ value: "link", label: "Esteka", icon: "link" },
+	{ value: "text", label: "Testua", icon: "text" },
 	{ value: "wifi", label: "WiFi" },
 ] as const;
 
 const LEGEND = "Zer partekatu nahi duzu?";
 
 function Harness(props: Partial<Pick<ChoiceChipsProps<Kind>, "hideLegend" | "hint">>) {
-	const [value, setValue] = useState<Kind>("esteka");
+	const [value, setValue] = useState<Kind>("link");
 	return (
 		<ChoiceChips
 			name="mota"
@@ -40,8 +40,8 @@ describe("ChoiceChips", () => {
 		expect(screen.getByRole("group", { name: LEGEND })).toBeVisible();
 		expect(screen.getByText(LEGEND)).not.toHaveClass("sr-only");
 		expect(screen.getAllByRole("radio").map((radio) => radio.getAttribute("value"))).toEqual([
-			"esteka",
-			"testua",
+			"link",
+			"text",
 			"wifi",
 		]);
 		expect(screen.getByRole("radio", { name: "Esteka" })).toBeChecked();
@@ -82,14 +82,14 @@ describe("ChoiceChips", () => {
 				name="mota"
 				legend={LEGEND}
 				items={ITEMS}
-				value="esteka"
+				value="link"
 				onChange={onChange}
 			/>,
 		);
 
 		await user.click(screen.getByRole("radio", { name: "Testua" }));
 
-		expect(onChange).toHaveBeenCalledExactlyOnceWith("testua");
+		expect(onChange).toHaveBeenCalledExactlyOnceWith("text");
 	});
 
 	it("describes the group with its hint", () => {

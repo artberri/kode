@@ -23,7 +23,7 @@ const TYPE_CHIPS = OFFERED_TYPES.map((type) => {
  * only, so switching back shows it again.
  */
 export function useContent() {
-	const [type, setType] = useState<OfferedType>("esteka");
+	const [type, setType] = useState<OfferedType>("link");
 	const [drafts, setDrafts] = useState<ContentDrafts>(EMPTY_DRAFTS);
 	const changeContent = useCallback((next: QrContent) => {
 		setDrafts((current) => ({ ...current, [next.type]: next }));

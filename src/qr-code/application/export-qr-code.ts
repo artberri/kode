@@ -1,5 +1,5 @@
 import { encodeContent } from "../domain/encode-content";
-import type { QrContent } from "../domain/qr-content";
+import { DOWNLOAD_NAMES, type QrContent } from "../domain/qr-content";
 import type { QrDesign } from "../domain/qr-design";
 import { renderQrSvg } from "../domain/render-qr-svg";
 import type { FileSaver } from "./file-saver";
@@ -55,7 +55,7 @@ export async function exportQrCode(
 			? new Blob([svg], { type: "image/svg+xml" })
 			: await rasterizer.rasterize(svg, { format, longSide: EXPORT_LONG_SIDE });
 	// Named after the type, so a folder of codes says what each one holds.
-	const fileName = `kode-${content.type}.${format}`;
+	const fileName = `kode-${DOWNLOAD_NAMES[content.type]}.${format}`;
 	saver.save({ name: fileName, blob });
 	return { status: "saved", fileName };
 }

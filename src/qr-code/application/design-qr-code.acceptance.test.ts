@@ -12,12 +12,12 @@ function design(overrides: Partial<QrDesign> = {}): QrDesign {
 	return { ...DEFAULT_DESIGN, ...overrides };
 }
 
-function esteka(link: string): QrContent {
-	return { type: "esteka", link };
+function linkContent(link: string): QrContent {
+	return { type: "link", link };
 }
 
-function testua(text: string): QrContent {
-	return { type: "testua", text };
+function textContent(text: string): QrContent {
+	return { type: "text", text };
 }
 
 function svgOf(result: DesignQrCodeResult): string {
@@ -34,9 +34,11 @@ function numbersIn(svg: string, pattern: RegExp): number[] {
 describe("designQrCode", () => {
 	it("waits for a link while the field is empty, without encoding anything", () => {
 		const encoder = new FixedMatrixEncoder();
-		expect(designQrCode({ content: esteka("  "), design: design() }, { encoder })).toEqual({
-			status: "empty",
-		});
+		expect(designQrCode({ content: linkContent("  "), design: design() }, { encoder })).toEqual(
+			{
+				status: "empty",
+			},
+		);
 		expect(encoder.encoded).toEqual([]);
 	});
 
@@ -47,23 +49,25 @@ describe("designQrCode", () => {
 		{ link: `https://kode.eus/${"a".repeat(1000)}`, reason: "too-long" },
 	])("rejects $link as $reason, without encoding anything", ({ link, reason }) => {
 		const encoder = new FixedMatrixEncoder();
-		expect(designQrCode({ content: esteka(link), design: design() }, { encoder })).toEqual({
-			status: "invalid",
-			problems: [{ field: "link", reason }],
-		});
+		expect(designQrCode({ content: linkContent(link), design: design() }, { encoder })).toEqual(
+			{
+				status: "invalid",
+				problems: [{ field: "link", reason }],
+			},
+		);
 		expect(encoder.encoded).toEqual([]);
 	});
 
 	it("encodes the normalised link and says whether https:// was added", () => {
 		const encoder = new FixedMatrixEncoder();
 		const result = designQrCode(
-			{ content: esteka(" kode.eus/menua "), design: design() },
+			{ content: linkContent(" kode.eus/menua "), design: design() },
 			{ encoder },
 		);
 		expect(result).toMatchObject({
 			status: "ready",
 			encoded: {
-				type: "esteka",
+				type: "link",
 				payload: "https://kode.eus/menua",
 				link: "https://kode.eus/menua",
 				schemeAdded: true,
@@ -74,7 +78,7 @@ describe("designQrCode", () => {
 
 	it("keeps a link that already has its scheme", () => {
 		const result = designQrCode(
-			{ content: esteka("http://kode.eus/"), design: design() },
+			{ content: linkContent("http://kode.eus/"), design: design() },
 			{ encoder: new FixedMatrixEncoder() },
 		);
 		expect(result).toMatchObject({
@@ -86,17 +90,19 @@ describe("designQrCode", () => {
 	it("encodes a text exactly as typed, line breaks and accents included", () => {
 		const encoder = new FixedMatrixEncoder();
 		const text = " Kaixo!\nGoñi · Azpeitia — 19:00 ";
-		const result = designQrCode({ content: testua(text), design: design() }, { encoder });
+		const result = designQrCode({ content: textContent(text), design: design() }, { encoder });
 		expect(result).toMatchObject({
 			status: "ready",
-			encoded: { type: "testua", payload: text },
+			encoded: { type: "text", payload: text },
 		});
 		expect(encoder.encoded).toEqual([text]);
 	});
 
 	it("waits for a text that is only whitespace, without encoding anything", () => {
 		const encoder = new FixedMatrixEncoder();
-		expect(designQrCode({ content: testua(" \n\t "), design: design() }, { encoder })).toEqual({
+		expect(
+			designQrCode({ content: textContent(" \n\t "), design: design() }, { encoder }),
+		).toEqual({
 			status: "empty",
 		});
 		expect(encoder.encoded).toEqual([]);
@@ -106,10 +112,12 @@ describe("designQrCode", () => {
 		const encoder = new FixedMatrixEncoder();
 		// 334 dashes of three bytes each: 1002 bytes in 334 characters.
 		const text = "—".repeat(334);
-		expect(designQrCode({ content: testua(text), design: design() }, { encoder })).toEqual({
-			status: "invalid",
-			problems: [{ field: "payload", reason: "too-long", excessBytes: 2 }],
-		});
+		expect(designQrCode({ content: textContent(text), design: design() }, { encoder })).toEqual(
+			{
+				status: "invalid",
+				problems: [{ field: "payload", reason: "too-long", excessBytes: 2 }],
+			},
+		);
 		expect(encoder.encoded).toEqual([]);
 	});
 
@@ -122,7 +130,7 @@ describe("designQrCode", () => {
 		} as const;
 		const result = designQrCode(
 			{
-				content: esteka("kode.eus"),
+				content: linkContent("kode.eus"),
 				design: design({ frame: "label", frameText: "Menua", colours }),
 			},
 			{ encoder: new FixedMatrixEncoder() },
@@ -138,7 +146,10 @@ describe("designQrCode", () => {
 	it("draws the frame text as outlines when given them, as the saved files do", async () => {
 		const { outline } = await new BoxFrameTextOutliner().load();
 		const result = designQrCode(
-			{ content: esteka("kode.eus"), design: design({ frame: "label", frameText: "Menua" }) },
+			{
+				content: linkContent("kode.eus"),
+				design: design({ frame: "label", frameText: "Menua" }),
+			},
 			{ encoder: new FixedMatrixEncoder(), outlineFrameText: outline },
 		);
 
@@ -154,7 +165,7 @@ describe("designQrCode", () => {
 	] as const)("rates $qr on $background as $contrast", ({ qr, background, contrast }) => {
 		const colours = { ...DEFAULT_DESIGN.colours, qr, background };
 		const result = designQrCode(
-			{ content: esteka("kode.eus"), design: design({ colours }) },
+			{ content: linkContent("kode.eus"), design: design({ colours }) },
 			{ encoder: new FixedMatrixEncoder() },
 		);
 		expect(result).toMatchObject({ status: "ready", contrast });
@@ -162,7 +173,7 @@ describe("designQrCode", () => {
 
 	it.each(FRAMES)("leaves four modules of quiet zone inside the %s frame", (frame) => {
 		const result = designQrCode(
-			{ content: esteka("kode.eus"), design: design({ frame }) },
+			{ content: linkContent("kode.eus"), design: design({ frame }) },
 			{ encoder: new FixedMatrixEncoder() },
 		);
 		const svg = svgOf(result);

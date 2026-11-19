@@ -9,8 +9,8 @@ import {
 	type QrContent,
 } from "../../domain/qr-content";
 import type { ContentFormProps } from "./forms/content-form";
-import { EstekaForm } from "./forms/esteka-form";
-import { TestuaForm } from "./forms/testua-form";
+import { LinkForm } from "./forms/link-form";
+import { TextForm } from "./forms/text-form";
 
 /** The types the generator offers: those with a form. */
 export type OfferedType = QrContent["type"];
@@ -32,19 +32,19 @@ interface ContentTypeUi<Type extends OfferedType> {
 }
 
 const CONTENT_TYPES: { readonly [Type in OfferedType]: ContentTypeUi<Type> } = {
-	esteka: {
+	link: {
 		label: "Esteka",
 		icon: "link",
-		Form: EstekaForm,
-		empty: { type: "esteka", link: "" },
+		Form: LinkForm,
+		empty: { type: "link", link: "" },
 		previewName: ({ link }) => link,
 		waitingLabel: "QR kodearen aurrebista, esteka baliozko baten zain",
 	},
-	testua: {
+	text: {
 		label: "Testua",
 		icon: "text",
-		Form: TestuaForm,
-		empty: { type: "testua", text: "" },
+		Form: TextForm,
+		empty: { type: "text", text: "" },
 		previewName: () => "testua",
 		waitingLabel: "QR kodearen aurrebista, testu laburrago baten zain",
 	},
@@ -63,8 +63,8 @@ export function contentTypeUi<Type extends OfferedType>(type: Type): ContentType
 export type ContentDrafts = { readonly [Type in OfferedType]: ContentOf<Type> };
 
 export const EMPTY_DRAFTS: ContentDrafts = {
-	esteka: CONTENT_TYPES.esteka.empty,
-	testua: CONTENT_TYPES.testua.empty,
+	link: CONTENT_TYPES.link.empty,
+	text: CONTENT_TYPES.text.empty,
 };
 
 function previewNameAs<Type extends OfferedType>(type: Type, encoded: EncodedOf<Type>): string {

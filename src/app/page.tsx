@@ -30,7 +30,7 @@ const FOOTER_LINK = "font-bold text-ink no-underline hover:text-violet";
 /** The hero's sample code, drawn once at build time: the sticker is its frame. */
 const sample = designQrCode(
 	{
-		content: { type: "esteka", link: SAMPLE_LINK },
+		content: { type: "link", link: SAMPLE_LINK },
 		design: { ...DEFAULT_DESIGN, frame: "none" },
 	},
 	{ encoder: new QrcodeGeneratorEncoder() },

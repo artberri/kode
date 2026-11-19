@@ -29,7 +29,7 @@ function fieldMessages(result: DesignQrCodeResult, left: boolean): FieldMessages
 	if (result.status === "empty") {
 		return { hint: "Itsatsi esteka bat zure QRa sortzeko." };
 	}
-	if (result.status === "ready" && result.encoded.type === "esteka") {
+	if (result.status === "ready" && result.encoded.type === "link") {
 		const { link, schemeAdded } = result.encoded;
 		return schemeAdded
 			? { success: `https:// gehitu diogu hasieran: ${link}` }
@@ -43,20 +43,20 @@ function fieldMessages(result: DesignQrCodeResult, left: boolean): FieldMessages
 }
 
 /** Esteka: the link field, with what the code will open or why it can't. */
-export function EstekaForm({ content, onChange, result }: ContentFormProps<"esteka">) {
+export function LinkForm({ content, onChange, result }: ContentFormProps<"link">) {
 	const [left, setLeft] = useState(false);
 	const leaveField = useCallback(() => {
 		setLeft(true);
 	}, []);
 	const changeLink = useCallback(
 		(link: string) => {
-			onChange({ type: "esteka", link });
+			onChange({ type: "link", link });
 		},
 		[onChange],
 	);
 	return (
 		<UrlField
-			id="esteka"
+			id="link"
 			label="Nora eraman behar du zure QRak?"
 			value={content.link}
 			onChange={changeLink}
