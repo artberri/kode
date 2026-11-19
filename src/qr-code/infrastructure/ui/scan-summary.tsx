@@ -16,7 +16,8 @@ export function ScanSummary({ result }: { readonly result: DesignQrCodeResult })
 		<>
 			<p className="m-0 flex items-start gap-2.5 text-body">
 				<Icon name="scan" className="text-violet" />
-				<span>
+				{/* A link has no spaces to break at: let it wrap anywhere, or the card clips it. */}
+				<span className="min-w-0 wrap-anywhere">
 					<b>Eskaneatzean:</b> {scanSentenceOf(result.encoded)}
 				</span>
 			</p>
