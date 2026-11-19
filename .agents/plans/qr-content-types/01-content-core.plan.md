@@ -103,12 +103,12 @@ Turn the generator from "a link" into "content of a type". This means a domain c
     - choosing Testua shows its field;
     - text typed there and a link typed in Esteka both survive switching back and forth;
     - the preview label follows the selected type.
-- [ ] Component tests: `choice-chips.test.tsx` covers a radio group with a legend, arrow keys and an optional icon. `text-area.test.tsx` covers the label, "(aukerakoa)", the counter beside the hint and `maxLength`.
+- [x] Component tests: `choice-chips.test.tsx` covers a radio group with a legend, arrow keys and an optional icon. `text-area.test.tsx` covers the label, "(aukerakoa)", the counter beside the hint, `maxLength` and an `error`.
 - [x] Unit test `content/testua`: the payload equals the text, and line breaks are kept.
 
 **To-do:**
 
-- [ ] Build `src/shared/ui/choice-chips.tsx` and `src/shared/ui/text-area.tsx` to the design system's README and `bundle.js`. Use `radio-group.tsx`'s `useRadioChange` for the chips.
+- [x] Build `src/shared/ui/choice-chips.tsx` and `src/shared/ui/text-area.tsx` to the design system's README and `bundle.js`. Use `radio-group.tsx`'s `useRadioChange` for the chips. TextArea gained `error` (500 characters of three-byte text go over 1,000 bytes), and the design system with it (version 26); `UrlField`'s message moved to `field-message.tsx` to share it.
 - [x] Add the `text` icon to `icon.tsx`, with its path from the design system.
 - [x] Add `domain/content/testua.ts` and its member of `QrContent`. `encodeContent` picks the encoder from a table typed per type (`ENCODERS`) rather than a `switch`, which `consistent-return` refuses.
 - [ ] Add `infrastructure/ui/content-types.tsx`, the registry, with Esteka and Testua. Add `infrastructure/ui/forms/testua-form.tsx`: TextArea "Zure testua", max 500, hint "Testua bera gordetzen da QRan: ez du ezer irekitzen."

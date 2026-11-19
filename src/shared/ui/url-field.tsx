@@ -1,14 +1,6 @@
 import { type ChangeEvent, type ReactNode, useCallback } from "react";
 
-import { Icon } from "./icon";
-
-type Tone = "error" | "success" | "hint";
-
-const MESSAGE_TONE: Record<Tone, string> = {
-	error: "font-medium text-danger",
-	success: "text-success",
-	hint: "text-ink-muted",
-};
+import { FieldMessage, pickMessage } from "./field-message";
 
 export interface UrlFieldProps {
 	readonly id: string;
@@ -39,39 +31,6 @@ const HTTPS_CHIP = (
 		https://
 	</span>
 );
-
-interface Message {
-	readonly tone: Tone;
-	readonly text: string;
-}
-
-function pickMessage(
-	error: string | undefined,
-	success: string | undefined,
-	hint: string | undefined,
-): Message | undefined {
-	if (error !== undefined) {
-		return { tone: "error", text: error };
-	}
-	if (success !== undefined) {
-		return { tone: "success", text: success };
-	}
-	return hint === undefined ? undefined : { tone: "hint", text: hint };
-}
-
-function FieldMessage({ id, message }: { readonly id: string; readonly message: Message }) {
-	return (
-		<p
-			id={id}
-			role={message.tone === "error" ? "alert" : undefined}
-			className={`m-0 flex items-center gap-1.5 text-small ${MESSAGE_TONE[message.tone]}`}
-		>
-			{message.tone === "error" && <Icon name="error" size={16} />}
-			{message.tone === "success" && <Icon name="check" size={16} />}
-			{message.text}
-		</p>
-	);
-}
 
 /**
  * The pill-shaped link input with an "https://" chip in front. The chip is decoration: people
