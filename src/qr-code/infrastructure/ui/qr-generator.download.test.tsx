@@ -5,18 +5,21 @@ import { BoxFrameTextOutliner } from "../box-frame-text-outliner";
 import { BrokenRasterizer, downloadButton, FIELD, setup, typeLink } from "./qr-generator.harness";
 
 describe("QrGenerator's download step", () => {
-	it("downloads kode-qr.png, and the button follows the chosen format", async () => {
+	it("downloads kode-esteka.png, and the button follows the chosen format", async () => {
 		const { user, saver } = setup({ outliner: new BoxFrameTextOutliner() });
 		await typeLink(user);
 
 		await user.click(screen.getByRole("button", { name: "Deskargatu PNG" }));
-		expect(await screen.findByText("Deskargatuta: kode-qr.png")).toBeVisible();
-		expect(saver.saved.map((file) => file.name)).toEqual(["kode-qr.png"]);
+		expect(await screen.findByText("Deskargatuta: kode-esteka.png")).toBeVisible();
+		expect(saver.saved.map((file) => file.name)).toEqual(["kode-esteka.png"]);
 
 		await user.click(screen.getByRole("radio", { name: "SVG" }));
 		await user.click(screen.getByRole("button", { name: "Deskargatu SVG" }));
-		expect(await screen.findByText("Deskargatuta: kode-qr.svg")).toBeVisible();
-		expect(saver.saved.map((file) => file.name)).toEqual(["kode-qr.png", "kode-qr.svg"]);
+		expect(await screen.findByText("Deskargatuta: kode-esteka.svg")).toBeVisible();
+		expect(saver.saved.map((file) => file.name)).toEqual([
+			"kode-esteka.png",
+			"kode-esteka.svg",
+		]);
 	});
 
 	it("labels the download step and starts on PNG", () => {
@@ -68,7 +71,7 @@ describe("QrGenerator's download step", () => {
 		const { user } = setup({ outliner: new BoxFrameTextOutliner() });
 		await typeLink(user);
 		await user.click(downloadButton());
-		const message = await screen.findByText("Deskargatuta: kode-qr.png");
+		const message = await screen.findByText("Deskargatuta: kode-esteka.png");
 
 		await user.click(screen.getByRole("radio", { name: "Etiketa" }));
 

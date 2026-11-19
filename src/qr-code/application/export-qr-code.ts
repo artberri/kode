@@ -1,4 +1,5 @@
-import { parseLink } from "../domain/parse-link";
+import { encodeContent } from "../domain/encode-content";
+import type { QrContent } from "../domain/qr-content";
 import type { QrDesign } from "../domain/qr-design";
 import { renderQrSvg } from "../domain/render-qr-svg";
 import type { FileSaver } from "./file-saver";
@@ -12,8 +13,8 @@ export type ExportFormat = "png" | "svg" | "webp";
 export const EXPORT_LONG_SIDE = 1024;
 
 export interface ExportQrCodeInput {
-	/** The link as people typed it. */
-	readonly link: string;
+	/** What people filled in, as they typed it. */
+	readonly content: QrContent;
 	readonly design: QrDesign;
 	readonly format: ExportFormat;
 }
@@ -27,7 +28,7 @@ export interface ExportQrCodeDependencies {
 
 export type ExportQrCodeResult =
 	| { readonly status: "saved"; readonly fileName: string }
-	| { readonly status: "no-link" }
+	| { readonly status: "invalid-content" }
 	| { readonly status: "webp-unsupported" };
 
 /**
@@ -35,25 +36,26 @@ export type ExportQrCodeResult =
  * looks the same in any viewer. Nothing leaves the browser.
  */
 export async function exportQrCode(
-	{ link, design, format }: ExportQrCodeInput,
+	{ content, design, format }: ExportQrCodeInput,
 	{ encoder, rasterizer, saver, outliner }: ExportQrCodeDependencies,
 ): Promise<ExportQrCodeResult> {
-	const parsed = parseLink(link);
-	if (parsed.status !== "valid") {
-		return { status: "no-link" };
+	const encoding = encodeContent(content);
+	if (encoding.status !== "valid") {
+		return { status: "invalid-content" };
 	}
 	if (format === "webp" && !(await rasterizer.canEncode("webp"))) {
 		return { status: "webp-unsupported" };
 	}
 	const { outline } = await outliner.load();
-	const matrix = encoder.encode(parsed.link);
+	const matrix = encoder.encode(encoding.encoded.payload);
 	// The SVG file has no fixed size, so viewers scale it to fit; a canvas needs one to draw it.
 	const svg = renderQrSvg(matrix, design, { outlineFrameText: outline, sized: format !== "svg" });
 	const blob =
 		format === "svg"
 			? new Blob([svg], { type: "image/svg+xml" })
 			: await rasterizer.rasterize(svg, { format, longSide: EXPORT_LONG_SIDE });
-	const fileName = `kode-qr.${format}`;
+	// Named after the type, so a folder of codes says what each one holds.
+	const fileName = `kode-${content.type}.${format}`;
 	saver.save({ name: fileName, blob });
 	return { status: "saved", fileName };
 }

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import type { QrContent } from "../domain/qr-content";
 import { DEFAULT_DESIGN, type QrDesign } from "../domain/qr-design";
 import { BoxFrameTextOutliner } from "../infrastructure/box-frame-text-outliner";
 import { FakeImageRasterizer } from "../infrastructure/fake-image-rasterizer";
@@ -7,7 +8,7 @@ import { FixedMatrixEncoder } from "../infrastructure/fixed-matrix-encoder";
 import { InMemoryFileSaver } from "../infrastructure/in-memory-file-saver";
 import { exportQrCode, type ExportFormat } from "./export-qr-code";
 
-const LINK = "kode.eus/menua";
+const CONTENT: QrContent = { type: "esteka", link: "kode.eus/menua" };
 
 /** The text of the one file the saver holds. */
 async function savedText(saver: InMemoryFileSaver): Promise<string> {
@@ -28,18 +29,18 @@ function setup({ webp = true }: { readonly webp?: boolean } = {}) {
 		outliner: new BoxFrameTextOutliner(),
 	};
 	const exportAs = async (format: ExportFormat, design: QrDesign = DEFAULT_DESIGN) =>
-		await exportQrCode({ link: LINK, design, format }, dependencies);
+		await exportQrCode({ content: CONTENT, design, format }, dependencies);
 	return { rasterizer, saver, dependencies, exportAs };
 }
 
 describe("exportQrCode", () => {
-	it("saves the SVG as kode-qr.svg, with the frame text as outlines", async () => {
+	it("saves the SVG as kode-esteka.svg, with the frame text as outlines", async () => {
 		const { saver, rasterizer, exportAs } = setup();
 
-		expect(await exportAs("svg")).toEqual({ status: "saved", fileName: "kode-qr.svg" });
+		expect(await exportAs("svg")).toEqual({ status: "saved", fileName: "kode-esteka.svg" });
 
 		expect(saver.saved.map((file) => [file.name, file.blob.type])).toEqual([
-			["kode-qr.svg", "image/svg+xml"],
+			["kode-esteka.svg", "image/svg+xml"],
 		]);
 		const svg = await savedText(saver);
 		expect(svg).toMatch(/^<svg [^>]*>/u);
@@ -60,7 +61,7 @@ describe("exportQrCode", () => {
 	});
 
 	it.each(["png", "webp"] as const)(
-		"draws the same outlined SVG at 1024 px and saves kode-qr.%s",
+		"draws the same outlined SVG at 1024 px and saves kode-esteka.%s",
 		async (format) => {
 			const { saver, rasterizer, exportAs } = setup();
 			const svgFile = setup();
@@ -69,7 +70,7 @@ describe("exportQrCode", () => {
 
 			expect(await exportAs(format)).toEqual({
 				status: "saved",
-				fileName: `kode-qr.${format}`,
+				fileName: `kode-esteka.${format}`,
 			});
 
 			// The same drawing, sized: Firefox can't draw an SVG without a size onto a canvas.
@@ -83,7 +84,7 @@ describe("exportQrCode", () => {
 				]),
 			).toEqual([[svg, { format, longSide: 1024 }]]);
 			expect(saver.saved.map((file) => [file.name, file.blob.type])).toEqual([
-				[`kode-qr.${format}`, `image/${format}`],
+				[`kode-esteka.${format}`, `image/${format}`],
 			]);
 		},
 	);
@@ -101,8 +102,11 @@ describe("exportQrCode", () => {
 		const { saver, dependencies } = setup();
 
 		expect(
-			await exportQrCode({ link, design: DEFAULT_DESIGN, format: "png" }, dependencies),
-		).toEqual({ status: "no-link" });
+			await exportQrCode(
+				{ content: { type: "esteka", link }, design: DEFAULT_DESIGN, format: "png" },
+				dependencies,
+			),
+		).toEqual({ status: "invalid-content" });
 
 		expect(saver.saved).toEqual([]);
 	});

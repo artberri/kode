@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import type { QrContent } from "../domain/qr-content";
 import { DEFAULT_DESIGN, type FrameStyle, type QrDesign } from "../domain/qr-design";
 import { BoxFrameTextOutliner } from "../infrastructure/box-frame-text-outliner";
 import { FixedMatrixEncoder } from "../infrastructure/fixed-matrix-encoder";
@@ -9,6 +10,10 @@ const FRAMES: readonly FrameStyle[] = ["none", "label", "stamp", "clipboard", "t
 
 function design(overrides: Partial<QrDesign> = {}): QrDesign {
 	return { ...DEFAULT_DESIGN, ...overrides };
+}
+
+function esteka(link: string): QrContent {
+	return { type: "esteka", link };
 }
 
 function svgOf(result: DesignQrCodeResult): string {
@@ -25,7 +30,7 @@ function numbersIn(svg: string, pattern: RegExp): number[] {
 describe("designQrCode", () => {
 	it("waits for a link while the field is empty, without encoding anything", () => {
 		const encoder = new FixedMatrixEncoder();
-		expect(designQrCode({ link: "  ", design: design() }, { encoder })).toEqual({
+		expect(designQrCode({ content: esteka("  "), design: design() }, { encoder })).toEqual({
 			status: "empty",
 		});
 		expect(encoder.encoded).toEqual([]);
@@ -38,33 +43,39 @@ describe("designQrCode", () => {
 		{ link: `https://kode.eus/${"a".repeat(1000)}`, reason: "too-long" },
 	])("rejects $link as $reason, without encoding anything", ({ link, reason }) => {
 		const encoder = new FixedMatrixEncoder();
-		expect(designQrCode({ link, design: design() }, { encoder })).toEqual({
+		expect(designQrCode({ content: esteka(link), design: design() }, { encoder })).toEqual({
 			status: "invalid",
-			reason,
+			problems: [{ field: "link", reason }],
 		});
 		expect(encoder.encoded).toEqual([]);
 	});
 
 	it("encodes the normalised link and says whether https:// was added", () => {
 		const encoder = new FixedMatrixEncoder();
-		const result = designQrCode({ link: " kode.eus/menua ", design: design() }, { encoder });
+		const result = designQrCode(
+			{ content: esteka(" kode.eus/menua "), design: design() },
+			{ encoder },
+		);
 		expect(result).toMatchObject({
 			status: "ready",
-			link: "https://kode.eus/menua",
-			schemeAdded: true,
+			encoded: {
+				type: "esteka",
+				payload: "https://kode.eus/menua",
+				link: "https://kode.eus/menua",
+				schemeAdded: true,
+			},
 		});
 		expect(encoder.encoded).toEqual(["https://kode.eus/menua"]);
 	});
 
 	it("keeps a link that already has its scheme", () => {
 		const result = designQrCode(
-			{ link: "http://kode.eus/", design: design() },
+			{ content: esteka("http://kode.eus/"), design: design() },
 			{ encoder: new FixedMatrixEncoder() },
 		);
 		expect(result).toMatchObject({
 			status: "ready",
-			link: "http://kode.eus/",
-			schemeAdded: false,
+			encoded: { link: "http://kode.eus/", schemeAdded: false },
 		});
 	});
 
@@ -76,7 +87,10 @@ describe("designQrCode", () => {
 			frameText: "#ABCDEF",
 		} as const;
 		const result = designQrCode(
-			{ link: "kode.eus", design: design({ frame: "label", frameText: "Menua", colours }) },
+			{
+				content: esteka("kode.eus"),
+				design: design({ frame: "label", frameText: "Menua", colours }),
+			},
 			{ encoder: new FixedMatrixEncoder() },
 		);
 		const svg = svgOf(result);
@@ -90,7 +104,7 @@ describe("designQrCode", () => {
 	it("draws the frame text as outlines when given them, as the saved files do", async () => {
 		const { outline } = await new BoxFrameTextOutliner().load();
 		const result = designQrCode(
-			{ link: "kode.eus", design: design({ frame: "label", frameText: "Menua" }) },
+			{ content: esteka("kode.eus"), design: design({ frame: "label", frameText: "Menua" }) },
 			{ encoder: new FixedMatrixEncoder(), outlineFrameText: outline },
 		);
 
@@ -106,7 +120,7 @@ describe("designQrCode", () => {
 	] as const)("rates $qr on $background as $contrast", ({ qr, background, contrast }) => {
 		const colours = { ...DEFAULT_DESIGN.colours, qr, background };
 		const result = designQrCode(
-			{ link: "kode.eus", design: design({ colours }) },
+			{ content: esteka("kode.eus"), design: design({ colours }) },
 			{ encoder: new FixedMatrixEncoder() },
 		);
 		expect(result).toMatchObject({ status: "ready", contrast });
@@ -114,7 +128,7 @@ describe("designQrCode", () => {
 
 	it.each(FRAMES)("leaves four modules of quiet zone inside the %s frame", (frame) => {
 		const result = designQrCode(
-			{ link: "kode.eus", design: design({ frame }) },
+			{ content: esteka("kode.eus"), design: design({ frame }) },
 			{ encoder: new FixedMatrixEncoder() },
 		);
 		const svg = svgOf(result);

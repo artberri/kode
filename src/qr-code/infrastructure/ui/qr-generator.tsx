@@ -26,11 +26,12 @@ export function QrGenerator({
 }: QrGeneratorProps) {
 	const [link, setLink] = useState("");
 	const [design, setDesign] = useState<QrDesign>(DEFAULT_DESIGN);
+	const content = useMemo(() => ({ type: "esteka", link }) as const, [link]);
 	const dependencies = useMemo(
 		() => ({ encoder: BROWSER_ADAPTERS.encoder, rasterizer, saver, outliner }),
 		[rasterizer, saver, outliner],
 	);
-	const { result, svg, undrawable } = usePreview({ link, design }, dependencies);
+	const { result, svg, undrawable } = usePreview({ content, design }, dependencies);
 	const changeDesign = useCallback<DesignChange>((key, value) => {
 		setDesign((current) => ({ ...current, [key]: value }));
 	}, []);
@@ -38,14 +39,14 @@ export function QrGenerator({
 	const side = useMemo(
 		() => (
 			<DownloadStep
-				link={link}
+				content={content}
 				design={design}
 				ready={result.status === "ready"}
 				preview={preview}
 				dependencies={dependencies}
 			/>
 		),
-		[link, design, result.status, preview, dependencies],
+		[content, design, result.status, preview, dependencies],
 	);
 
 	return (

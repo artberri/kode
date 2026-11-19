@@ -3,11 +3,14 @@ import { useEffect, useMemo, useState } from "react";
 import { type DesignQrCodeResult, designQrCode } from "../../application/design-qr-code";
 import type { FrameTextOutliner, FrameTextOutlines } from "../../application/frame-text-outliner";
 import type { QrMatrixEncoder } from "../../application/qr-matrix-encoder";
+import { encodeContent } from "../../domain/encode-content";
+import type { QrContent } from "../../domain/qr-content";
 import { DEFAULT_DESIGN, type QrDesign } from "../../domain/qr-design";
 import type { OutlineFrameText } from "../../domain/qr-frames";
 
-/** What the preview shows until the link is valid. */
+/** What the preview shows until the content is valid. */
 const PLACEHOLDER_LINK = "https://kode.eus/";
+const PLACEHOLDER: QrContent = { type: "esteka", link: PLACEHOLDER_LINK };
 
 const NONE: readonly string[] = [];
 
@@ -42,7 +45,7 @@ function useFrameTextOutlines(
 	return outlines;
 }
 
-/** The code to show: the link's, or the placeholder's in the same design until the link is valid. */
+/** The code to show: the content's, or the placeholder's in the same design until it is valid. */
 function previewSvg(
 	result: DesignQrCodeResult,
 	design: QrDesign,
@@ -53,7 +56,7 @@ function previewSvg(
 		return result.svg;
 	}
 	const placeholder = designQrCode(
-		{ link: PLACEHOLDER_LINK, design },
+		{ content: PLACEHOLDER, design },
 		{ encoder, outlineFrameText },
 	);
 	return placeholder.status === "ready" ? placeholder.svg : "";
@@ -67,21 +70,22 @@ export interface Preview {
 }
 
 /**
- * The code for the link and design as it will be saved: once the frame font has loaded, the
+ * The code for the content and design as it will be saved: once the frame font has loaded, the
  * frame text is drawn with the same outlines as the files.
  */
 export function usePreview(
-	{ link, design }: { readonly link: string; readonly design: QrDesign },
+	{ content, design }: { readonly content: QrContent; readonly design: QrDesign },
 	{
 		encoder,
 		outliner,
 	}: { readonly encoder: QrMatrixEncoder; readonly outliner: FrameTextOutliner },
 ): Preview {
-	const outlines = useFrameTextOutlines(outliner, link !== "" || design !== DEFAULT_DESIGN);
+	const started = useMemo(() => encodeContent(content).status !== "empty", [content]);
+	const outlines = useFrameTextOutlines(outliner, started || design !== DEFAULT_DESIGN);
 	const outlineFrameText = outlines?.outline;
 	const result = useMemo(
-		() => designQrCode({ link, design }, { encoder, outlineFrameText }),
-		[link, design, encoder, outlineFrameText],
+		() => designQrCode({ content, design }, { encoder, outlineFrameText }),
+		[content, design, encoder, outlineFrameText],
 	);
 	const svg = useMemo(
 		() => previewSvg(result, design, encoder, outlineFrameText),
@@ -100,7 +104,7 @@ export function usePreview(
 /** How the preview names itself, and whether it is dimmed. */
 function previewState(result: DesignQrCodeResult): { label: string; dimmed: boolean } {
 	if (result.status === "ready") {
-		return { label: `QR kodearen aurrebista: ${result.link}`, dimmed: false };
+		return { label: `QR kodearen aurrebista: ${result.encoded.link}`, dimmed: false };
 	}
 	// Nothing typed yet: the placeholder is a sample of the design, not a waiting state.
 	if (result.status === "empty") {

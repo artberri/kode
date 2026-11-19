@@ -5,6 +5,7 @@ import { UrlField } from "@/shared/ui/url-field";
 
 import type { DesignQrCodeResult } from "../../application/design-qr-code";
 import type { InvalidLinkReason } from "../../domain/parse-link";
+import type { ContentProblem } from "../../domain/qr-content";
 
 const ERRORS: Record<InvalidLinkReason, string> = {
 	scheme: "Estekak http:// edo https:// izan behar du. Adibidez: kode.eus",
@@ -12,6 +13,12 @@ const ERRORS: Record<InvalidLinkReason, string> = {
 	spaces: "Estekak ezin du hutsunerik izan. Adibidez: kode.eus/nire-menua",
 	"too-long": "Esteka luzeegia da: gehienez 1000 karaktere.",
 };
+
+/** The link's own reason; a payload over the byte limit reads as a link that is too long. */
+function linkReason(problems: readonly ContentProblem[]): InvalidLinkReason {
+	const [problem] = problems;
+	return problem?.field === "link" ? problem.reason : "too-long";
+}
 
 type FieldMessages =
 	| { readonly hint: string }
@@ -23,14 +30,16 @@ function fieldMessages(result: DesignQrCodeResult, left: boolean): FieldMessages
 		return { hint: "Itsatsi esteka bat zure QRa sortzeko." };
 	}
 	if (result.status === "ready") {
-		return result.schemeAdded
-			? { success: `https:// gehitu diogu hasieran: ${result.link}` }
-			: { success: `Zure QRak esteka hau irekiko du: ${result.link}` };
+		const { link, schemeAdded } = result.encoded;
+		return schemeAdded
+			? { success: `https:// gehitu diogu hasieran: ${link}` }
+			: { success: `Zure QRak esteka hau irekiko du: ${link}` };
 	}
+	const reason = linkReason(result.problems);
 	// "kode" is a host without a dot until ".eus" is typed: only call it wrong once the field is left.
-	return result.reason === "host" && !left
+	return reason === "host" && !left
 		? { hint: "Adibidez: kode.eus/menua" }
-		: { error: ERRORS[result.reason] };
+		: { error: ERRORS[reason] };
 }
 
 /** Step 1, "Esteka": the link field, with what the code will open or why it can't. */

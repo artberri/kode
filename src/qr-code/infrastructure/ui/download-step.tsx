@@ -13,6 +13,7 @@ import {
 	exportQrCode,
 } from "../../application/export-qr-code";
 import type { ImageRasterizer } from "../../application/image-rasterizer";
+import type { QrContent } from "../../domain/qr-content";
 import type { QrDesign } from "../../domain/qr-design";
 
 const FORMATS = [
@@ -43,7 +44,7 @@ function outcomeOf(result: ExportQrCodeResult): Outcome {
 	if (result.status === "webp-unsupported") {
 		return { tone: "warning", text: NO_WEBP };
 	}
-	// The button is disabled without a valid link, so only a race gets here.
+	// The button is disabled without valid content, so only a race gets here.
 	return { tone: "error", text: "Itsatsi esteka baliozko bat lehenago." };
 }
 
@@ -66,7 +67,7 @@ function useWebpSupport(rasterizer: ImageRasterizer): boolean {
 	return webp;
 }
 
-/** Saves the file, and keeps what happened until the link, design or format changes. */
+/** Saves the file, and keeps what happened until the content, design or format changes. */
 function useDownload(input: ExportQrCodeInput, dependencies: ExportQrCodeDependencies) {
 	const [last, setLast] = useState<{ input: ExportQrCodeInput; outcome: Outcome }>();
 	const download = useCallback(() => {
@@ -80,20 +81,20 @@ function useDownload(input: ExportQrCodeInput, dependencies: ExportQrCodeDepende
 }
 
 export interface DownloadStepProps {
-	readonly link: string;
+	readonly content: QrContent;
 	readonly design: QrDesign;
-	/** Whether the link is valid, so there is a code to save. */
+	/** Whether the content is valid, so there is a code to save. */
 	readonly ready: boolean;
 	readonly preview: ReactNode;
 	readonly dependencies: ExportQrCodeDependencies;
 }
 
 /** Step 3, "Deskarga": the preview, the format and the download button. */
-export function DownloadStep({ link, design, ready, preview, dependencies }: DownloadStepProps) {
+export function DownloadStep({ content, design, ready, preview, dependencies }: DownloadStepProps) {
 	const webp = useWebpSupport(dependencies.rasterizer);
 	const [picked, setPicked] = useState<ExportFormat>("png");
 	const format = picked === "webp" && !webp ? "png" : picked;
-	const input = useMemo(() => ({ link, design, format }), [link, design, format]);
+	const input = useMemo(() => ({ content, design, format }), [content, design, format]);
 	const { download, outcome } = useDownload(input, dependencies);
 	return (
 		<fieldset

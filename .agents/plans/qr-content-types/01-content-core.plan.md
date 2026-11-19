@@ -8,9 +8,9 @@ Turn the generator from "a link" into "content of a type". This means a domain c
 
 ## Behaviour
 
-- **B1.** Esteka behaves as today: the same errors, the same "https:// gehitu diogu hasieran" confirmation, the same preview label and the same encoded link. — _proved by:_
-- **B2.** A download is named after its type and format: `kode-esteka.png`, `kode-testua.svg`. — _proved by:_
-- **B3.** Content whose payload is over 1,000 UTF-8 bytes is refused as too long, without encoding anything, with a message that says how much to cut. — _proved by:_
+- **B1.** Esteka behaves as today: the same errors, the same "https:// gehitu diogu hasieran" confirmation, the same preview label and the same encoded link. — _proved by:_ `design-qr-code.acceptance.test.ts`, "rejects $link as $reason, without encoding anything" and "encodes the normalised link and says whether https:// was added"; `qr-generator.test.tsx`, "says https:// was added and names the preview with the full link" and the error cases, unchanged
+- **B2.** A download is named after its type and format: `kode-esteka.png`, `kode-testua.svg`. — _proved by:_ `export-qr-code.acceptance.test.ts`, "saves the SVG as kode-esteka.svg, …" and "draws the same outlined SVG at 1024 px and saves kode-esteka.%s"; `qr-generator.download.test.tsx`, "downloads kode-esteka.png, …"
+- **B3.** Content whose payload is over 1,000 UTF-8 bytes is refused as too long, without encoding anything, with a message that says how much to cut. — _proved by:_ `encode-content.test.ts`, "limitPayload › counts UTF-8 bytes, so ñ counts as two, and says how many bytes to cut" (the domain refusal, with `excessBytes`); the message comes with Testua in phase 2
 - **B4.** A scanner reads the code back byte for byte, accents and symbols included ("Goñi · Azpeitia — 19:00"). — _proved by:_ `qr-matrix-encoder.contract.test.ts`, "QrcodeGeneratorEncoder › encodes Goñi · Azpeitia — 19:00 🎶 so a reader decodes it back" and "writes the text as UTF-8 bytes, as phone cameras expect"
 - **B5.** "1 · Edukia" opens with the pills "Zer partekatu nahi duzu?" and Esteka selected. The pills list only the types that work. — _proved by:_
 - **B6.** Switching type keeps what was typed in each type for the visit. Switching back shows it again, and the preview follows the selected type. Nothing is stored. — _proved by:_
@@ -59,35 +59,35 @@ Turn the generator from "a link" into "content of a type". This means a domain c
 
 ## Open questions and risks
 
-| #   | Question or risk                                                                                                                                                                                    | Source           | Affects | Status   |
-| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- | ------- | -------- |
-| 1   | Does `jsqr` give UTF-8 back in `data`, or only raw bytes in `binaryData`? Resolved: `data` is the UTF-8-decoded text, and the contract test checks `binaryData` against `TextEncoder` too.          | Encoder contract | Phase 1 | Resolved |
-| 2   | The density thresholds (45 and 69 modules at level Q) are an estimate. Check them by scanning printed codes at 3 cm on a few phones and adjust the design system if they're wrong.                  | Design           | Phase 3 | Open     |
-| 3   | `MAX_LINK_LENGTH` and `MAX_PAYLOAD_BYTES` are both 1,000. A link with non-ASCII characters is percent-encoded by `new URL`, so it stays ASCII and the two limits agree; keep a test that pins this. | Domain           | Phase 1 | Open     |
+| #   | Question or risk                                                                                                                                                                                                                                                         | Source           | Affects | Status   |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------- | ------- | -------- |
+| 1   | Does `jsqr` give UTF-8 back in `data`, or only raw bytes in `binaryData`? Resolved: `data` is the UTF-8-decoded text, and the contract test checks `binaryData` against `TextEncoder` too.                                                                               | Encoder contract | Phase 1 | Resolved |
+| 2   | The density thresholds (45 and 69 modules at level Q) are an estimate. Check them by scanning printed codes at 3 cm on a few phones and adjust the design system if they're wrong.                                                                                       | Design           | Phase 3 | Open     |
+| 3   | `MAX_LINK_LENGTH` and `MAX_PAYLOAD_BYTES` are both 1,000. A link with non-ASCII characters is percent-encoded by `new URL`, so it stays ASCII and the two limits agree. Resolved: pinned by `encode-content.test.ts`, "keeps every valid link within the byte limit, …". | Domain           | Phase 1 | Resolved |
 
-## Phase 1: Encode content by type
+## Phase 1: Encode content by type ✅
 
 **Description:** This is the model and use-case change, with no new type yet: the generator still only offers Esteka. It lands first so later phases add types without touching the use cases again. It touches about 15 files because the input type ripples through both use cases, their tests and the three UI files that call them.
 
 **Outside-in TDD checklist:**
 
-- [ ] Acceptance test `design-qr-code` (B1, B3): rewrite the link cases to pass `{ type: "esteka", link }`, with the same expectations. Add a payload over 1,000 bytes that is refused as too long, with nothing encoded.
-- [ ] Acceptance test `export-qr-code` (B2): the file is `kode-esteka.png`; invalid content answers `invalid-content`.
-- [ ] Unit test `encode-content` (B3): the byte limit counts UTF-8 bytes ("ñ" counts as 2) and is checked before any encoder runs.
+- [x] Acceptance test `design-qr-code` (B1, B3): rewrite the link cases to pass `{ type: "esteka", link }`, with the same expectations. Add a payload over 1,000 bytes that is refused as too long, with nothing encoded. With only Esteka, a link can't pass its own 1,000-character rule and still be over 1,000 bytes, so this case is the link's `too-long`; the byte limit's own acceptance case moves to phase 2, with Testua.
+- [x] Acceptance test `export-qr-code` (B2): the file is `kode-esteka.png`; invalid content answers `invalid-content`.
+- [x] Unit test `encode-content` (B3): the byte limit counts UTF-8 bytes ("ñ" counts as 2) and is checked before any encoder runs. The check is `limitPayload`, exported and tested on its own, since no Esteka link reaches it.
 - [x] Contract test `QrMatrixEncoder` (B4): a non-ASCII text round-trips through `jsqr` for `QrcodeGeneratorEncoder`; `FixedMatrixEncoder` still records what it was given.
-- [ ] Component tests: the existing `qr-generator` and `qr-generator.download` tests pass, with the file name updated to `kode-esteka.png`.
+- [x] Component tests: the existing `qr-generator` and `qr-generator.download` tests pass, with the file name updated to `kode-esteka.png`.
 
 **To-do:**
 
-- [ ] Add `domain/qr-content.ts` (`QrContentType`, `QrContent`, the result types) and `domain/encode-content.ts` with the byte limit. Add `domain/content/esteka.ts`, which wraps `parseLink`.
-- [ ] Change `designQrCode` and `exportQrCode` to take `content`, encode through `encodeContent`, and name files `kode-<type>.<format>`.
+- [x] Add `domain/qr-content.ts` (`QrContentType`, `QrContent`, the result types) and `domain/encode-content.ts` with the byte limit. Add `domain/content/esteka.ts`, which wraps `parseLink`.
+- [x] Change `designQrCode` and `exportQrCode` to take `content`, encode through `encodeContent`, and name files `kode-<type>.<format>`. `encodeContent`'s valid case is `{ status: "valid", encoded }`, where `encoded` holds the `type`, the `payload` and Esteka's `link` and `schemeAdded`. The `ready` result carries the same `encoded`. The too-long problem is `{ field: "payload", reason: "too-long", excessBytes }`. `encodeContent` calls Esteka's encoder directly; the `switch` on `type` comes with the second type, as oxlint refuses a one-case switch.
 - [x] Make `QrcodeGeneratorEncoder` encode UTF-8 and update its doc comment. Neither offered hook was used: 2.0.4 has no `stringToBytesFuncs` at runtime (only in its `.d.ts`), and `qrcode_UTF8.mjs` works by replacing the library's shared `stringToBytes`. The encoder passes one character per `TextEncoder` byte in byte mode instead.
-- [ ] Update `qr-generator.tsx`, `link-step.tsx`, `qr-preview.tsx` and `download-step.tsx` to hold and pass `{ type: "esteka", link }`. Copy and layout stay as they are.
+- [x] Update `qr-generator.tsx`, `link-step.tsx`, `qr-preview.tsx` and `download-step.tsx` to hold and pass `{ type: "esteka", link }`. Copy and layout stay as they are.
 
 **Verify:**
 
-- [ ] `bun run qa` passes with zero warnings.
-- [ ] On `bun run dev`, a link still previews and downloads as before, now as `kode-esteka.png`.
+- [x] `bun run qa` passes with zero warnings.
+- [x] On `bun run dev`, a link still previews and downloads as before, now as `kode-esteka.png`. The page, the field, the sample preview and the hero code render on dev; the download name is proved by `qr-generator.download.test.tsx`, not by a click in a real browser.
 
 ## Phase 2: Pick the type and write a text
 
@@ -97,7 +97,7 @@ Turn the generator from "a link" into "content of a type". This means a domain c
 
 **Outside-in TDD checklist:**
 
-- [ ] Acceptance test `design-qr-code` (B7): `{ type: "testua", text }` encodes the text as typed; whitespace-only text is `empty`.
+- [ ] Acceptance test `design-qr-code` (B3, B7): `{ type: "testua", text }` encodes the text as typed; whitespace-only text is `empty`; a text over 1,000 UTF-8 bytes is refused as too long, with nothing encoded.
 - [ ] Component test `qr-generator` (B5, B6, B7):
     - the pills show with Esteka checked;
     - choosing Testua shows its field;
@@ -147,4 +147,4 @@ Turn the generator from "a link" into "content of a type". This means a domain c
 
 ## Next step
 
-Phase 1: introduce `QrContent` and `encodeContent` behind the existing link UI. Run `/execute-plan .agents/plans/qr-content-types`.
+Phase 2: build ChoiceChips and TextArea, add Testua and the content registry, and turn "1 · Esteka" into "1 · Edukia". Run `/execute-plan .agents/plans/qr-content-types`.
