@@ -13,6 +13,9 @@ const LINKS = [
 	`https://kode.eus/${"a".repeat(983)}`,
 ];
 
+/** Accents, a middle dot, an em dash and an emoji: one to four UTF-8 bytes each. */
+const NON_ASCII = "Goñi · Azpeitia — 19:00 🎶";
+
 const FINDER = ["1111111", "1000001", "1011101", "1011101", "1011101", "1000001", "1111111"].map(
 	(row) => Array.from(row, (cell) => cell === "1"),
 );
@@ -55,6 +58,11 @@ describe.each([
 		}
 	});
 
+	it("encodes non-ASCII text too", () => {
+		const matrix = create().encode(NON_ASCII);
+		expect(matrix.length).toBeGreaterThanOrEqual(21);
+	});
+
 	it("puts a finder pattern in the top-left, top-right and bottom-left corners", () => {
 		const matrix = create().encode(SHORT_LINK);
 		const far = matrix.length - 7;
@@ -64,9 +72,24 @@ describe.each([
 	});
 });
 
+describe("FixedMatrixEncoder", () => {
+	it("remembers the text it was given, as given", () => {
+		const encoder = new FixedMatrixEncoder();
+		encoder.encode(NON_ASCII);
+		expect(encoder.encoded).toEqual([NON_ASCII]);
+	});
+});
+
 describe("QrcodeGeneratorEncoder", () => {
-	it.each(LINKS)("encodes %s so a reader decodes it back", (link) => {
-		const { data, size } = toImage(new QrcodeGeneratorEncoder().encode(link));
-		expect(jsQR(data, size, size)?.data).toBe(link);
+	it.each([...LINKS, NON_ASCII])("encodes %s so a reader decodes it back", (text) => {
+		const { data, size } = toImage(new QrcodeGeneratorEncoder().encode(text));
+		expect(jsQR(data, size, size)?.data).toBe(text);
+	});
+
+	it("writes the text as UTF-8 bytes, as phone cameras expect", () => {
+		const { data, size } = toImage(new QrcodeGeneratorEncoder().encode(NON_ASCII));
+		expect(jsQR(data, size, size)?.binaryData).toEqual([
+			...new TextEncoder().encode(NON_ASCII),
+		]);
 	});
 });

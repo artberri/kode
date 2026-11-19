@@ -11,7 +11,7 @@ Turn the generator from "a link" into "content of a type". This means a domain c
 - **B1.** Esteka behaves as today: the same errors, the same "https:// gehitu diogu hasieran" confirmation, the same preview label and the same encoded link. — _proved by:_
 - **B2.** A download is named after its type and format: `kode-esteka.png`, `kode-testua.svg`. — _proved by:_
 - **B3.** Content whose payload is over 1,000 UTF-8 bytes is refused as too long, without encoding anything, with a message that says how much to cut. — _proved by:_
-- **B4.** A scanner reads the code back byte for byte, accents and symbols included ("Goñi · Azpeitia — 19:00"). — _proved by:_
+- **B4.** A scanner reads the code back byte for byte, accents and symbols included ("Goñi · Azpeitia — 19:00"). — _proved by:_ `qr-matrix-encoder.contract.test.ts`, "QrcodeGeneratorEncoder › encodes Goñi · Azpeitia — 19:00 🎶 so a reader decodes it back" and "writes the text as UTF-8 bytes, as phone cameras expect"
 - **B5.** "1 · Edukia" opens with the pills "Zer partekatu nahi duzu?" and Esteka selected. The pills list only the types that work. — _proved by:_
 - **B6.** Switching type keeps what was typed in each type for the visit. Switching back shows it again, and the preview follows the selected type. Nothing is stored. — _proved by:_
 - **B7.** Testua encodes the text exactly as typed. Text that is only whitespace counts as empty: no error, and the sample preview shows. The field stops at 500 characters, with a counter. — _proved by:_
@@ -59,11 +59,11 @@ Turn the generator from "a link" into "content of a type". This means a domain c
 
 ## Open questions and risks
 
-| #   | Question or risk                                                                                                                                                                                    | Source           | Affects | Status |
-| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- | ------- | ------ |
-| 1   | Does `jsqr` give UTF-8 back in `data`, or only raw bytes in `binaryData`? The contract test may need `TextDecoder` over `binaryData`.                                                               | Encoder contract | Phase 1 | Open   |
-| 2   | The density thresholds (45 and 69 modules at level Q) are an estimate. Check them by scanning printed codes at 3 cm on a few phones and adjust the design system if they're wrong.                  | Design           | Phase 3 | Open   |
-| 3   | `MAX_LINK_LENGTH` and `MAX_PAYLOAD_BYTES` are both 1,000. A link with non-ASCII characters is percent-encoded by `new URL`, so it stays ASCII and the two limits agree; keep a test that pins this. | Domain           | Phase 1 | Open   |
+| #   | Question or risk                                                                                                                                                                                    | Source           | Affects | Status   |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- | ------- | -------- |
+| 1   | Does `jsqr` give UTF-8 back in `data`, or only raw bytes in `binaryData`? Resolved: `data` is the UTF-8-decoded text, and the contract test checks `binaryData` against `TextEncoder` too.          | Encoder contract | Phase 1 | Resolved |
+| 2   | The density thresholds (45 and 69 modules at level Q) are an estimate. Check them by scanning printed codes at 3 cm on a few phones and adjust the design system if they're wrong.                  | Design           | Phase 3 | Open     |
+| 3   | `MAX_LINK_LENGTH` and `MAX_PAYLOAD_BYTES` are both 1,000. A link with non-ASCII characters is percent-encoded by `new URL`, so it stays ASCII and the two limits agree; keep a test that pins this. | Domain           | Phase 1 | Open     |
 
 ## Phase 1: Encode content by type
 
@@ -74,14 +74,14 @@ Turn the generator from "a link" into "content of a type". This means a domain c
 - [ ] Acceptance test `design-qr-code` (B1, B3): rewrite the link cases to pass `{ type: "esteka", link }`, with the same expectations. Add a payload over 1,000 bytes that is refused as too long, with nothing encoded.
 - [ ] Acceptance test `export-qr-code` (B2): the file is `kode-esteka.png`; invalid content answers `invalid-content`.
 - [ ] Unit test `encode-content` (B3): the byte limit counts UTF-8 bytes ("ñ" counts as 2) and is checked before any encoder runs.
-- [ ] Contract test `QrMatrixEncoder` (B4): a non-ASCII text round-trips through `jsqr` for `QrcodeGeneratorEncoder`; `FixedMatrixEncoder` still records what it was given.
+- [x] Contract test `QrMatrixEncoder` (B4): a non-ASCII text round-trips through `jsqr` for `QrcodeGeneratorEncoder`; `FixedMatrixEncoder` still records what it was given.
 - [ ] Component tests: the existing `qr-generator` and `qr-generator.download` tests pass, with the file name updated to `kode-esteka.png`.
 
 **To-do:**
 
 - [ ] Add `domain/qr-content.ts` (`QrContentType`, `QrContent`, the result types) and `domain/encode-content.ts` with the byte limit. Add `domain/content/esteka.ts`, which wraps `parseLink`.
 - [ ] Change `designQrCode` and `exportQrCode` to take `content`, encode through `encodeContent`, and name files `kode-<type>.<format>`.
-- [ ] Make `QrcodeGeneratorEncoder` encode UTF-8 and update its doc comment.
+- [x] Make `QrcodeGeneratorEncoder` encode UTF-8 and update its doc comment. Neither offered hook was used: 2.0.4 has no `stringToBytesFuncs` at runtime (only in its `.d.ts`), and `qrcode_UTF8.mjs` works by replacing the library's shared `stringToBytes`. The encoder passes one character per `TextEncoder` byte in byte mode instead.
 - [ ] Update `qr-generator.tsx`, `link-step.tsx`, `qr-preview.tsx` and `download-step.tsx` to hold and pass `{ type: "esteka", link }`. Copy and layout stay as they are.
 
 **Verify:**
