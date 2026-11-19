@@ -14,7 +14,7 @@ Turn the generator from "a link" into "content of a type". This means a domain c
 - **B4.** A scanner reads the code back byte for byte, accents and symbols included ("Goñi · Azpeitia — 19:00"). — _proved by:_ `qr-matrix-encoder.contract.test.ts`, "QrcodeGeneratorEncoder › encodes Goñi · Azpeitia — 19:00 🎶 so a reader decodes it back" and "writes the text as UTF-8 bytes, as phone cameras expect"
 - **B5.** "1 · Edukia" opens with the pills "Zer partekatu nahi duzu?" and Esteka selected. The pills list only the types that work. — _proved by:_ `qr-generator.content.test.tsx`, "opens on the type pills with Esteka checked, listing only the types that work"; `qr-generator.test.tsx`, "labels the content step"
 - **B6.** Switching type keeps what was typed in each type for the visit. Switching back shows it again, and the preview follows the selected type. Nothing is stored. — _proved by:_ `qr-generator.content.test.tsx`, "keeps what was typed in each type while switching, and the preview follows"
-- **B7.** Testua encodes the text exactly as typed. Text that is only whitespace counts as empty: no error, and the sample preview shows. The field stops at 500 characters, with a counter. — _proved by:_ `design-qr-code.acceptance.test.ts`, "encodes a text exactly as typed, …" and "waits for a text that is only whitespace, …"; `content/testua.test.ts`; `qr-generator.content.test.tsx`, "shows the chosen type's field in place of the link's", "counts a text of only whitespace as empty: …" and "stops the text at 500 characters"
+- **B7.** Testua encodes the text exactly as typed. Text that is only whitespace counts as empty: no error, and the sample preview shows. The field stops at 500 characters, with a counter. — _proved by:_ `design-qr-code.acceptance.test.ts`, "encodes a text exactly as typed, …" and "waits for a text that is only whitespace, …"; `content/text.test.ts`; `qr-generator.content.test.tsx`, "shows the chosen type's field in place of the link's", "counts a text of only whitespace as empty: …" and "stops the text at 500 characters"
 - **B8.** While the content is valid, the download side says what scanning will do ("Eskaneatzean: testua pantailan erakutsiko du, kopiatzeko prest."). While it isn't, the line is absent. — _proved by:_
 - **B9.** While the content is valid, the density meter shows the code's size ("33×33 modulu") and its level: Arina up to 45 modules, Ertaina up to 69, Trinkoa above. Each level has its sentence. While the content isn't valid, the meter is absent. — _proved by:_
 
@@ -39,8 +39,8 @@ Turn the generator from "a link" into "content of a type". This means a domain c
 ### Contracts
 
 - **Domain content model** (new, `src/qr-code/domain/`):
-    - `QrContentType` lists all eleven slugs from the start: `esteka`, `testua`, `telefonoa`, `whatsapp`, `sms`, `posta`, `wifi`, `kontaktua`, `ekitaldia`, `kokapena`, `sareak`. Each slug is also the download name.
-    - `QrContent` is a discriminated union on `type`, holding each type's form values. This plan defines `{ type: "esteka"; link }` and `{ type: "testua"; text }`, and later plans add a member each.
+    - `QrContentType` lists all eleven types from the start, in English: `link`, `text`, `phone`, `whatsapp`, `sms`, `email`, `wifi`, `contact`, `event`, `location`, `social`. `DOWNLOAD_NAMES` maps each to its Basque download name (`link` → `esteka`). Phases 1 and 2 shipped with Basque slugs, renamed afterwards with the rest of the code; their to-dos keep the names they were written with.
+    - `QrContent` is a discriminated union on `type`, holding each type's form values. This plan defines `{ type: "link"; link }` and `{ type: "text"; text }`, and later plans add a member each.
     - `encodeContent(content)` is exhaustive over the union and returns one of three shapes:
         - `{ status: "empty" }` when nothing required is filled;
         - `{ status: "invalid"; problems }`, one `{ field, reason }` per wrong field, with reason codes and no copy;
@@ -51,7 +51,7 @@ Turn the generator from "a link" into "content of a type". This means a domain c
     - `DesignQrCodeInput` and `ExportQrCodeInput` take `content: QrContent` instead of `link: string`.
     - `DesignQrCodeResult` becomes `empty | invalid (problems) | ready`. The `ready` case carries the encoded content, `svg`, `contrast` and, from phase 3, `modules`, the matrix size.
     - `ExportQrCodeResult`'s `no-link` becomes `invalid-content`.
-    - The file name is `kode-<type>.<format>`.
+    - The file name is `kode-<download name>.<format>`.
 - **`QrMatrixEncoder` port:** the text is encoded as UTF-8 bytes. Today `QrcodeGeneratorEncoder` relies on links being ASCII, and its doc comment must change. `qrcode-generator` 2.0.4 offers `stringToBytesFuncs["UTF-8"]` and a `dist/qrcode_UTF8.mjs` build: read its README and pick one in phase 1.
 - **Screens:** "1 · Edukia" holds the type pills and the selected type's form. The download side gains the scan line and the density meter.
     - Each type's Basque copy lives in one UI registry, `infrastructure/ui/content-types.tsx`, so later plans add a type in one place. Per type it holds: the label, the icon, the form, the scan sentence, the preview label, and the error message for each reason.

@@ -56,7 +56,7 @@ Add the last two types, Kokapena and Sare sozialak, with their Tabler brand icon
 
 ### Contracts
 
-- **Domain:** `QrContent` gains `kokapena` (`mode`, `address`, `latitude`, `longitude`, `map`) and `sareak` (`network`, `username`, `server`), each with an encoder module and unit tests.
+- **Domain:** `QrContent` gains `location` (`mode`, `address`, `latitude`, `longitude`, `map`) and `social` (`network`, `username`, `server`), each with an encoder module and unit tests.
 - **Shared UI:** Icon gains `pin`, `share` and the ten `brand-*` icons. `brand-*` icons draw at 2px by default, as the design system's `Icon` does.
 - **Assets:** one `ASSETS.md` row for the Tabler path data in `icon.tsx`, naming Tabler Icons 3.24.0, MIT, © Paweł Kuna.
 - **Page metadata:** `metadata.description` in `page.tsx`.
@@ -81,12 +81,12 @@ Add the last two types, Kokapena and Sare sozialak, with their Tabler brand icon
 
 - [ ] Acceptance test `design-qr-code` (B1, B2): an address in each map, coordinates in each map, and out-of-range coordinates.
 - [ ] Component test `qr-generator` (B1, B3): switching to Koordenatuak shows Latitudea and Longitudea; the test link has the encoded `href`, `target="_blank"` and `rel="noopener noreferrer"`.
-- [ ] Unit test `content/kokapena` (B1, B2): decimal commas, percent-encoding and both map formats.
+- [ ] Unit test `content/location` (B1, B2): decimal commas, percent-encoding and both map formats.
 
 **To-do:**
 
-- [ ] Add `domain/content/kokapena.ts` and its `QrContent` member.
-- [ ] Add `forms/kokapena-form.tsx`:
+- [ ] Add `domain/content/location.ts` and its `QrContent` member.
+- [ ] Add `forms/location-form.tsx`:
     - a SegmentedControl "Nola adierazi lekua";
     - the address field, or Latitudea and Longitudea side by side;
     - a SegmentedControl "Zein mapatan ireki", with its hint;
@@ -109,13 +109,13 @@ Add the last two types, Kokapena and Sare sozialak, with their Tabler brand icon
     - the network chips have their icons and Instagram is checked;
     - the field's prefix chip follows the network;
     - choosing Mastodon shows the server field.
-- [ ] Unit test `content/sareak` (B5, B6, B7).
+- [ ] Unit test `content/social` (B5, B6, B7).
 
 **To-do:**
 
 - [ ] Add the `share` and ten `brand-*` icons to `icon.tsx` from the design system's `bundle.js`, with the 2px default for brand icons. Add the `ASSETS.md` row.
-- [ ] Add `domain/content/sareak.ts` and its `QrContent` member.
-- [ ] Add `forms/sareak-form.tsx`:
+- [ ] Add `domain/content/social.ts` and its `QrContent` member.
+- [ ] Add `forms/social-form.tsx`:
     - ChoiceChips "Sare soziala", with icons and the Mastodon hint;
     - the username field with the network's prefix chip and success line;
     - the Mastodon server field.

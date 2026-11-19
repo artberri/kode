@@ -40,7 +40,7 @@ Add the two structured types: Kontaktua (a vCard) and Ekitaldia (a calendar even
 
 ### Contracts
 
-- **Domain:** `QrContent` gains `kontaktua` and `ekitaldia`, each with an encoder module and unit tests. Both share a text-escaping helper, `domain/content/escape-text.ts`, for the RFC 2426 and RFC 5545 rules.
+- **Domain:** `QrContent` gains `contact` and `event`, each with an encoder module and unit tests. Both share a text-escaping helper, `domain/content/escape-text.ts`, for the RFC 2426 and RFC 5545 rules.
 - **Shared UI:** new `Disclosure` and `DateTimeField`; Icon gains `contact`, `calendar` and `plus`.
 
 ### Dependencies
@@ -65,12 +65,12 @@ Add the two structured types: Kontaktua (a vCard) and Ekitaldia (a calendar even
 - [ ] Acceptance test `design-qr-code` (B1, B2, B3): the name alone, a full card and an invalid phone or email inside the card.
 - [ ] Component test `qr-generator` (B1, B7): Lana starts open and the rest start closed; opening Helbidea and typing adds the address to the code; closing it keeps the address.
 - [ ] Component test `disclosure.test.tsx` (B7).
-- [ ] Unit tests `content/kontaktua` and `escape-text` (B2).
+- [ ] Unit tests `content/contact` and `escape-text` (B2).
 
 **To-do:**
 
 - [ ] Build `src/shared/ui/disclosure.tsx` to the design system. Add the `contact` and `plus` icons.
-- [ ] Add `domain/content/escape-text.ts`, `domain/content/kontaktua.ts`, its `QrContent` member, `forms/kontaktua-form.tsx` and its registry entry.
+- [ ] Add `domain/content/escape-text.ts`, `domain/content/contact.ts`, its `QrContent` member, `forms/contact-form.tsx` and its registry entry.
 - [ ] Below the form, show "Zenbat eta datu gehiago, orduan eta QR trinkoagoa…".
 - [ ] If the code diverges from the design system's README or preview, update the artifact in the same change.
 
@@ -88,14 +88,14 @@ Add the two structured types: Kontaktua (a vCard) and Ekitaldia (a calendar even
 - [ ] Acceptance test `design-qr-code` (B4, B5): a timed event in Europe/Madrid across a daylight-saving change, an all-day event over two days, and an end before the start.
 - [ ] Component test `qr-generator` (B4, B6): moving the start past the end moves the end; "Egun osoa" switches both fields to dates; the time zone line names the browser's zone.
 - [ ] Component test `date-time-field.test.tsx`: the `datetime-local` and `date` types, `min`, and messages.
-- [ ] Unit test `content/ekitaldia` (B5): the UTC conversion with an injected time zone, the exclusive all-day end, and escaping.
+- [ ] Unit test `content/event` (B5): the UTC conversion with an injected time zone, the exclusive all-day end, and escaping.
 
 **To-do:**
 
 - [ ] Resolve open question 1 by scanning both shapes on real phones.
 - [ ] Build `src/shared/ui/date-time-field.tsx` to the design system. Add the `calendar` icon.
-- [ ] Add `domain/content/ekitaldia.ts`. It takes the time zone as input, so it stays pure and testable. Add its `QrContent` member.
-- [ ] Add `forms/ekitaldia-form.tsx`:
+- [ ] Add `domain/content/event.ts`. It takes the time zone as input, so it stays pure and testable. Add its `QrContent` member.
+- [ ] Add `forms/event-form.tsx`:
     - Izenburua;
     - Hasiera and Amaiera side by side;
     - the "Egun osoa" switch and its time zone hint;

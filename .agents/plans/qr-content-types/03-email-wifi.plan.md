@@ -42,7 +42,7 @@ Add Posta and WiFi. Posta brings the TextField extensions that later forms reuse
 
 ### Contracts
 
-- **Domain:** `QrContent` gains `posta` (`to`, `subject`, `body`) and `wifi` (`ssid`, `security`, `password`, `hidden`), each with an encoder module and unit tests.
+- **Domain:** `QrContent` gains `email` (`to`, `subject`, `body`) and `wifi` (`ssid`, `security`, `password`, `hidden`), each with an encoder module and unit tests.
 - **Shared UI:**
     - TextField gains `optional`, `type`, `inputMode`, `autoComplete`, `prefix`, `error`, `success` and `onBlur`. Existing props keep their meaning.
     - New `PasswordField` and `Switch`.
@@ -61,12 +61,12 @@ Add Posta and WiFi. Posta brings the TextField extensions that later forms reuse
 - [ ] Acceptance test `design-qr-code` (B1, B2): an address alone, an address with subject and message, and an invalid address.
 - [ ] Component test `qr-generator` (B1, B3): Posta's fields with "(aukerakoa)" on the subject and message; an invalid address shows its error after leaving the field.
 - [ ] Component test `text-field.test.tsx` (B3): `optional`, `prefix` (visual only), `error` (border, `aria-invalid`, announced) and `success`, and only one message shows. The existing frame-text cases still pass.
-- [ ] Unit test `content/posta` (B2): `%20` for spaces, "&" and "?" escaped in the subject and body, and no empty parameters.
+- [ ] Unit test `content/email` (B2): `%20` for spaces, "&" and "?" escaped in the subject and body, and no empty parameters.
 
 **To-do:**
 
 - [ ] Extend `src/shared/ui/text-field.tsx` to the design system's `TextFieldProps`.
-- [ ] Add `domain/content/posta.ts`, its `QrContent` member, `forms/posta-form.tsx` (recipient and subject side by side from 480px, then the message) and the registry entry with the `mail` icon.
+- [ ] Add `domain/content/email.ts`, its `QrContent` member, `forms/email-form.tsx` (recipient and subject side by side from 480px, then the message) and the registry entry with the `mail` icon.
 
 **Verify:**
 

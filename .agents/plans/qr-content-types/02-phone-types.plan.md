@@ -51,7 +51,7 @@ Add Telefonoa, WhatsApp and SMSa. They share a phone field with a country chip w
     - `domain/phone-number.ts` normalises, validates and formats numbers in international format, including the trunk-0 rule.
     - `domain/countries.ts` maps ISO 3166-1 alpha-2 codes to calling codes and holds no names.
     - `domain/default-country.ts` holds a pure `defaultCountry(languages, timeZone)`.
-    - `QrContent` gains `telefonoa`, `whatsapp` and `sms`, each with `country`, `number` and, for WhatsApp and SMSa, `message`.
+    - `QrContent` gains `phone`, `whatsapp` and `sms`, each with `country`, `number` and, for WhatsApp and SMSa, `message`.
 - **Browser adapter:** a small hook reads `navigator.languages` and `Intl.DateTimeFormat().resolvedOptions().timeZone` once. Country names come from `Intl.DisplayNames(["eu"], { type: "region" })`.
 - **Shared UI:** new `PhoneField`; Icon gains `phone`, `chat`, `sms` and `chevron-down`.
 
@@ -75,20 +75,20 @@ Add Telefonoa, WhatsApp and SMSa. They share a phone field with a country chip w
 
 **Outside-in TDD checklist:**
 
-- [ ] Acceptance test `design-qr-code` (B5): `{ type: "telefonoa", country: "ES", number: "600 112 233" }` encodes `tel:+34600112233`.
+- [ ] Acceptance test `design-qr-code` (B5): `{ type: "phone", country: "ES", number: "600 112 233" }` encodes `tel:+34600112233`.
 - [ ] Component test `qr-generator` (B1, B2, B4, B5):
     - picking Telefonoa shows the chip on the default country;
     - choosing France re-encodes with +33;
     - a short number shows its error after leaving the field.
 - [ ] Component test `phone-field.test.tsx`: the label, the select named "Herrialdea eta aurrizkia", the chip text, messages and the invalid state.
-- [ ] Unit tests: `phone-number` (B3, B4: stripping, the +/00 prefix, the trunk 0 and the Italy exception, the 6–15 digit range), `default-country` (B1) and `content/telefonoa`.
+- [ ] Unit tests: `phone-number` (B3, B4: stripping, the +/00 prefix, the trunk 0 and the Italy exception, the 6–15 digit range), `default-country` (B1) and `content/phone`.
 
 **To-do:**
 
 - [ ] Add `domain/countries.ts` from the E.164 list, and `domain/phone-number.ts`.
 - [ ] Add `domain/default-country.ts` and the browser hook in `infrastructure/ui/`.
 - [ ] Build `src/shared/ui/phone-field.tsx` to the design system. Add the `phone` and `chevron-down` icons.
-- [ ] Add `domain/content/telefonoa.ts`, its `QrContent` member, `forms/telefonoa-form.tsx` and its registry entry.
+- [ ] Add `domain/content/phone.ts`, its `QrContent` member, `forms/phone-form.tsx` and its registry entry.
 - [ ] If the code diverges from the design system's README or preview, update the artifact in the same change.
 
 **Verify:**
