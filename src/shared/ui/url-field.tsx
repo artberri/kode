@@ -49,7 +49,7 @@ export function UrlField({
 	className,
 }: UrlFieldProps) {
 	const shown = pickMessage(error, success, hint);
-	const messageId = `${id}-mezua`;
+	const messageId = `${id}-message`;
 	const invalid = shown?.tone === "error";
 	const handleChange = useCallback(
 		(event: ChangeEvent<HTMLInputElement>) => {

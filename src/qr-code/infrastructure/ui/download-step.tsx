@@ -98,15 +98,15 @@ export function DownloadStep({ content, design, ready, preview, dependencies }: 
 	const { download, outcome } = useDownload(input, dependencies);
 	return (
 		<fieldset
-			aria-labelledby="urratsa-deskarga"
+			aria-labelledby="step-download"
 			className="m-0 flex min-w-0 flex-col gap-space-5 border-0 p-0"
 		>
-			<StepLabel step={3} id="urratsa-deskarga">
+			<StepLabel step={3} id="step-download">
 				Deskarga
 			</StepLabel>
 			{preview}
 			<SegmentedControl
-				name="formatua"
+				name="format"
 				legend="Formatua"
 				items={FORMATS}
 				value={format}

@@ -45,7 +45,7 @@ export function TextField({
 	disabled = false,
 	className,
 }: TextFieldProps) {
-	const hintId = `${id}-laguntza`;
+	const hintId = `${id}-hint`;
 	const handleChange = useCallback(
 		(event: ChangeEvent<HTMLInputElement>) => {
 			onChange(event.target.value);

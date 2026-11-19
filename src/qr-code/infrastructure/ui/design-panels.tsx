@@ -49,14 +49,14 @@ export function FramePanel({ design, undrawable, onChange }: PanelProps) {
 	return (
 		<div className="flex flex-col gap-space-6">
 			<OptionTiles
-				name="markoa"
+				name="frame"
 				legend="Markoa"
 				items={FRAME_TILES}
 				value={design.frame}
 				onChange={pickFrame}
 			/>
 			<TextField
-				id="markoaren-testua"
+				id="frame-text"
 				label="Markoaren testua"
 				value={design.frameText}
 				onChange={changeText}
@@ -78,7 +78,7 @@ export function ShapePanel({ design, onChange }: PanelProps) {
 	return (
 		<div className="flex flex-col gap-space-6">
 			<OptionTiles
-				name="puntuak"
+				name="dots"
 				legend="Puntuen forma"
 				showLegend
 				items={DOT_TILES}
@@ -87,7 +87,7 @@ export function ShapePanel({ design, onChange }: PanelProps) {
 			/>
 			<div className="flex flex-wrap gap-x-space-7 gap-y-space-6">
 				<OptionTiles
-					name="izkinak"
+					name="corners"
 					legend="Izkinen markoa"
 					showLegend
 					size="sm"
@@ -96,7 +96,7 @@ export function ShapePanel({ design, onChange }: PanelProps) {
 					onChange={pickCorner}
 				/>
 				<OptionTiles
-					name="erdiguneak"
+					name="centres"
 					legend="Izkinen erdigunea"
 					showLegend
 					size="sm"

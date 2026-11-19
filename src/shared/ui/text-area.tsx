@@ -73,7 +73,7 @@ export function TextArea({
 	className,
 }: TextAreaProps) {
 	const shown = pickMessage(error, undefined, hint);
-	const messageId = `${id}-mezua`;
+	const messageId = `${id}-message`;
 	const invalid = shown?.tone === "error";
 	const handleChange = useCallback(
 		(event: ChangeEvent<HTMLTextAreaElement>) => {

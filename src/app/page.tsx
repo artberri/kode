@@ -136,10 +136,10 @@ function ReasonsIntro({ id }: { readonly id: string }) {
 function Reasons() {
 	return (
 		<section
-			aria-labelledby="arrazoiak"
+			aria-labelledby="reasons"
 			className={`${COLUMN} flex flex-wrap items-start gap-x-[72px] gap-y-space-7 pb-space-10`}
 		>
-			<ReasonsIntro id="arrazoiak" />
+			<ReasonsIntro id="reasons" />
 			<ol
 				// oxlint-disable-next-line jsx-a11y/no-redundant-roles -- Safari drops the list role from a list-style: none list unless it is explicit
 				role="list"

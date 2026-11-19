@@ -17,7 +17,7 @@ function Harness({ size }: Pick<OptionTilesProps<Shape>, "size">) {
 	const [value, setValue] = useState<Shape>("borobildua");
 	return (
 		<OptionTiles
-			name="izkinak"
+			name="corners"
 			legend="Izkinen markoa"
 			items={ITEMS}
 			value={value}
@@ -61,7 +61,7 @@ describe("OptionTiles", () => {
 		const onChange = vi.fn<(value: Shape) => void>();
 		render(
 			<OptionTiles
-				name="izkinak"
+				name="corners"
 				legend="Izkinen markoa"
 				items={ITEMS}
 				value="karratua"

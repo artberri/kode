@@ -62,7 +62,7 @@ function ColourInput({
 	);
 	return (
 		<ColorField
-			id={`kolorea-${part}`}
+			id={`colour-${part}`}
 			label={label}
 			value={colours[part]}
 			onChange={change}
@@ -103,7 +103,7 @@ export function ColourPanel({ design, onChange }: PanelProps) {
 	return (
 		<div className="flex flex-col gap-space-6">
 			<SwatchPicker
-				name="paleta"
+				name="palette"
 				legend="Paleta"
 				showLegend
 				items={SWATCHES}

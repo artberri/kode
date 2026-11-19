@@ -7,18 +7,18 @@ import type { QrDesign } from "../../domain/qr-design";
 import { ColourPanel } from "./colour-panel";
 import { type DesignChange, FramePanel, type PanelProps, ShapePanel } from "./design-panels";
 
-type DesignTab = "markoa" | "forma" | "koloreak";
+type DesignTab = "frame" | "shape" | "colours";
 
 const DESIGN_TABS = [
-	{ id: "markoa", label: "Markoa" },
-	{ id: "forma", label: "Forma" },
-	{ id: "koloreak", label: "Koloreak" },
+	{ id: "frame", label: "Markoa" },
+	{ id: "shape", label: "Forma" },
+	{ id: "colours", label: "Koloreak" },
 ] as const;
 
 const PANELS: Record<DesignTab, ComponentType<PanelProps>> = {
-	markoa: FramePanel,
-	forma: ShapePanel,
-	koloreak: ColourPanel,
+	frame: FramePanel,
+	shape: ShapePanel,
+	colours: ColourPanel,
 };
 
 /** Step 2, "Diseinua": the frame, shape and colour tabs. */
@@ -32,13 +32,13 @@ export function DesignStep({
 	readonly undrawable: readonly string[];
 	readonly onChange: DesignChange;
 }) {
-	const [tab, setTab] = useState<DesignTab>("markoa");
+	const [tab, setTab] = useState<DesignTab>("frame");
 	return (
 		<fieldset
-			aria-labelledby="urratsa-diseinua"
+			aria-labelledby="step-design"
 			className="m-0 flex min-w-0 flex-col gap-space-4 border-0 p-0"
 		>
-			<StepLabel step={2} id="urratsa-diseinua">
+			<StepLabel step={2} id="step-design">
 				Diseinua
 			</StepLabel>
 			<Tabs
@@ -46,7 +46,7 @@ export function DesignStep({
 				value={tab}
 				onChange={setTab}
 				label="Diseinua"
-				idPrefix="diseinua"
+				idPrefix="design"
 			/>
 			{DESIGN_TABS.map(({ id }) => {
 				const Panel = PANELS[id];
@@ -54,7 +54,7 @@ export function DesignStep({
 					<TabPanel
 						key={id}
 						id={id}
-						idPrefix="diseinua"
+						idPrefix="design"
 						selected={tab === id}
 						className="pt-space-2"
 					>

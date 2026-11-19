@@ -5,15 +5,15 @@ import { describe, expect, it } from "vitest";
 
 import { TabPanel, Tabs } from "./tabs";
 
-type Id = "markoa" | "forma" | "koloreak";
+type Id = "frame" | "shape" | "colours";
 
 const ITEMS = [
-	{ id: "markoa", label: "Markoa" },
-	{ id: "forma", label: "Forma" },
-	{ id: "koloreak", label: "Koloreak" },
+	{ id: "frame", label: "Markoa" },
+	{ id: "shape", label: "Forma" },
+	{ id: "colours", label: "Koloreak" },
 ] as const;
 
-function Harness({ initial = "markoa" }: { readonly initial?: Id }) {
+function Harness({ initial = "frame" }: { readonly initial?: Id }) {
 	const [value, setValue] = useState<Id>(initial);
 	return (
 		<>
@@ -61,7 +61,7 @@ describe("Tabs", () => {
 	});
 
 	it("keeps only the selected tab in the tab order", async () => {
-		const { user } = setup("forma");
+		const { user } = setup("shape");
 
 		await user.tab();
 
@@ -83,7 +83,7 @@ describe("Tabs", () => {
 	});
 
 	it("jumps to the first and last tab with Home and End", async () => {
-		const { user } = setup("forma");
+		const { user } = setup("shape");
 		await user.tab();
 
 		await user.keyboard("{End}");

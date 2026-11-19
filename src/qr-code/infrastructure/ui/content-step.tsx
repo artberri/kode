@@ -59,14 +59,14 @@ export interface ContentStepProps {
 export function ContentStep({ content, onTypeChange, onChange, result }: ContentStepProps) {
 	return (
 		<fieldset
-			aria-labelledby="urratsa-edukia"
+			aria-labelledby="step-content"
 			className="m-0 flex min-w-0 flex-col gap-space-5 border-0 p-0"
 		>
-			<StepLabel step={1} id="urratsa-edukia">
+			<StepLabel step={1} id="step-content">
 				Edukia
 			</StepLabel>
 			<ChoiceChips
-				name="mota"
+				name="content-type"
 				legend="Zer partekatu nahi duzu?"
 				items={TYPE_CHIPS}
 				value={content.type}

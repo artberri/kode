@@ -5,19 +5,19 @@ import { describe, expect, it, vi } from "vitest";
 
 import { SwatchPicker } from "./swatch-picker";
 
-type Palette = "morea" | "menda" | "gaua";
+type Palette = "violet" | "mint" | "night";
 
 const ITEMS = [
-	{ value: "morea", label: "Morea", color: "#6B3FA8" },
-	{ value: "menda", label: "Menda", color: "#8EE6C9" },
-	{ value: "gaua", label: "Gaua", color: "#2A1740" },
+	{ value: "violet", label: "Morea", color: "#6B3FA8" },
+	{ value: "mint", label: "Menda", color: "#8EE6C9" },
+	{ value: "night", label: "Gaua", color: "#2A1740" },
 ] as const;
 
 function Harness() {
-	const [value, setValue] = useState<Palette | undefined>("menda");
+	const [value, setValue] = useState<Palette | undefined>("mint");
 	return (
 		<SwatchPicker
-			name="paleta"
+			name="palette"
 			legend="Paleta"
 			items={ITEMS}
 			value={value}
@@ -32,9 +32,9 @@ describe("SwatchPicker", () => {
 
 		expect(screen.getByRole("group", { name: "Paleta" })).toBeVisible();
 		expect(screen.getAllByRole("radio").map((radio) => radio.getAttribute("value"))).toEqual([
-			"morea",
-			"menda",
-			"gaua",
+			"violet",
+			"mint",
+			"night",
 		]);
 		expect(screen.getByRole("radio", { name: "Menda" })).toBeChecked();
 	});
@@ -59,7 +59,7 @@ describe("SwatchPicker", () => {
 	it("can have no swatch chosen, when the colours match no preset", () => {
 		render(
 			<SwatchPicker
-				name="paleta"
+				name="palette"
 				legend="Paleta"
 				items={ITEMS}
 				value={undefined}
@@ -77,7 +77,7 @@ describe("SwatchPicker", () => {
 		const onChange = vi.fn<(value: Palette) => void>();
 		render(
 			<SwatchPicker
-				name="paleta"
+				name="palette"
 				legend="Paleta"
 				items={ITEMS}
 				value={undefined}
@@ -87,6 +87,6 @@ describe("SwatchPicker", () => {
 
 		await user.click(screen.getByRole("radio", { name: "Morea" }));
 
-		expect(onChange).toHaveBeenCalledExactlyOnceWith("morea");
+		expect(onChange).toHaveBeenCalledExactlyOnceWith("violet");
 	});
 });

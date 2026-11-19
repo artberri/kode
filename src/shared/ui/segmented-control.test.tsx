@@ -20,7 +20,7 @@ function Harness({ webp = true }: { readonly webp?: boolean }) {
 	const [value, setValue] = useState<Format>("png");
 	return (
 		<SegmentedControl
-			name="formatua"
+			name="format"
 			legend="Formatua"
 			items={ITEMS}
 			{...(webp ? {} : { disabled: WEBP, hint: NO_WEBP_HINT })}

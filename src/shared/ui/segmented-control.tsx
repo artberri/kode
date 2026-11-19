@@ -44,7 +44,7 @@ export function SegmentedControl<Value extends string>({
 	className,
 }: SegmentedControlProps<Value>) {
 	const handleChange = useRadioChange(items, onChange);
-	const hintId = `${name}-laguntza`;
+	const hintId = `${name}-hint`;
 	return (
 		<RadioFieldset
 			legend={legend}

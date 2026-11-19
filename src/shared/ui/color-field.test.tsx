@@ -7,7 +7,7 @@ describe("ColorField", () => {
 	it("is a colour input named by its label alone", () => {
 		render(
 			<ColorField
-				id="qr-kolorea"
+				id="qr-colour"
 				label="QRaren kolorea"
 				value="#2a1740"
 				onChange={vi.fn<(value: string) => void>()}
@@ -23,7 +23,7 @@ describe("ColorField", () => {
 	it("shows the hex value in capitals and describes the input with it", () => {
 		render(
 			<ColorField
-				id="qr-kolorea"
+				id="qr-colour"
 				label="QRaren kolorea"
 				value="#2a1740"
 				onChange={vi.fn<(value: string) => void>()}
@@ -38,7 +38,7 @@ describe("ColorField", () => {
 		const onChange = vi.fn<(value: string) => void>();
 		render(
 			<ColorField
-				id="qr-kolorea"
+				id="qr-colour"
 				label="QRaren kolorea"
 				value="#2a1740"
 				onChange={onChange}
@@ -53,7 +53,7 @@ describe("ColorField", () => {
 	it("can be disabled", () => {
 		render(
 			<ColorField
-				id="markoa"
+				id="frame"
 				label="Markoaren kolorea"
 				value="#6b3fa8"
 				onChange={vi.fn<(value: string) => void>()}

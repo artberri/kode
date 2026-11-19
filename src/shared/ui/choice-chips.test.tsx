@@ -19,7 +19,7 @@ function Harness(props: Partial<Pick<ChoiceChipsProps<Kind>, "hideLegend" | "hin
 	const [value, setValue] = useState<Kind>("link");
 	return (
 		<ChoiceChips
-			name="mota"
+			name="content-type"
 			legend={LEGEND}
 			items={ITEMS}
 			value={value}
@@ -79,7 +79,7 @@ describe("ChoiceChips", () => {
 		const onChange = vi.fn<(value: Kind) => void>();
 		render(
 			<ChoiceChips
-				name="mota"
+				name="content-type"
 				legend={LEGEND}
 				items={ITEMS}
 				value="link"

@@ -27,7 +27,7 @@ describe("presetMatching", () => {
 	});
 
 	it("matches the default design to Morea", () => {
-		expect(presetMatching(DEFAULT_DESIGN.colours)).toBe("morea");
+		expect(presetMatching(DEFAULT_DESIGN.colours)).toBe("violet");
 	});
 
 	it("ignores the case of the hex digits, as colour inputs give lowercase", () => {
@@ -38,7 +38,7 @@ describe("presetMatching", () => {
 				frame: "#6b3fa8",
 				frameText: "#ffffff",
 			}),
-		).toBe("morea");
+		).toBe("violet");
 	});
 
 	it("matches none once any one colour differs", () => {

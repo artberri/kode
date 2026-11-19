@@ -1,6 +1,6 @@
 import type { QrColours } from "./qr-design";
 
-export type PalettePresetId = "morea" | "lila" | "menda" | "mertxikia" | "gurina" | "gaua";
+export type PalettePresetId = "violet" | "lilac" | "mint" | "peach" | "butter" | "night";
 
 export interface PalettePreset {
 	readonly id: PalettePresetId;
@@ -18,32 +18,32 @@ const WHITE = "#FFFFFF";
  */
 export const PALETTE_PRESETS: readonly PalettePreset[] = [
 	{
-		id: "morea",
+		id: "violet",
 		name: "Morea",
 		colours: { qr: INK, background: WHITE, frame: "#6B3FA8", frameText: WHITE },
 	},
 	{
-		id: "lila",
+		id: "lilac",
 		name: "Lila",
 		colours: { qr: INK, background: WHITE, frame: "#CDB8FF", frameText: INK },
 	},
 	{
-		id: "menda",
+		id: "mint",
 		name: "Menda",
 		colours: { qr: INK, background: WHITE, frame: "#8EE6C9", frameText: INK },
 	},
 	{
-		id: "mertxikia",
+		id: "peach",
 		name: "Mertxikia",
 		colours: { qr: INK, background: WHITE, frame: "#FFC2A1", frameText: INK },
 	},
 	{
-		id: "gurina",
+		id: "butter",
 		name: "Gurina",
 		colours: { qr: INK, background: WHITE, frame: "#FFE58F", frameText: INK },
 	},
 	{
-		id: "gaua",
+		id: "night",
 		name: "Gaua",
 		colours: { qr: INK, background: WHITE, frame: INK, frameText: "#FFE58F" },
 	},
