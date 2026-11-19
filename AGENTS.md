@@ -73,6 +73,7 @@ The design lives in two Claude Design artifacts. Read them with the Artifact too
 - [`docs/KNOWN_NON_ISSUES.md`](docs/KNOWN_NON_ISSUES.md): deliberate patterns that look like defects. Read it before acting on a review comment, and before writing code in an area it covers.
 - [`docs/PRE_PR_REVIEW.md`](docs/PRE_PR_REVIEW.md): check your diff against it before opening a pull request.
 - [`docs/FOOTGUNS.md`](docs/FOOTGUNS.md): runtime traps that pass review and type checks. Scan its headings when a change touches the same areas.
+- [`docs/FOLLOW_UPS.md`](docs/FOLLOW_UPS.md): work deferred until a backend exists. Add to it rather than building what it lists, and check it when starting the URL shortener or bio pages.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
